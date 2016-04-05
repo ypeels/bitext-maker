@@ -1,0 +1,1 @@
+This is an attempt to generate multilingual parallel corpora from human-scalable multilingual resources.
