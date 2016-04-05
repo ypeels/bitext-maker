@@ -1,0 +1,41 @@
+# morphological information - which Chinese doesn't need...
+# n.b. pyyaml cannot 
+
+--- # template
+#VB:     # infinitive
+#VBD:    # past
+#VBG:    # present participle
+#VBN:    # past participle
+#VBP:    # present (all except )
+#VBZ:
+- VB: 
+  VBD:
+  VBG:
+  VBN:
+  VBP:
+  VBZ:
+
+# making things a big long list instead of multiple documents for now
+# - don't see a compelling reason to use multiple documents per file right now, other than maybe indentation
+# - this way, can use references between words if needed (on its own line, to get the whole list item)
+
+
+- VB: be
+  VBD: were
+  VBG: being
+  VBN: been
+  VBP: are
+  VBZ: is
+  irregular:
+    VBP1: am # should i add more metadata here?
+    VBD1: was
+    VBD3: was
+    # and maybe subjunctives
+
+- VB: have
+  VBD: had
+  VBG: having
+  VBN: had
+  VBP: have
+  VBZ: has
+  

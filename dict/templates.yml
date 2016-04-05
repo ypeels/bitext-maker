@@ -1,0 +1,37 @@
+# first try: all templates will be unmodified indicative active
+  # "transformations" will modify 
+    # verb tense, mood, voice, etc.
+    # nouns via adjectives, particples, etc.
+    # combine clauses
+
+# not totally sure whether to redo this for every semantic category... 
+description: transitive
+
+example: Alice|S kicks|V Bob|O .
+ 
+symbols:
+  - id: V
+    type: verb
+    description: main verb
+    
+  - id: S
+    type: NP
+    description: subject
+    
+  - id: O
+    type: NP
+    description: object
+    
+
+
+
+
+
+# oh, one "template" for each semantic category? or should I tag them with categories instead?
+  # the latter sounds like more typing in the long run... BUT then you don't have to figure out file locations...
+    # or should you split into multiple files? but then you have to copy/paste the SVO info
+
+# okay, so without any transformations, V(en) needs to choose between VBP and VBZ, but V(zh) does not.
+  # special case: be(I) = am|VBZ1(perhaps)
+  # transformations need to set flags that "the system" would execute?
+  # ideally, morphology rules would be set in data instead of algorithms, to maximize portability...

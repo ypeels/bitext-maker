@@ -1,0 +1,18 @@
+# pinyin: romanization, for alphabetization purposes
+# NN: the noun (Chinese treebank tag)
+# M: measure word (default 个)
+
+- pinyin: dong1 xi1
+  NN: 东西
+  M：件  
+
+- pinyin: ren2
+  NN: 人
+  M: 位 # is there any word that CAN'T use 个? well, you could just flag it if it ever comes up...
+  
+- pinyin: ren2 men
+  NN: 人们
+  number: plural # hmm
+  
+- pinyin: wen4 ti2
+  NN: 问题

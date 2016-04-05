@@ -1,0 +1,15 @@
+# a multilingual file synsets.yml and a separate file nouns_en.yml
+# - this way, morphological information can be shared between all (possibly many!) senses of a word 
+# - also, this way, inflection-rich languages won't clutter up synsets.yml 
+
+# penn treebank tags
+# NN: noun, singular (or mass)
+# NNS: noun, plural (default: NN+s)
+
+- {NN: man, NNS: men}  
+- {NN: person, NNS: people}
+- NN: right
+- NN: thing
+  
+  
+# any words whose morphology changes with meaning can be marked with extra tags

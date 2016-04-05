@@ -1,0 +1,13 @@
+
+
+
+# semantic tags that should apply to all languages
+- tags: 
+  - person
+
+  synset:
+  - {lang: en, noun: man}
+  - {lang: en, noun: person}
+  - {lang: zh, noun: 人}
+
+# I guess the workflow should be to add words to synsets here, THEN add their language-specific morphology?
