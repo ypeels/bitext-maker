@@ -24,18 +24,18 @@
   VBD: were
   VBG: being
   VBN: been
-  VBP: are
-  VBZ: is
+  VBP: [are, "'re"]
+  VBZ: [is, "'s"]
   irregular:
-    VBP1: am # should i add more metadata here?
+    VBP1: [am, "'m"] # should i add more metadata here?
     VBD1: was
     VBD3: was
     # and maybe subjunctives
 
-- VB: have
-  VBD: had
+- VB: [have, "'ve"]
+  VBD: [had, "'d"]
   VBG: having
   VBN: had
-  VBP: have
-  VBZ: has
+  VBP: [have, "'ve"]
+  VBZ: [has, "'s"]
   
