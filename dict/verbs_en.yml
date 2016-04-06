@@ -1,14 +1,13 @@
 # morphological information - which Chinese doesn't need...
-# n.b. pyyaml cannot 
+# n.b. pyyaml cannot write comments back to file (duh - parser discards them)
 
---- # template
 #VB:     # infinitive
 #VBD:    # past
 #VBG:    # present participle
 #VBN:    # past participle
 #VBP:    # present (all except )
 #VBZ:
-- VB: 
+__verb__:
   VBD:
   VBG:
   VBN:
@@ -20,7 +19,7 @@
 # - this way, can use references between words if needed (on its own line, to get the whole list item)
 
 
-- VB: be
+be: 
   VBD: were
   VBG: being
   VBN: been
@@ -32,7 +31,7 @@
     VBD3: was
     # and maybe subjunctives
 
-- VB: [have, "'ve"]
+have:
   VBD: [had, "'d"]
   VBG: having
   VBN: had

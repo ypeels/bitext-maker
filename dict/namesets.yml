@@ -3,24 +3,27 @@
   # gender is needed even for Chinese, though, since you need to distinguish 他/她
 
 - type:  
-  names: 
+  nameset: 
   - {lang: , name: }
 
 # hmm, so this is basically a gazetteer?
 - type: woman 
-  names:
+  nameset:
     en: Alice
     zh: 爱丽丝
     # if you REALLY need multiple names per language, you can hack it like "en2", etc.
   
+# TODO: revise format to allow nicknames...
 - type: man
-  names: &Bob
+  nameset: &Bob
     en: Bob
     zh: 鲍勃
   
 # unisex example - now here's a reason to stay with a single document
 # note that to be able to override nodes with <<, the referenced node must be a map
 - type: woman
-  names: 
+  nameset: 
     <<: *Bob
     # can add or override keys here
+
+
