@@ -5,33 +5,69 @@
     # combine clauses
 
 # not totally sure whether to redo this for every semantic category... 
+---
 description: transitive
 
 example: Alice|S kicks|V Bob|O .
  
 symbols:
-  - id: V
+  V: 
     type: verb
     description: main verb
-    
-  - id: S
+  S: 
     type: NP
-    description: subject
-    
-  - id: O
+    description: subject  
+  O:
     type: NP
     description: object
-    
 
+  
+templates:
+  en: S V O .
+  zh: S V O 。
+  
+  
+# ugh, make this one form per language, and save alternate forms for transformations? (like O, V S for "add emphasis")
+  # otherwise, you'd have to keep track right here about which template goes with which, across all languages
+  # WARNING: this could be problematic if there are many equivalent forms in a single language...
+  # TODO: if i'm not accessing raw data directly, it's only SLIGHTLY less convenient to use list?
+    # bleh, let's postpone as much complexity as possible and just see what's the minimal code it takes to get this working
+#- lang: zh
+#  template: O ， S V
+    
 
 
 
 
 # oh, one "template" for each semantic category? or should I tag them with categories instead?
-  # the latter sounds like more typing in the long run... BUT then you don't have to figure out file locations...
+  # the latter sounds like more typing in the long run... but then you don't have to figure out file locations...
     # or should you split into multiple files? but then you have to copy/paste the SVO info
+  # BUT if you tag each verbset individually, you also have to retag the O/S constraints. let's not do that for now.
 
 # okay, so without any transformations, V(en) needs to choose between VBP and VBZ, but V(zh) does not.
   # special case: be(I) = am|VBZ1(perhaps)
   # transformations need to set flags that "the system" would execute?
   # ideally, morphology rules would be set in data instead of algorithms, to maximize portability...
+
+  
+# sentence templates and verbs (+ arguments) are inseparable; they are both multilingually banked in the same file 
+  
+# proposal: all verbs in each semantic category can be modified with the same PP set.
+categories:
+
+- id: action.possession
+  # TODO: PP-style modifications, before all verbs in the set - probably with an example
+  
+  # semantic constraints on (the head word of) S, O. TODO: allow override on per-verb basis?
+  tags:
+    O:
+    S:
+    
+  verbsets:
+  - en: have
+    zh: 有
+    
+  # well, generator needs to have knowledge about who is S and who is O in order to decline/inflect nouns...
+    
+    
+    

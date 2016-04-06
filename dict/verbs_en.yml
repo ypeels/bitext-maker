@@ -29,12 +29,13 @@ be:
     VBP1: [am, "'m"] # should i add more metadata here?
     VBD1: was
     VBD3: was
-    # and maybe subjunctives
+    # TODO: subjunctives
 
+# VB != [have, 've] - VB is the unique infinitive form (you don't say "to 've")
 have:
-  VBD: [had, "'d"]
+  VBD: had # TODO: 'd when auxiliary - maybe throw that into "irregular"?
   VBG: having
   VBN: had
-  VBP: [have, "'ve"]
-  VBZ: [has, "'s"]
+  VBP: have # TODO: 've when auxiliary
+  VBZ: has # "he's a lovely face" - I don't think that's very standard en-us... save for a transformation?
   

@@ -2,26 +2,28 @@
   # Actually, if you had to decline a name like in Latin, maybe it would be better to separate it
   # gender is needed even for Chinese, though, since you need to distinguish 他/她
 
-- type:  
+# dummy entry for copy/pasting
+- tags: []
   nameset: 
   - {lang: , name: }
 
 # hmm, so this is basically a gazetteer?
-- type: woman 
+# TODO: noun tag hierarchy, so this can just be tagged with "woman"
+- tags: [person, woman]
   nameset:
     en: Alice
     zh: 爱丽丝
     # if you REALLY need multiple names per language, you can hack it like "en2", etc.
   
 # TODO: revise format to allow nicknames...
-- type: man
+- tags: [person, man]
   nameset: &Bob
     en: Bob
     zh: 鲍勃
   
 # unisex example - now here's a reason to stay with a single document
 # note that to be able to override nodes with <<, the referenced node must be a map
-- type: woman
+- tags: [person, woman]
   nameset: 
     <<: *Bob
     # can add or override keys here
