@@ -40,6 +40,9 @@ class Templated:
 
 
     ### "protected" functions - available to derived classes ###
+    def _deps_for_symbol(self, symbol):
+        return self.__template.deps_for_symbol(symbol)
+    
     def _symbols(self):
         return self.__template.symbols()
         
@@ -96,7 +99,8 @@ class Clause(Templated):
             assert(not self.__nodes) # this function should only be called once, for initialization 
         
             for s in self._symbols():
-                self.__nodes[s] = create_node(self._type_for_symbol(s), tags=self._tags_for_symbol(s)) # requires symbols to be unique... but they SHOULD be, since they're in a dict
+                self.__nodes[s] = create_node(self._type_for_symbol(s),  # requires symbols to be unique... but they SHOULD be, since they're in a dict
+                    tags=self._tags_for_symbol(s), deps=self._deps_for_symbol(s)) 
         
 
     def _tags_for_symbol(self, symbol):

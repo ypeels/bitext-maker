@@ -72,12 +72,19 @@ class Template:
         self.__data = {}
         self.__symbols = {}
         self.__syntax_tags_per_symbol = collections.defaultdict(dict)
+        self.__deps_per_symbol = collections.defaultdict(dict)
+        
+        #self.__symbol_metadata = collections.defaultdict(collections.defaultdict(dict))
+        # e.g., symbol_metadata[symbol]['tags']
         
         self.__data = data        
         self.__parse()
         
     def __str__(self):
         return 'Template({})'.format(self.__data)
+        
+    def deps_for_symbol(self, symbol):
+        return self.__deps_per_symbol[symbol]
         
     def symbols(self):
         return self.__symbols.keys()
@@ -88,10 +95,18 @@ class Template:
         This is a reconstituted data structure (the innermost lists might be shallow copies)
         '''
         return self.__syntax_tags_per_symbol[symbol]
+        #return self.__symbol_metadata[symbol]['tags']
         
     def type_for_symbol(self, symbol):
         return self.__data['symbols'][symbol]['type']
 
+        
+    def __wrap_as_list(self, item):
+        if type(item) is list:
+            return item
+        else:
+            return [item]
+        
         
     def __parse(self):
         # parse symbols
@@ -99,19 +114,21 @@ class Template:
         self.__symbols = self.__data['symbols']
         
         # parse tags for each symbol - a bit of non-trivial inversion, so do it here at load time, once-only
-        for lang in LANGUAGES:
-            try:
-                tag_dict = self.__data['templates'][lang]['tags']
-            except KeyError as e:
-                pass # not every language is going to have syntactic tags for every symbol...
-                     # TODO: log this? 
-                     # TODO: independent error-checking of data file                     
-            else:
-                for symbol in tag_dict.keys():
-                    tags = tag_dict[symbol]
-                    if type(tags) is not list:
-                        tags = [tags]
-                    self.__syntax_tags_per_symbol[symbol][lang] = tags          
+        # imperative style is just a bit more DRY and flexible for something like this...
+        for lang, metadata in self.__data['templates'].items():
+            if lang in LANGUAGES:                
+                for symbol, tags in metadata.get('tags', {}).items():
+                    self.__syntax_tags_per_symbol[symbol][lang] = self.__wrap_as_list(tags)
+                    
+                for symbol, deps in metadata.get('dependencies', {}).items():
+                    deps_list = self.__wrap_as_list(deps)
+                    assert(all(d in self.symbols() for d in deps_list))
+                    self.__deps_per_symbol[symbol][lang] = deps_list
+                    
+
+        
+
+
    
    
 # polylingual lexical "Sets" - e.g., { 'en': 'Alice', 'zh': ... }
