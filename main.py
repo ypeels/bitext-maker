@@ -1,88 +1,68 @@
 import os
 
-from taxonomy import Taxonomy
-from utility import DATA_DIR
-from yaml_reader import read_file
+
+### 1. read data from databases - giant, read-only globals ###
+print('Reading data from files...')
+import data
+# a bit more typing in the short run, but should be very helpful and sanity-preserving in the long run
+#from data import CLAUSE_TEMPLATE_BANK, NAME_BANK, VERBSET_BANK
+#from data import LANGUAGES, TAXONOMY
+#from data import RAW_NOUNS, RAW_NOUNSETS
 
 
 
-
-# interface classes between raw YAML and program logic - because so much is subject to change...
-
-# TODO: put Bank classes into their own file(s) once the interface is stable enough
-class NameBank:
-    def __init__(self, filename):
-        self.__data = read_file(filename)
-    
-    def find_tagged(self, target_tag):
-        # TODO: handle single-tag case where it's not even a list?
-        return [item['nameset'] for item in self.__data 
-            for tag in item['tags'] if TAXONOMY.isa(tag, target_tag)]
+# TODO: inherit from object?
+class Templated(object):
+    '''Currently covers NP and Clause'''
+    def __init__(self, bank):
+        self.__template_bank = bank
         
-        
-        #if tag in item['tags']]
-  
-
-# TODO: inherit from object
-class Clause:
-    def __init__(self):
         self.__symbols = {}
         self.__nodes = {}
         
-        self.__syntax = {}
+        # syntactic template
+        self.__template = {}
+        self.__template_id = ''
+        
         self.__semantics = {}
         
+    def __str__(self): # for interactive probing
+        return "{type}({template})".format(type=self.__class__, template=self.__template)
         
-
-    # TODO: have Clause reach into TemplateBank 
-    def set_template(self, syntax, semantics):
-        
-        
-        # should I really be storing all this raw data? can I just store the bits I need and discard the rest?
-        # but I suppose it's all shallow-copying anyway...
-        self.__set_syntax(syntax)
-        self.__set_semantics(semantics)               
-
-        
-        
-    def __set_syntax(self, syntax):
+    ### "public" API - for use outside this class ###
+    def has_template(self):
+        return bool(self.__template_id) and bool(self.__template)
+    
+    def set_template(self, id):
+        syntax = self.__template_bank.get_template_by_id(id)
+        assert(type(syntax) == dict)
         self.__parse_symbols(syntax)
+        
         self.__syntax = syntax
-        self.__make_nodes()
-        
-    def __set_semantics(self, semantics):
-        self.__semantics = semantics
-        self.__make_nodes()
-            
-        
-    def __parse_symbols(self, syntax):
-        self.__symbols = syntax['symbols']
-        assert(type(self.__symbols) == dict)
-        
-    # hey, notice that you don't really have to order the symbols until generation time anyway, even if specified by templates
-    def __make_nodes(self):
-        if self.__semantics and self.__syntax:            
-            assert(not self.__nodes) # this function should only be called once, for initialization 
-        
-            for s in self._symbols():
-                self.__nodes[s] = make_node(self._type_for_symbol(s), tags=self._tags_for_symbol(s)) # requires symbols to be unique... but they SHOULD be, since they're in a dict
-        
-    # notice that populating the nodes is a separate step from just constructing them
-    #def populate_nodes(self):
+        self.__template_id = id
         
         
-    ### internal functions that I might still want to noodle with at the interactive prompt ###
+    
+        
+    ### "pure virtual" functions - to be implemented in derived classes ###
+
+
+    ### "protected" functions - available to derived classes ###
+
+
     def _symbols(self):
         return self.__symbols.keys()
         
-    def _type_for_symbol(self, symbol):
-        return self.__symbols[symbol]['type']
+    # TODO: wrap all accesses to data chunks into dedicated Data objects
+        # - their ONE AND ONLY PURPOSE should be to mediate between data and logic
+        # - it's tempting to keep things as they are, but that interleaves data calls and logic calls, right?
+    # oh hey, this lets me break the rather restrictive inheritance for Clause and NounPhrase
+    def _syntax_tags_for_symbol(self, symbol):
         
-    def _tags_for_symbol(self, symbol):
-        assert(self.__syntax and self.__semantics) # must be initialized
+        assert(self.__syntax) # must be initialized
         
         lang_tags = {}
-        for lang in LANGUAGES:
+        for lang in data.LANGUAGES:
             try:
                 tags = self.__syntax['templates'][lang]['tags'][symbol]
                 if type(tags) is not list:
@@ -91,12 +71,21 @@ class Clause:
             except KeyError as e:
                 pass # not every language is going to have syntactic tags for every symbol...
         
-        try:        
-            main_tags = self.__semantics['tags'].get(symbol) or []
-        except KeyError as e:
-            raise(e) # TODO: handle gracefully
-            
-        return main_tags.append(lang_tags)
+        return lang_tags
+
+    def _template_id(self):
+        return self.__template_id
+
+    def _type_for_symbol(self, symbol):
+        return self.__symbols[symbol]['type']
+
+        
+    ### "private" functions - not intended to be called outside this class ###
+    def __parse_symbols(self, syntax):         
+        assert(type(syntax['symbols']) == dict)
+        self.__symbols = syntax['symbols']
+
+        
         
     ### TODO: delete these debugging aliases ###
     def _syntax(self):
@@ -104,43 +93,73 @@ class Clause:
     def _semantics(self):
         return self.__semantics
 
+
+
+class Clause(Templated):
+    def __init__(self): 
+        Templated.__init__(self, data.CLAUSE_TEMPLATE_BANK)
+        
+        self.__verb_category_id = ''
+        self.__verb_category = {}
+        
+    # clauses really need to have semantics figured out before populating the next level down (except blank symbols in participles, etc.)
+    def has_verb_category(self):
+        return bool(self.__verb_category_id) and bool(self.__verb_category)
+        
+    def set_verb_category(self, category):    
+        assert(category in data.VERBSET_BANK.categories())
+        self.__verb_category_id = category
+        self.__verb_category = data.VERBSET_BANK.get_category(category)
+    
+    
+    # hey, notice that you don't really have to order the symbols until generation time anyway, even if specified by templates
+    def _create_nodes(self):
+        if self.has_template() and self.has_verb_category():            
+            assert(not self.__nodes) # this function should only be called once, for initialization 
+        
+            for s in self._symbols():
+                self.__nodes[s] = create_node(self._type_for_symbol(s), tags=self._tags_for_symbol(s)) # requires symbols to be unique... but they SHOULD be, since they're in a dict
+        
+
+    def _tags_for_symbol(self, symbol):
+        try:        
+            main_tags = self.__verb_category['tags'].get(symbol) or []
+        except KeyError as e:
+            raise(e) # TODO: handle gracefully
+            
+        return main_tags.append(self._syntax_tags_for_symbol(symbol))
+        
+
+
+
+        
+        
+    # notice that populating the nodes is a separate step from just constructing them
+    #def populate_nodes(self):
+        
+        
+
+        
+
+
         
     #def symbols_needed(self):
     #    return [v['type'] for v in self.__symbols.values()]
         
         
-class NounPhrase:
+class NounPhrase(Templated):
     def __init__(self, tags=[]):
         pass
         
         
-def make_node(type, **kwargs):
+def create_node(type, **kwargs):
     '''Object factory that will instantiate the appropriate class, with an optional dict of tags, etc.'''
     print(type, kwargs)
-make_node('NP', tags=['man', 'plural'])
+#make_node('NP', tags=['man', 'plural'])
         
 
-### 1. read data from databases - giant, read-only globals ###
-LANGUAGES = ['en', 'zh']
-RAW_NOUNS = { lang: read_file(DATA_DIR + 'nouns_{}.yml'.format(lang)) for lang in LANGUAGES }
-RAW_NOUNSETS = read_file(DATA_DIR + 'nounsets.yml')
 
-RAW_VERBS = {}
-for lang in LANGUAGES:
-    verb_file = DATA_DIR + 'verbs_{}.yml'.format(lang)
-    try:
-        RAW_VERBS[lang] = read_file(verb_file)
-    except FileNotFoundError as e:
-        print('Skipping verb file for {} - tenseless like zh, right?'.format(lang))
-        # TODO: some sort of dummy dict so that verbs['zh'][<anything>] == <anything>, or something similar?
 
-RAW_VERB_TEMPLATES = read_file(DATA_DIR + 'verb_templates.yml')
-        
-        
-NAME_BANK = NameBank(DATA_DIR + 'namesets.yml') #read_file(DATA_DIR + 'namesets.yml')
-# TODO: load language-specific name files, for any languages that might have noun declensions
-
-TAXONOMY = Taxonomy(DATA_DIR + 'taxonomy.yml')
 
 
 
@@ -149,12 +168,15 @@ TAXONOMY = Taxonomy(DATA_DIR + 'taxonomy.yml')
 ### 2. Generate sentences ###
 
 #def hello():
-template = RAW_VERB_TEMPLATES[1]
+#template = RAW_CLAUSE_TEMPLATES[1]
 clause = Clause()
-
-# TODO: have the Clause grab its own data from a TemplateBank
-# well, it should really do this
-clause.set_template(template['syntax'], template['semantics'][0])
+clause.set_template('transitive')
+clause.set_verb_category('action.possession')
+clause._create_nodes()
+#
+## TODO: have the Clause grab its own data from a TemplateBank
+## well, it should really do this
+#clause.set_template(template['syntax'], template['semantics'][0])
 
 # putting logic outside the class seems like a BAD idea - it kind of defeats the whole point of encapsulation
 #print(clause.symbols_needed())
@@ -167,7 +189,7 @@ clause.set_template(template['syntax'], template['semantics'][0])
 
 
 # dependents/specifics - just pick SOMETHING to start with 
-names = NAME_BANK
+names = data.NAME_BANK
 women = names.find_tagged('woman')
 #men = names.find_tagged('man')
 people = names.find_tagged('person')
