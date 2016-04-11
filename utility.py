@@ -3,7 +3,8 @@ if sys.version_info < (3, 0):
     raise Exception('This project requires Python 3 - mainly for better Unicode support')
     
 # "global" read-only variables
-DATA_DIR = 'data/'
+DATA_DIR = 'datasets/'
+LANGUAGES = ['en', 'zh']
 
 # TODO: call this once at startup
 def seed_rng():

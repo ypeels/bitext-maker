@@ -1,0 +1,31 @@
+# TODO: move templates to their own folder
+
+name:
+  example: Alice|N
+  symbols:
+    N:
+      type: name
+      description: head name
+  templates:
+    en: { template: N }
+    zh: { template: N }
+
+noun:
+  example: cats|N
+  symbols:
+    N:
+      type: noun
+      description: head noun
+  templates:
+    en: { template: N }
+    zh: { template: N }
+    
+
+
+
+# TODO: pronoun
+# TODO: VP-NP like gerunds or infinitives
+# TODO: subgroups for conjunctions? but they're only weird as subjects... "The taco and flying a bike"
+# TODO: "C"
+# TODO: custom templates 
+# TODO: PP's - hmm, those belong in transformations, maybe stored in some kind of nounset file?

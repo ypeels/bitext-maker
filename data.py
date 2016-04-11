@@ -16,11 +16,18 @@ class Bank:
     def __init__(self, filename):
         self._data = read_file(filename) # TODO: self.__data, and access in derived classes via self._Bank__data? (discourage interactive access)
 
-class NounSetBank(Bank):    
+
+class NameSetBank(Bank):    
+    def _makeN(self, item):
+        raise Exception('Unimplemented in abstract base class' + __class__)
+        
     def find_tagged(self, target_tag):
         # TODO: handle single-tag case where it's not even a list?
-        return [item['nameset'] for item in self._data 
+        # TODO: share code with NounSetBank? is it worth sacrificing clarity just to DRY out 2 lines?
+        return [NameSet(item['nameset']) for item in self._data 
             for tag in item['tags'] if TAXONOMY.isa(tag, target_tag)]
+
+            
             
 class TemplateBank(Bank):
     def get_template_by_id(self, id):
@@ -59,6 +66,7 @@ class VerbSetBank:
 # then add processing, etc... wait a second, isn't that just standard object-oriented programming??
     # well, this is still important, since it separates Data-level logic from Linguistics-level logic
 class Template:
+    '''Verb and NP syntax'''
     def __init__(self, data):
         # "declarations"
         self.__data = {}
@@ -75,7 +83,14 @@ class Template:
         return self.__symbols.keys()
         
     def syntax_tags_for_symbol(self, symbol):
+        '''
+        Returns { 'en': [<en tags>], ... }
+        This is a reconstituted data structure (the innermost lists might be shallow copies)
+        '''
         return self.__syntax_tags_per_symbol[symbol]
+        
+    def type_for_symbol(self, symbol):
+        return self.__data['symbols'][symbol]['type']
 
         
     def __parse(self):
@@ -83,7 +98,7 @@ class Template:
         assert(type(self.__data['symbols']) == dict)
         self.__symbols = self.__data['symbols']
         
-        # parse tags for each symbol
+        # parse tags for each symbol - a bit of non-trivial inversion, so do it here at load time, once-only
         for lang in LANGUAGES:
             try:
                 tag_dict = self.__data['templates'][lang]['tags']
@@ -96,13 +111,24 @@ class Template:
                     tags = tag_dict[symbol]
                     if type(tags) is not list:
                         tags = [tags]
-                    self.__syntax_tags_per_symbol[symbol][lang] = tags 
-         
+                    self.__syntax_tags_per_symbol[symbol][lang] = tags          
    
+   
+# polylingual lexical "Sets" - e.g., { 'en': 'Alice', 'zh': ... }
 class VerbCategory:
+    '''Verb semantics'''
     def __init__(self, data):
-        raise # i am here.
+        self.__data = data
         
+    def tags_for_symbol(self, symbol):
+        return self.__data['tags'].get(symbol)
+        
+        
+class NameSet:
+    def __init__(self, data):
+        self.__data = data
+    def __repr__(self): # TODO: get lists of NameSets to print info using __str__ instead of __repr__?
+        return self.__data.__repr__()
             
             
 ### module-level variables (intended to be read-only after initialization) ###
@@ -127,7 +153,7 @@ for lang in LANGUAGES:
 #raise Exception('''TODO: load verbsets, pass to Clause initializer 
 #actually, I think it should just be able to initialize given "transitive" and "action.possessive"''')
         
-NAME_BANK = NounSetBank(DATA_DIR + 'namesets.yml')
+NAME_BANK = NameSetBank(DATA_DIR + 'namesets.yml')
 # TODO: load language-specific name files, for any languages that might have noun declensions
 
 TAXONOMY = Taxonomy(DATA_DIR + 'taxonomy.yml')

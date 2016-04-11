@@ -12,7 +12,7 @@ import data
 
 
 # TODO: inherit from object?
-class Templated(object):
+class Templated:
     '''Currently covers NP and Clause'''
     def __init__(self, bank):
         self.__template_bank = bank
@@ -20,8 +20,6 @@ class Templated(object):
         # syntactic template
         self.__template = None # data.Template
         self.__template_id = ''
-        
-        self.__semantics = {}
         
     def __str__(self): # for interactive probing
         return "{type}({template})".format(type=self.__class__, template=self.__template)
@@ -42,7 +40,8 @@ class Templated(object):
 
 
     ### "protected" functions - available to derived classes ###
-
+    def _symbols(self):
+        return self.__template.symbols()
         
     # TODO: wrap all accesses to data chunks into dedicated Data objects
         # - their ONE AND ONLY PURPOSE should be to mediate between data and logic
@@ -56,7 +55,8 @@ class Templated(object):
         return self.__template_id
 
     def _type_for_symbol(self, symbol):
-        return self.__template.symbols()
+        return self.__template.type_for_symbol(symbol)
+
 
         
     #### "private" functions - not intended to be called outside this class ###
@@ -67,8 +67,8 @@ class Templated(object):
     ### TODO: delete these debugging aliases ###
     def _template(self):
         return self.__template
-    def _symbols(self):
-        return self.__symbols.keys()
+    def _template_id(self):
+        return self.__template_id
 
 
 
@@ -100,12 +100,9 @@ class Clause(Templated):
         
 
     def _tags_for_symbol(self, symbol):
-        try:        
-            main_tags = self.__verb_category['tags'].get(symbol) or []
-        except KeyError as e:
-            raise(e) # TODO: handle gracefully
-            
-        return main_tags.append(self._syntax_tags_for_symbol(symbol))
+        semantic_tags = self.__verb_category.tags_for_symbol(symbol) or []
+        syntax_tags = [self._syntax_tags_for_symbol(symbol)]            
+        return semantic_tags + syntax_tags
         
 
 
@@ -145,14 +142,21 @@ def create_node(type, **kwargs):
 
 ### 2. Generate sentences ###
 
+# some quickie testing
+names = data.NAME_BANK
+women = names.find_tagged('woman')
+#men = names.find_tagged('man')
+people = names.find_tagged('person')
+
+
 #def hello():
 #template = RAW_CLAUSE_TEMPLATES[1]
 clause = Clause()
 clause.set_template('transitive')
 clause.set_verb_category('action.possession')
-print(clause._type_for_symbol('S'))
+print(clause._symbols())
 print(clause._syntax_tags_for_symbol('O'))
-#clause._create_nodes()
+clause._create_nodes()
 #
 ## TODO: have the Clause grab its own data from a TemplateBank
 ## well, it should really do this
@@ -169,10 +173,8 @@ print(clause._syntax_tags_for_symbol('O'))
 
 
 # dependents/specifics - just pick SOMETHING to start with 
-names = data.NAME_BANK
-women = names.find_tagged('woman')
-#men = names.find_tagged('man')
-people = names.find_tagged('person')
+
+
 
 # pick a verb, any verb
 

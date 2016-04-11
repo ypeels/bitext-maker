@@ -39,6 +39,7 @@ class Taxonomy:
         
         
 # really belongs in its own file, where it absolutely would not gunk up production files...
+    # plus, pass/fail summary is much harder to read when run on its own
 def test():
     from utility import DATA_DIR
     import unittest

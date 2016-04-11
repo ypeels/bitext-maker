@@ -5,7 +5,7 @@
     # combine clauses
 
 # not totally sure whether to redo this for every semantic category... 
----
+#---
 #
 # too annoying - have to deal with direct address (no article!) and, if sticking with 你好, pronouns too.
 # let's use regular SVO for "hello world" instead
@@ -30,8 +30,7 @@
 #   notags: # forbidden tags
 #     A: plural # ugh, have to infer this from the NP?
 
----
-id: transitive
+transitive:
 
 # TODO: convert everything to lists?? 
   # con: more awkward code
@@ -40,13 +39,12 @@ id: transitive
 # TODO: syntax-checker - pending format changes...
 
 
-example: Alice|S kicks|V Bob|O .
- 
-syntax: 
+  example: Alice|S kicks|V Bob|O .
+
   symbols:
     V: 
       type: verb
-      description: main verb
+      description: head verb
     S: 
       type: NP
       description: subject  
@@ -55,7 +53,7 @@ syntax:
       description: object
 
 
-  # tags up here are purely syntactic    
+  # purely syntactic - semantics are in "verbsets"
   templates:
     en: 
       template: S V O .
@@ -68,6 +66,9 @@ syntax:
       template: S V O 。
    
   
+  # TODO: list eligible semantic verbsets here, which is where they "opt in"?
+    # likewise, they would have to individually "opt into" each new transformation? lots of work, but prevents false positives...
+  
   
 # ugh, make this one form per language, and save alternate forms for transformations? (like O, V S for "add emphasis")
   # otherwise, you'd have to keep track right here about which template goes with which, across all languages
@@ -78,39 +79,13 @@ syntax:
 #  template: O ， S V 。
     
 
+# TODO: transformation that allows compound VP like "kick ass and take names"
+  # hmm, this would parallel NP better (trivially?) if I grouped things as NP/VP instead of S/V/O...
+  # in current framework, it would be a transformation that would take a second clause with null subject and "join" with first
 
 
 
-# oh, one "template" for each semantic category? or should I tag them with categories instead?
-  # the latter sounds like more typing in the long run... but then you don't have to figure out file locations...
-    # or should you split into multiple files? but then you have to copy/paste the SVO info
-  # BUT if you tag each verbset individually, you also have to retag the O/S constraints. let's not do that for now.
 
-# okay, so without any transformations, V(en) needs to choose between VBP and VBZ, but V(zh) does not.
-  # special case: be(I) = am|VBZ1(perhaps)
-  # transformations need to set flags that "the system" would execute?
-  # ideally, morphology rules would be set in data instead of algorithms, to maximize portability...
-
-  
-# sentence templates and verbs (+ arguments) are inseparable; they are both multilingually banked in the same file 
-  
-# proposal: all verbs in each semantic category can be modified with the same PP set.
-semantics:
-
-- id: action.possession
-  # TODO: PP-style modifications, before all verbs in the set - probably with an example
-  
-  # semantic constraints on (the head word of) S, O. TODO: allow override on per-verb basis?
-  tags:
-    O:
-    S: # could make this "entity", but what about figurative uses?
-    
-  verbsets:
-  - example: Alice has cookies .
-    en: have
-    zh: 有
-    
-  # well, generator needs to have knowledge about who is S and who is O in order to decline/inflect nouns...
     
     
     

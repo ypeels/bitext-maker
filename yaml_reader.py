@@ -26,7 +26,8 @@ def read_file(filename):
             
 def test():
     '''some quickie testing - not even really unit testing, since pass/fail criteria aren't defined'''
-    testfile = 'dict/namesets.yml'
+    from utility import DATA_DIR
+    testfile = DATA_DIR + 'namesets.yml'
     print('Reading', testfile)
     boo = read_file(testfile)
     print(boo[:3])
