@@ -2,19 +2,22 @@
 # NN: the noun (Chinese treebank tag)
 # M: measure word (default 个)
   # is there any word that CAN'T use 个? well, you could just flag it if it ever comes up...
-  
-- pinyin: dong1 xi1
-  NN: 东西
+
+东西:  
+  pinyin: dong1 xi1
   M: 件  
 
-- pinyin: ren2
-  NN: 人
+人:
+  pinyin: ren2
   M: 位 
+ 
+人们: 
+  pinyin: ren2 men
+  tags: plural   # hmm
   
-- pinyin: ren2 men
-  NN: 人们
-  number: plural 
-          # hmm
-  
-- pinyin: wen4 ti2
-  NN: 问题
+世界:
+  pinyin: shi4 jie4
+
+问题:
+  pinyin: wen4 ti2
+

@@ -13,6 +13,12 @@ __verb__:
   VBN:
   VBP:
   VBZ:
+  
+# COULD use references, but that would add an annoying extra key to EVERY entry...
+__regular__:
+  VBP1: VBP
+  VBD1: VBD
+  VBD3: VBD
 
 # making things a big long list instead of multiple documents for now
 # - don't see a compelling reason to use multiple documents per file right now, other than maybe indentation

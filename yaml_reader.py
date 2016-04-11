@@ -24,10 +24,14 @@ def read_file(filename):
 
             
             
-if __name__ == '__main__': 
-    
-    # some light testing
-    testfile = 'dict/names.yml'
+def test():
+    '''some quickie testing - not even really unit testing, since pass/fail criteria aren't defined'''
+    testfile = 'dict/namesets.yml'
     print('Reading', testfile)
     boo = read_file(testfile)
     print(boo[:3])
+            
+            
+if __name__ == '__main__': 
+    test()
+    

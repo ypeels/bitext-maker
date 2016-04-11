@@ -6,25 +6,67 @@
 
 # not totally sure whether to redo this for every semantic category... 
 ---
-description: transitive
+#
+# too annoying - have to deal with direct address (no article!) and, if sticking with 你好, pronouns too.
+# let's use regular SVO for "hello world" instead
+# id: greeting
+# example: Hello , world|A !
+# syntax:
+#   symbols:
+#     A:
+#       type: NP
+#       description: addressee
+#   templates:
+#     en:
+#       template: hello , A !
+#     zh:
+#       template: 你 好 ， A ！
+#       # TODO: handle plural A
+#       # TODO: polite 您好?
+#       #dependencies:
+#       #  你: A # alternative: make 2 templates, 1 for plural A... but then en needs a duplicate!
+# semantics:
+# - id:
+#   notags: # forbidden tags
+#     A: plural # ugh, have to infer this from the NP?
+
+---
+id: transitive
+
+# TODO: convert everything to lists?? 
+  # con: more awkward code
+  # pro: human-friendly data migration if data format ever changes?
+  
+# TODO: syntax-checker - pending format changes...
+
 
 example: Alice|S kicks|V Bob|O .
  
-symbols:
-  V: 
-    type: verb
-    description: main verb
-  S: 
-    type: NP
-    description: subject  
-  O:
-    type: NP
-    description: object
+syntax: 
+  symbols:
+    V: 
+      type: verb
+      description: main verb
+    S: 
+      type: NP
+      description: subject  
+    O:
+      type: NP
+      description: object
 
-  
-templates:
-  en: S V O .
-  zh: S V O 。
+
+  # tags up here are purely syntactic    
+  templates:
+    en: 
+      template: S V O .
+      tags:
+        S: subjective # needed by pronouns
+        O: objective 
+      dependencies:
+        V: S
+    zh: 
+      template: S V O 。
+   
   
   
 # ugh, make this one form per language, and save alternate forms for transformations? (like O, V S for "add emphasis")
@@ -33,7 +75,7 @@ templates:
   # TODO: if i'm not accessing raw data directly, it's only SLIGHTLY less convenient to use list?
     # bleh, let's postpone as much complexity as possible and just see what's the minimal code it takes to get this working
 #- lang: zh
-#  template: O ， S V
+#  template: O ， S V 。
     
 
 
@@ -53,7 +95,7 @@ templates:
 # sentence templates and verbs (+ arguments) are inseparable; they are both multilingually banked in the same file 
   
 # proposal: all verbs in each semantic category can be modified with the same PP set.
-categories:
+semantics:
 
 - id: action.possession
   # TODO: PP-style modifications, before all verbs in the set - probably with an example
@@ -61,10 +103,11 @@ categories:
   # semantic constraints on (the head word of) S, O. TODO: allow override on per-verb basis?
   tags:
     O:
-    S:
+    S: # could make this "entity", but what about figurative uses?
     
   verbsets:
-  - en: have
+  - example: Alice has cookies .
+    en: have
     zh: 有
     
   # well, generator needs to have knowledge about who is S and who is O in order to decline/inflect nouns...

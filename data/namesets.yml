@@ -9,23 +9,27 @@
 
 # hmm, so this is basically a gazetteer?
 # TODO: noun tag hierarchy, so this can just be tagged with "woman"
-- tags: [person, woman]
+- tags: [woman]
   nameset:
     en: Alice
     zh: 爱丽丝
     # if you REALLY need multiple names per language, you can hack it like "en2", etc.
   
 # TODO: revise format to allow nicknames...
-- tags: [person, man]
+- tags: [man]
   nameset: &Bob
     en: Bob
     zh: 鲍勃
+    # TODO: mark direct en as a feasible alternative to zh transliteration - or does that go in the generator?
   
 # unisex example - now here's a reason to stay with a single document
 # note that to be able to override nodes with <<, the referenced node must be a map
-- tags: [person, woman]
+- tags: [woman]
   nameset: 
     <<: *Bob
     # can add or override keys here
 
-
+- tags: [man]
+  nameset:
+    en: Chuck
+    zh: 查克

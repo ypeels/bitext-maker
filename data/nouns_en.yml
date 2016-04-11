@@ -6,10 +6,18 @@
 # NN: noun, singular (or mass)
 # NNS: noun, plural (default: NN+s)
 
-- {NN: man, NNS: men}  
-- {NN: person, NNS: people}
-- NN: right
-- NN: thing
+# TODO: noun templates, which you need to generate non-compositional semantic tags like "last night #past"
+  # funny noun phrases could go here
+
+man: 
+  NNS: men
+  
+person: 
+  NNS: people # TODO: "persons", as in "persons of interest"
+
+right:
+
+thing:
   
   
 # any words whose morphology changes with meaning can be marked with extra tags
