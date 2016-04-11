@@ -17,11 +17,8 @@ class Templated(object):
     def __init__(self, bank):
         self.__template_bank = bank
         
-        self.__symbols = {}
-        self.__nodes = {}
-        
         # syntactic template
-        self.__template = {}
+        self.__template = None # data.Template
         self.__template_id = ''
         
         self.__semantics = {}
@@ -34,11 +31,8 @@ class Templated(object):
         return bool(self.__template_id) and bool(self.__template)
     
     def set_template(self, id):
-        syntax = self.__template_bank.get_template_by_id(id)
-        assert(type(syntax) == dict)
-        self.__parse_symbols(syntax)
-        
-        self.__syntax = syntax
+        self.__template = self.__template_bank.get_template_by_id(id)
+        assert(type(self.__template) == data.Template)
         self.__template_id = id
         
         
@@ -49,49 +43,32 @@ class Templated(object):
 
     ### "protected" functions - available to derived classes ###
 
-
-    def _symbols(self):
-        return self.__symbols.keys()
         
     # TODO: wrap all accesses to data chunks into dedicated Data objects
         # - their ONE AND ONLY PURPOSE should be to mediate between data and logic
         # - it's tempting to keep things as they are, but that interleaves data calls and logic calls, right?
     # oh hey, this lets me break the rather restrictive inheritance for Clause and NounPhrase
     def _syntax_tags_for_symbol(self, symbol):
-        
-        assert(self.__syntax) # must be initialized
-        
-        lang_tags = {}
-        for lang in data.LANGUAGES:
-            try:
-                tags = self.__syntax['templates'][lang]['tags'][symbol]
-                if type(tags) is not list:
-                    tags = [tags]
-                lang_tags[lang] = tags 
-            except KeyError as e:
-                pass # not every language is going to have syntactic tags for every symbol...
-        
-        return lang_tags
+        return self.__template.syntax_tags_for_symbol(symbol)
+
 
     def _template_id(self):
         return self.__template_id
 
     def _type_for_symbol(self, symbol):
-        return self.__symbols[symbol]['type']
+        return self.__template.symbols()
 
         
-    ### "private" functions - not intended to be called outside this class ###
-    def __parse_symbols(self, syntax):         
-        assert(type(syntax['symbols']) == dict)
-        self.__symbols = syntax['symbols']
+    #### "private" functions - not intended to be called outside this class ###
+
 
         
         
     ### TODO: delete these debugging aliases ###
-    def _syntax(self):
-        return self.__syntax
-    def _semantics(self):
-        return self.__semantics
+    def _template(self):
+        return self.__template
+    def _symbols(self):
+        return self.__symbols.keys()
 
 
 
@@ -101,6 +78,7 @@ class Clause(Templated):
         
         self.__verb_category_id = ''
         self.__verb_category = {}
+        self.__nodes = {}
         
     # clauses really need to have semantics figured out before populating the next level down (except blank symbols in participles, etc.)
     def has_verb_category(self):
@@ -172,7 +150,9 @@ def create_node(type, **kwargs):
 clause = Clause()
 clause.set_template('transitive')
 clause.set_verb_category('action.possession')
-clause._create_nodes()
+print(clause._type_for_symbol('S'))
+print(clause._syntax_tags_for_symbol('O'))
+#clause._create_nodes()
 #
 ## TODO: have the Clause grab its own data from a TemplateBank
 ## well, it should really do this

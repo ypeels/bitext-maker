@@ -3,6 +3,7 @@ Data module - only gets run once; an effective singleton
 
 Note that this file CANNOT be called as a top-level script - circular imports with Taxonomy
 '''
+import collections
 import os
 
 from taxonomy import Taxonomy
@@ -11,6 +12,7 @@ from yaml_reader import read_file
 
 # TODO: put Bank classes into their own file(s) once the interface is stable enough
 class Bank:
+    '''Base class that reads a single YAML file'''
     def __init__(self, filename):
         self._data = read_file(filename) # TODO: self.__data, and access in derived classes via self._Bank__data? (discourage interactive access)
 
@@ -22,7 +24,7 @@ class NounSetBank(Bank):
             
 class TemplateBank(Bank):
     def get_template_by_id(self, id):
-        return self._data[id]
+        return Template(self._data[id])
 
 # not currently inheriting Bank, since this is multi-file...
 class VerbSetBank:
@@ -36,7 +38,7 @@ class VerbSetBank:
         return self.__data.keys()
         
     def get_category(self, category):
-        return self.__data[category]
+        return VerbCategory(self.__data[category])
     
     def __add_file(self, filename):
         new_data = read_file(filename)
@@ -52,7 +54,55 @@ class VerbSetBank:
 # chunks of data files that nevertheless should be isolated into objects
 # this way, if/when the data format changes, ONLY these classes would need to be changed.
 # this is a LITTLE different from typical object-oriented programming, since the data files impose external constraints
-            
+
+# as thin as possible to begin with - just the raw data + whatever accessors you need
+# then add processing, etc... wait a second, isn't that just standard object-oriented programming??
+    # well, this is still important, since it separates Data-level logic from Linguistics-level logic
+class Template:
+    def __init__(self, data):
+        # "declarations"
+        self.__data = {}
+        self.__symbols = {}
+        self.__syntax_tags_per_symbol = collections.defaultdict(dict)
+        
+        self.__data = data        
+        self.__parse()
+        
+    def __str__(self):
+        return 'Template({})'.format(self.__data)
+        
+    def symbols(self):
+        return self.__symbols.keys()
+        
+    def syntax_tags_for_symbol(self, symbol):
+        return self.__syntax_tags_per_symbol[symbol]
+
+        
+    def __parse(self):
+        # parse symbols
+        assert(type(self.__data['symbols']) == dict)
+        self.__symbols = self.__data['symbols']
+        
+        # parse tags for each symbol
+        for lang in LANGUAGES:
+            try:
+                tag_dict = self.__data['templates'][lang]['tags']
+            except KeyError as e:
+                pass # not every language is going to have syntactic tags for every symbol...
+                     # TODO: log this? 
+                     # TODO: independent error-checking of data file                     
+            else:
+                for symbol in tag_dict.keys():
+                    tags = tag_dict[symbol]
+                    if type(tags) is not list:
+                        tags = [tags]
+                    self.__syntax_tags_per_symbol[symbol][lang] = tags 
+         
+   
+class VerbCategory:
+    def __init__(self, data):
+        raise # i am here.
+        
             
             
 ### module-level variables (intended to be read-only after initialization) ###
