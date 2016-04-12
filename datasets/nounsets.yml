@@ -5,8 +5,8 @@
 - tags: 
   - person
 
-  synset:
-    en: [man, person]
+  nounset:
+    en: [person, man, human]
     zh: 人
 
 # I guess the workflow should be to add words to synsets here, THEN add their language-specific morphology?

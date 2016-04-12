@@ -24,10 +24,10 @@
   
 # unisex example - now here's a reason to stay with a single document
 # note that to be able to override nodes with <<, the referenced node must be a map
-- tags: [woman]
-  nameset: 
-    <<: *Bob
-    # can add or override keys here
+#- tags: [woman]
+#  nameset: 
+#    <<: *Bob
+#    # can add or override keys here
 
 - tags: [man]
   nameset:

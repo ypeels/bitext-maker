@@ -5,6 +5,7 @@ Note that this file CANNOT be called as a top-level script - circular imports wi
 '''
 import collections
 import os
+import random
 
 from taxonomy import Taxonomy
 from utility import DATA_DIR, LANGUAGES # kept in separate file for fast unit testing
@@ -95,7 +96,7 @@ class Template:
         This is a reconstituted data structure (the innermost lists might be shallow copies)
         '''
         return self.__syntax_tags_per_symbol[symbol]
-        #return self.__symbol_metadata[symbol]['tags']
+        
         
     def type_for_symbol(self, symbol):
         return self.__data['symbols'][symbol]['type']
@@ -133,15 +134,30 @@ class Template:
    
 # polylingual lexical "Sets" - e.g., { 'en': 'Alice', 'zh': ... }
 class VerbCategory:
-    '''Verb semantics'''
+    '''Verb semantics - responsible for choosing a verb synset for generation'''
     def __init__(self, data):
         self.__data = data
+    
+    def __str__(self):
+        return str(self.__data)
+        
+    def all_verbsets(self):
+        return [VerbSet(item) for item in self.__data['verbsets']]
         
     def tags_for_symbol(self, symbol):
         return self.__data['tags'].get(symbol)
         
+    def template_id(self):
+        return self.__data['template']
+        
         
 class NameSet:
+    def __init__(self, data):
+        self.__data = data
+    def __repr__(self): # TODO: get lists of NameSets to print info using __str__ instead of __repr__?
+        return self.__data.__repr__()
+        
+class VerbSet:
     def __init__(self, data):
         self.__data = data
     def __repr__(self): # TODO: get lists of NameSets to print info using __str__ instead of __repr__?

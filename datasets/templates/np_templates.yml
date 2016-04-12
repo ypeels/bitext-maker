@@ -23,9 +23,10 @@ noun:
 
 
 
-# TODO: pronoun
-# TODO: VP-NP like gerunds or infinitives
+# TODO: pronoun - n.b. a nonlocal dependency would have to be wired up externally
+# TODO: VP-NP - like gerunds or infinitives
 # TODO: subgroups for conjunctions? but they're only weird as subjects... "The taco and flying a bike"
-# TODO: "C"
 # TODO: custom templates 
 # TODO: PP's - hmm, those belong in transformations, maybe stored in some kind of nounset file?
+
+# TODO: "C" - e.g., "Let's go to the mall" was a bad thing to say. Or is that a meta transformation?
