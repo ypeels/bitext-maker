@@ -1,7 +1,7 @@
 '''
-Data module - only gets run once; an effective singleton
+Data module - global read-only data, and their related interface classes
 
-Note that this file CANNOT be called as a top-level script - circular imports with Taxonomy
+- if you want to test some code quickly, maybe it would just be easier to change DATA_DIR to a folder with small test data
 '''
 import collections
 import os
@@ -15,24 +15,30 @@ from yaml_reader import read_file
 class Bank:
     '''Base class that reads a single YAML file'''
     def __init__(self, filename):
-        self._data = read_file(filename) # TODO: self.__data, and access in derived classes via self._Bank__data? (discourage interactive access)
+        self.__data = read_file(filename) # TODO: self.__data, and access in derived classes via self._Bank__data? (discourage interactive access)
 
+    def _data(self):
+        '''expose to derived classes'''
+        return self.__data
 
 class NameSetBank(Bank):    
     def _makeN(self, item):
         raise Exception('Unimplemented in abstract base class' + __class__)
         
+    def all_namesets(self):
+        return [NameSet(item['nameset']) for item in self._data()]
+        
     def find_tagged(self, target_tag):
         # TODO: handle single-tag case where it's not even a list?
         # TODO: share code with NounSetBank? is it worth sacrificing clarity just to DRY out 2 lines?
-        return [NameSet(item['nameset']) for item in self._data 
+        return [NameSet(item['nameset']) for item in self._data() 
             for tag in item['tags'] if TAXONOMY.isa(tag, target_tag)]
 
             
             
 class TemplateBank(Bank):
     def get_template_by_id(self, id):
-        return Template(self._data[id])
+        return Template(self._data()[id])
 
 # not currently inheriting Bank, since this is multi-file...
 class VerbSetBank:
@@ -149,25 +155,38 @@ class VerbCategory:
         
     def template_id(self):
         return self.__data['template']
-        
-        
-class NameSet:
+
+
+class WordSet:        
     def __init__(self, data):
         self.__data = data
-    def __repr__(self): # TODO: get lists of NameSets to print info using __str__ instead of __repr__?
-        return self.__data.__repr__()
         
-class VerbSet:
-    def __init__(self, data):
-        self.__data = data
     def __repr__(self): # TODO: get lists of NameSets to print info using __str__ instead of __repr__?
         return self.__data.__repr__()
+
+    def num_words(self, lang):
+        words = self._words(lang)
+        if type(words) is str:
+            return 1
+        else:
+            return len(words)
+        
+    # ugh, expose to derived classes...
+    def _data(self):
+        return self.__data
+        
+class NameSet(WordSet):
+    def _words(self, lang):
+        return self._data()[lang]
+        
+class VerbSet(WordSet):
+    def _words(self, lang):
+        return self._data()[lang]
+
             
             
 ### module-level variables (intended to be read-only after initialization) ###
-
-
-
+# TODO: move classes to a separate file, if they ever want to be used externally without having to load all these files
 
 RAW_NOUNS = { lang: read_file(DATA_DIR + 'nouns_{}.yml'.format(lang)) for lang in LANGUAGES }
 RAW_NOUNSETS = read_file(DATA_DIR + 'nounsets.yml')
