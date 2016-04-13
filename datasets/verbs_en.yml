@@ -15,6 +15,7 @@ __verb__:
   VBZ:
   
 # COULD use references, but that would add an annoying extra key to EVERY entry...
+# unused? isn't it easier to just check each verb for an "irregular" key? well, doesn't hurt to have this info...
 __regular__:
   VBP1: VBP
   VBD1: VBD

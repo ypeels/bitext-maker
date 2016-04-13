@@ -22,6 +22,14 @@ class Bank:
         return self.__data
 
 class NameSetBank(Bank):    
+    def __init__(self, filename):
+        Bank.__init__(self, filename)
+        
+        # normalize single-item entries to be lists
+        for item in self._data():
+            if type(item['tags']) is str:
+                item['tags'] = [item['tags']]
+        
     def _makeN(self, item):
         raise Exception('Unimplemented in abstract base class' + __class__)
         
@@ -39,6 +47,14 @@ class NameSetBank(Bank):
 class TemplateBank(Bank):
     def get_template_by_id(self, id):
         return Template(self._data()[id])
+        
+class VerbFormBank(Bank):
+    def get(self, word):
+        vf = self._data().get(word)
+        if vf:
+            return VerbForms(vf)
+        else:
+            return None
 
 # not currently inheriting Bank, since this is multi-file...
 class VerbSetBank:
@@ -90,8 +106,14 @@ class Template:
     def __str__(self):
         return 'Template({})'.format(self.__data)
         
+    def description_for_symbol(self, symbol):
+        return self.__data['symbols'][symbol].get('description')
+        
     def deps_for_symbol(self, symbol):
         return self.__deps_per_symbol[symbol]
+        
+    def head_symbols(self):
+        return [s for s in self.symbols() if 'head' in self.description_for_symbol(s)]
         
     def symbols(self):
         return self.__symbols.keys()
@@ -103,6 +125,8 @@ class Template:
         '''
         return self.__syntax_tags_per_symbol[symbol]
         
+    def template_text(self, lang):
+        return self.__data['templates'][lang]['template']
         
     def type_for_symbol(self, symbol):
         return self.__data['symbols'][symbol]['type']
@@ -155,6 +179,19 @@ class VerbCategory:
         
     def template_id(self):
         return self.__data['template']
+        
+class VerbForms:
+    def __init__(self, data):
+        self.__data = data
+        
+    def __repr__(self): # meh, this is okay, right? it's pretty definitive (no other data)...
+        return "VerbForms({})".format(self.__data.__repr__())
+        
+    def get_form(self, form):        
+        return self.__data[form]
+        
+    def is_regular(self):
+        return not bool(self.__data.get('irregular'))
 
 
 class WordSet:        
@@ -162,7 +199,7 @@ class WordSet:
         self.__data = data
         
     def __repr__(self): # TODO: get lists of NameSets to print info using __str__ instead of __repr__?
-        return self.__data.__repr__()
+        return "WordSet({})".format(self.__data.__repr__())
 
     def num_words(self, lang):
         words = self._words(lang)
@@ -176,10 +213,21 @@ class WordSet:
         return self.__data
         
 class NameSet(WordSet):
+    def name(self, lang, index):
+        name = self._data()[lang]
+        assert(type(name) is str)
+        assert(index is 0)
+        return name
+        
     def _words(self, lang):
         return self._data()[lang]
         
 class VerbSet(WordSet):
+    def verb(self, lang):
+        verb = self._data()[lang]
+        assert(type(verb) is str)
+        return verb
+        
     def _words(self, lang):
         return self._data()[lang]
 
@@ -187,29 +235,26 @@ class VerbSet(WordSet):
             
 ### module-level variables (intended to be read-only after initialization) ###
 # TODO: move classes to a separate file, if they ever want to be used externally without having to load all these files
+    # but that seems unlikely, since these are FILE INTERFACE classes
 
 RAW_NOUNS = { lang: read_file(DATA_DIR + 'nouns_{}.yml'.format(lang)) for lang in LANGUAGES }
 RAW_NOUNSETS = read_file(DATA_DIR + 'nounsets.yml')
 
-RAW_VERBS = {}
-for lang in LANGUAGES:
-    verb_file = DATA_DIR + 'verbs_{}.yml'.format(lang)
-    try:
-        RAW_VERBS[lang] = read_file(verb_file)
-    except FileNotFoundError as e:
-        print('Skipping verb file for {} - tenseless like zh, right?'.format(lang))
-        # TODO: some sort of dummy dict so that verbs['zh'][<anything>] == <anything>, or something similar?
-
-
-
-#raise Exception('''TODO: load verbsets, pass to Clause initializer 
-#actually, I think it should just be able to initialize given "transitive" and "action.possessive"''')
         
 NAME_BANK = NameSetBank(DATA_DIR + 'namesets.yml')
 # TODO: load language-specific name files, for any languages that might have noun declensions
 
 TAXONOMY = Taxonomy(DATA_DIR + 'taxonomy.yml')
 VERBSET_BANK = VerbSetBank(DATA_DIR + 'verbsets/')
+
+VERB_FORMS = {}
+for lang in LANGUAGES:
+    verb_file = DATA_DIR + 'verbs_{}.yml'.format(lang)
+    try:
+        VERB_FORMS[lang] = VerbFormBank(verb_file)
+    except FileNotFoundError as e:
+        print('Skipping verb file for {} - tenseless like zh, right?'.format(lang))
+        # TODO: some sort of dummy dict so that verbs['zh'][<anything>] == <anything>, or something similar?
 
 
 TEMPLATE_DIR = DATA_DIR + 'templates/'

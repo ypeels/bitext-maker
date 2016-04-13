@@ -23,7 +23,7 @@ class Node:
     def __init__(self, **options): # contains data, so probably don't want to use as a mixin (would have to call constructor in derived classes)
         self.__dependencies = []
         
-        self.__generated_text = {}
+        self.__generated_text = {} # { 'en': 'Alice' ... }
         
         # just store them for now and figure out what to do with them later... can always use dict.pop()
         self.__type = options.pop('type')
@@ -107,6 +107,7 @@ class TemplatedNode(Node):
     def __init__(self, bank, **kwargs):
         Node.__init__(self, **kwargs)
         
+        self.__headnodes = [] # Node
         self.__subnodes = {}
         
         assert(bank) # catch uninitialization errors
@@ -121,9 +122,14 @@ class TemplatedNode(Node):
         return "{type}({template})".format(type=self.__class__, template=self.__template)
         
     ### "public" API - for use outside this class ###
-    def generated_symbols(self):
-        return { symbol: subnode.generated_text() for symbol, subnode in self.__subnodes.items() if subnode.has_generated_text() }
+    def generated_symbols(self, lang):
+        return { symbol: subnode.generated_text(lang) for symbol, subnode in self.__subnodes.items() if subnode.has_generated_text(lang) }
             
+    def get_template_text(self, lang):
+        return self.__template.template_text(lang)
+            
+    def num_symbols(self):
+        return len(self._symbols()) # TODO: cache this on calling set_template()?
     
     def has_template(self):
         return bool(self.__template_id) and bool(self.__template)    
@@ -131,6 +137,9 @@ class TemplatedNode(Node):
         self.__template = self.__template_bank.get_template_by_id(id)
         assert(type(self.__template) == data.Template)
         self.__template_id = id
+        
+
+        
         
     ### "pure virtual" functions - to be implemented in derived classes ###
     # not needed per se (duck typing will get it), but still valuable to document what this function is
@@ -152,6 +161,14 @@ class TemplatedNode(Node):
                 for lang, deps in self._deps_for_symbol(s).items():
                     for d in deps:
                         self.__subnodes[s].add_dependency(self.__subnodes[d], lang=lang)
+            
+            
+            self.__headnodes = [self._get_subnode(s) for s in self.__template.head_symbols()]
+            assert(len(self.__headnodes) == 1)            
+            #import pdb; pdb.set_trace()
+            # TODO: alter head upon transformation
+
+            
                         
     def _tags_for_symbol(self, symbol):
         tags = self._syntax_tags_for_symbol(symbol)
@@ -173,6 +190,9 @@ class TemplatedNode(Node):
         
     def _get_subnode(self, symbol):
         return self.__subnodes.get(symbol)
+        
+    def _get_headnodes(self):
+        return self.__headnodes
     
     def _symbols(self):
         return self.__template.symbols()
@@ -190,13 +210,8 @@ class TemplatedNode(Node):
 
     def _type_for_symbol(self, symbol):
         return self.__template.type_for_symbol(symbol)
-
-
         
-    #### "private" functions - not intended to be called outside this class ###
-
-
-        
+    #### "private" functions - not intended to be called outside this class ###        
         
     ### TODO: delete these debugging aliases ###
     def _template(self):
@@ -280,6 +295,28 @@ class NounPhrase(TemplatedNode):
     def __init__(self, **options):
         TemplatedNode.__init__(self, data.NP_TEMPLATE_BANK, **options)
         
+    def number(self):
+        '''singular or plural?'''
+        heads = self._get_headnodes()
+        assert(len(heads) > 0)
+        
+        if len(self._get_headnodes()) > 1:
+            return 'plural' # in a disjunction like "candy or dogs", only one should be marked as a headword, right?
+        else:
+            return heads[0].number()
+        
+    
+    def person(self):
+        '''1: I/we, 2: You/y'all, 3: all others'''
+        heads = self._get_headnodes()
+        assert(len(heads) is 1)
+        
+        # hey, person only matters for SINGULAR? can I just return something like "0" if there are multiple headwords?
+        return heads[0].person()
+        
+        
+        
+        
     # overrides
     def _ready_to_create_subnodes(self):
         return self.has_template()
@@ -288,8 +325,12 @@ class NounPhrase(TemplatedNode):
         TemplatedNode._create_subnodes(self)
     
         # propagate tags from parent node into head word
-        # TODO: handle "multiple headwords" (Alice and Bob and...)
-        self._get_subnode('N').add_options(self._options())
+        # TODO: handle "multiple headwords" correctly (Alice and Bob and...)
+            # n.b. tags don't necessarily propagate into all head words... (Alice and tacos and killing)
+        head_subnodes = self._get_headnodes()
+        assert(len(head_subnodes) == 1)
+        for head in head_subnodes:
+            head.add_options(self._options())
         
     # TODO: handle semantic tags (pre-nounset constraints)
         
@@ -308,7 +349,6 @@ class LexicalNode(Node):
         raise UNIMPLEMENTED_EXCEPTION
         
     def num_datasets(self, lang):
-        print([ds.num_words(lang) for ds in self._datasets()])
         return sum(ds.num_words(lang) for ds in self._datasets())
         
         
@@ -318,14 +358,22 @@ class Name(LexicalNode):
         Node.__init__(self, **kwargs)
         self.__namesets = []
         
-    #def namesets(self):
-    #    return self.__namesets
+    def get_nameset_by_index(self, index):
+        return self.__namesets[index]
+        
+    def number(self):
+        if 'plural' in self._get_option('tags'):
+            return 'plural'
+        else:
+            return 'singular'
+            
+    def person(self): # a name is always third person
+        return 3
         
     def _lexicalize(self, num_candidates=1):
         semantic_tags = [tag for tag in self._get_option('tags') if type(tag) is str]
         assert(len(semantic_tags) <= 1)
         
-        print(semantic_tags)
         if semantic_tags:
             candidates = data.NAME_BANK.find_tagged(semantic_tags[0])   
         else:
@@ -333,7 +381,6 @@ class Name(LexicalNode):
             
         # TODO: move random.sample() into NameBank? abstraction level is different for VerbCategory, which sample()s there...
         self.__namesets = random.sample(candidates, num_candidates)
-        print(self.__namesets)
             
             
     # expose to BASE class ("pure virtual")
@@ -347,8 +394,17 @@ class Verb(LexicalNode):
         self.__category = {} # data.VerbCategory
         self.__verbsets = [] # data.VerbSet
         
+        # TODO: does this really belong here, in a multilingual data structure?
+        self.__tense = 'present' # default tense
+        
+    def get_verbset_by_index(self, index):
+        return self.__verbsets[index]
+        
     def set_category(self, category):
         self.__category = category
+        
+    def get_tense(self):
+        return self.__tense
         
     # DELETE ME: debugging interfaces
     def _category(self):

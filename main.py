@@ -4,6 +4,7 @@ import data # may take a while
 
 import generator
 import nodes
+from utility import LANGUAGES
 
 #make_node('NP', tags=['man', 'plural'])
         
@@ -60,11 +61,21 @@ clause.lexicalize_all()
 # okay, i think this is the best tradeoff: Node knows its internal data structure (tree), while Generator knows how to generate
   # looping through languages? no, can just do all languages in parallel
 
-# reset the generators' counters for a pass through the whole tree
-for g in generator.generators.values():
-    g.reset()
+generators = generator.generators
+assert(set(generator.generators.keys()) == set(LANGUAGES))
 
-clause.generate_all(generator.generators)
+# TODO: wrap this in a giant loop that takes into account all candidate madlib choices
+# generate a single sentence (a single choice of madlibs)
+while not all(clause.has_generated_text(lang) for lang in LANGUAGES):
+    # reset the generators' counters for a pass through the whole tree
+    for g in generators.values():
+        g.reset()
+
+    clause.generate_all(generators)
+    if not all(clause.has_generated_text(lang) or generators[lang].num_generated() > 0 for lang in LANGUAGES):
+        raise Exception('full pass through tree did not generate anything - cyclic dependencies?')
+        
+        
     
     # after the whole pass, 
         # if root node has been generated for all langs, just spit out the result
@@ -73,7 +84,9 @@ clause.generate_all(generator.generators)
             # else FAILURE - cyclic dependency? could output placeholders like V(S) instead of the real words
 
 
-
+with open('output.txt', 'w', encoding='utf8') as output:
+    for lang in LANGUAGES:
+        output.write(clause.generated_text(lang) + '\n')
 
 
     

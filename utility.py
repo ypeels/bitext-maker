@@ -7,6 +7,7 @@ DATA_DIR = 'datasets/'
 LANGUAGES = ['en', 'zh']
 
 # TODO: call this once at startup
+# BUT there might still be nondeterminism in terms of dict key ordering...
 def seed_rng():
     import random
     random.seed(2016)

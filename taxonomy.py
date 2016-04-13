@@ -13,15 +13,15 @@ class Taxonomy:
     Output: Queryable object such that query(cat) = [animal, mammal]
     '''
     def __init__(self, filename):
-        self.__data = collections.defaultdict(list)
+        self.__data = collections.defaultdict(set)
         tree = yaml_reader.read_file(filename)
-        self.__index_tree(tree, [])
+        self.__index_tree(tree, set())
         
     # not thread safe - writes to self.__data - but you wouldn't want to multithread this...
     def __index_tree(self, tree, parents):        
         for key, subtree in tree.items():
-            genealogy = parents + [key]
-            self.__data[key] += genealogy            
+            genealogy = parents.union({key})
+            self.__data[key].update(genealogy)
             if subtree:
                 self.__index_tree(subtree, genealogy)
         
