@@ -14,6 +14,9 @@ class Generator:
         
         self._verb_form_bank = data.VERB_FORMS.get(self.LANG)
         
+    def analyze(self, node):
+        print('Generator.analyze', node)
+        
     def generate(self, node):
         if isinstance(node, nodes.LexicalNode):
             self._generate_lexical(node)
@@ -33,6 +36,7 @@ class Generator:
     def _generate_lexical(self, node):
         # TODO: multiple entries in a node - store tuple of (node, count). do this here once, for all node types
             # - permit multiple names for now and just take the first one as a default
+        print('generator _generate_lexical', node)
         assert(node.num_datasets(self.LANG) == 1)
         
         # should I check this here? but then if they ARE all ready, I have to pull them again in _generate_verb(), etc...

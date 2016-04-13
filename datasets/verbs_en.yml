@@ -46,3 +46,9 @@ have:
   VBP: have # TODO: 've when auxiliary
   VBZ: has # "he's a lovely face" - I don't think that's very standard en-us... save for a transformation?
   
+possess:
+  VBD: possessed
+  VBG: possessing
+  VBN: possessed
+  VBP: possess
+  VBZ: possesses

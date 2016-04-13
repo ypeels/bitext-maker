@@ -4,17 +4,14 @@ import data # may take a while
 
 import generator
 import nodes
-from utility import LANGUAGES
-
-#make_node('NP', tags=['man', 'plural'])
-        
-
+from utility import LANGUAGES, seed_rng
 
 
 
 assert(__name__ == '__main__') # for now
 
 
+#seed_rng() # output becomes deterministic, but loops over dicts are still random
 
 
 
@@ -36,6 +33,8 @@ assert(__name__ == '__main__') # for now
 # actually, i think it should commute - user CAN specify certain constraints, then object specifies the rest
     # I suppose this is important for transformed Clauses, for which you specify "empty subject" or something
     # BUT, don't you have to create a public API with which you reach down into the tree?
+# I think that ideally there would be some kind of metadata format that can specify all this 
+    
 clause = nodes.node_factory('Clause')
 clause.set_template('transitive')
 clause.set_verb_category('action.possession') 
@@ -51,6 +50,8 @@ A, B = [np._get_subnode('N') for np in [S, O]]
 A.add_options({'tags': ['woman']})
 B.add_options({'tags': ['man']}) # hmm... 
 
+#A.set_num_samples(2)
+#B.set_num_samples(1)
 
 
 clause.lexicalize_all()
@@ -64,9 +65,13 @@ clause.lexicalize_all()
 generators = generator.generators
 assert(set(generator.generators.keys()) == set(LANGUAGES))
 
+clause.analyze_all(generators)
+
 # TODO: wrap this in a giant loop that takes into account all candidate madlib choices
 # generate a single sentence (a single choice of madlibs)
 while not all(clause.has_generated_text(lang) for lang in LANGUAGES):
+    print('taking another pass through the tree')
+    
     # reset the generators' counters for a pass through the whole tree
     for g in generators.values():
         g.reset()

@@ -34,4 +34,8 @@ action.possession:
     en: have
     zh: 有
     
+    # not common - just testing multiple verbsets
+  - en: possess
+    zh: 独有
+    
   # well, generator needs to have knowledge about who is S and who is O in order to decline/inflect nouns...

@@ -56,7 +56,7 @@ class Node:
     def type(self):
         return self.__type
         
-    # tree-walking operations
+    ### tree-walking operations ###
     
     # TODO: use generic tree traversal operation to DRY out code... meh, confusing and not really worth it for now
     #def for_all(self, operation, **kwargs):
@@ -65,15 +65,18 @@ class Node:
     #        sn.for_all(operation, **kwargs)
     #    operation(self, **kwargs)
     
-    def generate_all(self, generators):
-        subnodes = self._subnodes()
-        for _, sn in subnodes:
-            sn.generate_all(generators)
-        
+    def analyze_all(self, generators):
+        for _, sn in self._subnodes():
+            sn.analyze_all(generators)
         for lang in generators.keys():
-            if not self.has_generated_text(lang):
-                if (not subnodes) or all(sn.has_generated_text(lang) for _, sn in subnodes):            
-                    generators[lang].generate(self)
+            generators[lang].analyze(self)
+    
+    def generate_all(self, generators):
+        for _, sn in self._subnodes():
+            sn.generate_all(generators)        
+        for lang in generators.keys():
+            self._generate(generators)
+
         
     def lexicalize_all(self):
         '''TODO: multiple synsets per node, to allow for outer product'''
@@ -81,7 +84,7 @@ class Node:
             sn.lexicalize_all()
         self._lexicalize()
         
-    ### "protected" functions to be overridden in derived classes ###
+    ### "protected" functions - silent defaults to be overridden in derived classes as needed ###
     # override this iff a node has any lexical choices to be made
     def _lexicalize(self):
         pass
@@ -178,6 +181,12 @@ class TemplatedNode(Node):
             return []
             
     ### "protected" - these override the base class ###
+    def _generate(self, generators):
+        assert(self._subnodes())
+        for lang in generators.keys():
+            if all(sn.has_generated_text(lang) for _, sn in self._subnodes()) and not self.has_generated_text(lang):  
+                generators[lang].generate(self)
+                
     def _subnodes(self):
         return self.__subnodes.items()
 
@@ -345,17 +354,45 @@ class LexicalNode(Node):
     Collects operations over multiple VerbSets, etc.
     These operations don't really belong in Node or TemplatedNode
     '''
+    def __init__(self, **options):
+        Node.__init__(self, **options)
+        self.__num_samples = 1
+        
+    # public
+    def num_datasets(self, lang):
+        return sum(ds.num_words(lang) for ds in self._datasets())
+        
+    def num_samples(self):
+        #import pdb; pdb.set_trace()
+        return self.__num_samples
+    def set_num_samples(self, num):
+        self.__num_samples = num
+        
+    # pure virtual
     def _lexicalize(self):
         raise UNIMPLEMENTED_EXCEPTION
         
-    def num_datasets(self, lang):
-        return sum(ds.num_words(lang) for ds in self._datasets())
+    # override base class
+    def _generate(self, generators):
+        assert(not self._subnodes())
+        for lang in generators.keys():
+            if not self.has_generated_text(lang):
+                generators[lang].generate(self)
+                
+        
+    # protected - used by derived classes
+    def _pick_samples(self, candidates):
+        num_candidates = len(candidates)
+        if self.num_samples() > num_candidates:
+            self.set_num_samples(num_candidates)
+        self._set_datasets(random.sample(candidates, self.num_samples()))
+
         
         
 # leaf nodes - hmm, are all non-leaf nodes Templated, then?
 class Name(LexicalNode):
     def __init__(self, **kwargs):
-        Node.__init__(self, **kwargs)
+        LexicalNode.__init__(self, **kwargs)
         self.__namesets = []
         
     def get_nameset_by_index(self, index):
@@ -370,7 +407,7 @@ class Name(LexicalNode):
     def person(self): # a name is always third person
         return 3
         
-    def _lexicalize(self, num_candidates=1):
+    def _lexicalize(self):
         semantic_tags = [tag for tag in self._get_option('tags') if type(tag) is str]
         assert(len(semantic_tags) <= 1)
         
@@ -379,18 +416,24 @@ class Name(LexicalNode):
         else:
             candidates = data.NAME_BANK.all_namesets()
             
-        # TODO: move random.sample() into NameBank? abstraction level is different for VerbCategory, which sample()s there...
-        self.__namesets = random.sample(candidates, num_candidates)
+        self._pick_samples(candidates)
+            
+
+        
+        #self.__namesets = self._sample(candidates)
             
             
     # expose to BASE class ("pure virtual")
     def _datasets(self):
         return self.__namesets
         
+    def _set_datasets(self, datasets):
+        self.__namesets = datasets
+        
     
 class Verb(LexicalNode):
     def __init__(self, **kwargs):
-        Node.__init__(self, **kwargs)
+        LexicalNode.__init__(self, **kwargs)
         self.__category = {} # data.VerbCategory
         self.__verbsets = [] # data.VerbSet
         
@@ -412,11 +455,14 @@ class Verb(LexicalNode):
         
     def _lexicalize(self):
         # TODO: filter further by, say, semantic tags 
-        self.__verbsets = self.__category.all_verbsets()
+        self._pick_samples(self.__category.all_verbsets())
         
     # expose to base class
     def _datasets(self):
         return self.__verbsets
+        
+    def _set_datasets(self, datasets):
+        self.__verbsets = datasets
 
 
 
