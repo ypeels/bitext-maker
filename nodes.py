@@ -133,6 +133,11 @@ class TemplatedNode(Node):
         return "{type}({template})".format(type=self.__class__, template=self.__template)
         
     ### "public" API - for use outside this class ###
+    def add_options(self, options):
+        Node.add_options(self, options)    
+        for symbol, subnode in self.__subnodes.items():
+            subnode.add_options(self._options())
+    
     def generated_symbols(self, lang):
         return { symbol: subnode.generated_text(lang) for symbol, subnode in self.__subnodes.items() if subnode.has_generated_text(lang) }
             
@@ -162,9 +167,12 @@ class TemplatedNode(Node):
         if self._ready_to_create_subnodes():
             assert(not self.__subnodes) # this function should only be called once, for initialization 
         
-             # requires symbols to be unique... but they SHOULD be, since they're in a dict
-            self.__subnodes = { s: node_factory(self._type_for_symbol(s), tags=self._tags_for_symbol(s)) 
+            # requires symbols to be unique... but they SHOULD be, since they're in a dict
+            self.__subnodes = { s: node_factory(self._type_for_symbol(s))
                 for s in self._symbols() }
+                
+            for symbol, subnode in self.__subnodes.items():
+                subnode.add_options({'tags': self._tags_for_symbol(symbol)})
             
             # hook up dependencies between NODES and their data - all nodes must have been instantiated first
             # add_dependency() should allow pronouns to work all the way across the tree...right?
@@ -444,6 +452,7 @@ class Name(LexicalNode):
         return 3
         
     def _lexicalize(self):
+        assert(self._get_option('tags') is not None)
         semantic_tags = [tag for tag in self._get_option('tags') if type(tag) is str]
         assert(len(semantic_tags) <= 1)
         
@@ -452,6 +461,7 @@ class Name(LexicalNode):
         else:
             candidates = data.NAME_BANK.all_namesets()
             
+           
         self._pick_samples(candidates)
             
 

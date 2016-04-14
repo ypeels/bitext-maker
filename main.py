@@ -11,23 +11,11 @@ from utility import LANGUAGES, seed_rng
 assert(__name__ == '__main__') # for now
 
 
-#seed_rng() # output becomes deterministic, but loops over dicts are still random
+#seed_rng() # output still not deterministic? loops over dicts are still random
 
 
 
-### 2. Generate sentences ###
-
-## some quickie testing
-#names = data.NAME_BANK
-#women = names.find_tagged('woman')
-##men = names.find_tagged('man')
-#people = names.find_tagged('person')
-
-# hmm, should I make these singletons instead? otherwise, I could have just created one per node...
-#generators = { lang: get_generator(lang) for lang in data.LANGUAGES }
-
-#def hello():
-#template = RAW_CLAUSE_TEMPLATES[1]
+### 1. Specify sentences ###
 
 # where will this logic live??
 # actually, i think it should commute - user CAN specify certain constraints, then object specifies the rest
@@ -42,25 +30,25 @@ clause._create_subnodes()
 
 
 S, V, O = [clause._get_subnode(sym) for sym in 'SVO']
+
 for n in [S, O]:
     n.set_template('name')
     n._create_subnodes()
     
 A, B = [np._get_subnode('N') for np in [S, O]]
-A.add_options({'tags': ['woman']})
-B.add_options({'tags': ['man']}) # hmm... 
-
-A.set_num_samples(2)
-B.set_num_samples(3)
+#A.add_options({'tags': ['woman']})
+S.add_options({'tags': ['woman']}) # gets propagated down now, even if called AFTER A and B have been created
+#B.add_options({'tags': ['man']}) # hmm... 
 
 
-clause.lexicalize_all()
+A.set_num_samples(10)
+B.set_num_samples(10)
 
 
+clause.lexicalize_all() # uses tags/constraints from above to choose namesets, verbsets, etc. to be sampled
 
 
-# okay, i think this is the best tradeoff: Node knows its internal data structure (tree), while Generator knows how to generate
-  # looping through languages? no, can just do all languages in parallel
+### 2. Generate sentences ###
 
 # hmm, should I really be using singletons for this?
 analyzer = generator.analyzer
@@ -77,6 +65,7 @@ clause.analyze_all(analyzer)
 # note that you opt into multisampling via set_num_samples ABOVE - and that determines the length of the list passed to select_samples() 
 max_selections = analyzer.num_samples()
 
+# this is a BIT more flexible than making it a member of Analyzer, since it can also be called externally
 def count_digits(bases):
     '''Loop through "variable-base" number, where each digit has a different base, little-endian'''
     assert(all(type(d) is int and d > 1 for d in bases))
@@ -105,6 +94,7 @@ def count_digits(bases):
         
 outputs = { lang: open('output_{}.txt'.format(lang), 'w', encoding='utf8') for lang in LANGUAGES }
 
+# currently generating ALL samples
 for t in count_digits(max_selections):
     clause.ungenerate_all()
 
@@ -123,7 +113,7 @@ for t in count_digits(max_selections):
         if not all(clause.has_generated_text(lang) or generators[lang].num_generated() > 0 for lang in LANGUAGES):
             raise Exception('full pass through tree did not generate anything - cyclic dependencies?')
         
-    #print(clause.generated_text('en'))
+    print(clause.generated_text('en'))
     
     for lang in LANGUAGES:
         outputs[lang].write(clause.generated_text(lang) + '\n')
