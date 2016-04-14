@@ -71,38 +71,78 @@ for g in generators.values():
     g.reset_num_samples() # this would be required to reuse generators for multiple trees...
 clause.analyze_all(generators)
 
-#for g in generators.values():
-#    g.select_samples([1, 1])
-# current idiosyncrasy: any single generator can perform 
-    # this is because sample selection is performed directly on the polylingual tree
-    # i.e., sample selection is done purely multilingually right now (don't have something like { en: [Bob, Robert], zh: Bob }
-        # I suppose this could become QUITE the problem once I move to nounsets... although maybe could work around using YAML references
-        # but no, a long-term solution for many languages REQUIRES having multi-entry datasets... otherwise the # refs explodes
 
 # note that you opt into multisampling via set_num_samples ABOVE - and that determines the length of the list passed to select_samples() 
-generators['en'].select_samples([0,0])
+max_selections = generators['en'].num_samples()
+assert(max_selections == generators['zh'].num_samples())
+print(max_selections)
 
-raise Exception('next: get tuples and then loop over them. how do you loop over a variable number of counters? "long addition" with carry?')
-
-# TODO: wrap this in a giant loop that takes into account all candidate madlib choices
-# generate a single sentence (a single choice of madlibs)
-while not all(clause.has_generated_text(lang) for lang in LANGUAGES):
-    print('taking another pass through the tree')
+def count_digits(bases):
+    '''Loop through "variable-base" number, where each digit has a different base, little-endian'''
+    assert(all(type(d) is int and d > 1 for d in bases))
     
-    # reset the generators' counters for a pass through the whole tree
-    for g in generators.values():
-        g.reset_generated_counter()
-
-    clause.generate_all(generators)
-    if not all(clause.has_generated_text(lang) or generators[lang].num_generated() > 0 for lang in LANGUAGES):
-        raise Exception('full pass through tree did not generate anything - cyclic dependencies?')
+    digits = [0] * len(bases)
+    overflow = False
+    while not overflow: # alternative: extra carry digit for termination 
+        yield tuple(digits) 
         
+        # += 1, long-addition
+        place = 0   
+        carry = True        
+        while carry and place < len(digits):
+            carry = False        
+            digits[place] += 1
+            if digits[place] >= bases[place]:
+                assert(digits[place] == bases[place])
+                digits[place] = 0
+                place += 1
+                carry = True
+        
+        assert(0 <= place <= len(digits))
+        overflow = (place == len(digits))
+            
+        
+        
+outputs = { lang: open('output_{}.txt'.format(lang), 'w', encoding='utf8') for lang in LANGUAGES }
 
+for t in count_digits(max_selections):
+    clause.ungenerate_all()
 
+    #for g in generators.values():
+    #    g.select_samples([1, 1])
+    # current idiosyncrasy: any single generator can perform 
+        # this is because sample selection is performed directly on the polylingual tree
+        # i.e., sample selection is done purely multilingually right now (don't have something like { en: [Bob, Robert], zh: Bob }
+            # I suppose this could become QUITE the problem once I move to nounsets... although maybe could work around using YAML references
+            # but no, a long-term solution for many languages REQUIRES having multi-entry datasets... otherwise the # refs explodes
+    generators['en'].select_samples(t)
 
-with open('output.txt', 'w', encoding='utf8') as output:
+    # TODO: wrap this in a giant loop that takes into account all candidate madlib choices
+    # generate a single sentence (a single choice of madlibs)
+    while not all(clause.has_generated_text(lang) for lang in LANGUAGES):
+        #print('taking another pass through the tree')
+        
+        # reset the generators' counters for a pass through the whole tree
+        for g in generators.values():
+            g.reset_generated_counter()
+
+        clause.generate_all(generators)
+        if not all(clause.has_generated_text(lang) or generators[lang].num_generated() > 0 for lang in LANGUAGES):
+            raise Exception('full pass through tree did not generate anything - cyclic dependencies?')
+        
+    #print(clause.generated_text('en'))
+    
     for lang in LANGUAGES:
-        output.write(clause.generated_text(lang) + '\n')
+        outputs[lang].write(clause.generated_text(lang) + '\n')
+    
+
+for o in outputs.values():
+    o.close()
+
+
+#with open('output.txt', 'w', encoding='utf8') as output:
+#    for lang in LANGUAGES:
+#        output.write(clause.generated_text(lang) + '\n')
 
 
     

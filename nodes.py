@@ -24,7 +24,7 @@ class Node:
     def __init__(self, **options): # contains data, so probably don't want to use as a mixin (would have to call constructor in derived classes)
         self.__dependencies = []
         
-        self.__generated_text = {} # { 'en': 'Alice' ... }
+        self.__generated_text = None # { 'en': 'Alice' ... }
         
         # just store them for now and figure out what to do with them later... can always use dict.pop()
         self.__type = options.pop('type')
@@ -50,6 +50,8 @@ class Node:
         return bool(self.__generated_text.get(lang))
     def set_generated_text(self, lang, text):
         self.__generated_text[lang] = text
+    def reset_generated_text(self):
+        self.__generated_text = {}
 
     def get_dependencies(self, **input_options):
         return [dep for (dep, options) in self.__dependencies if all(options[ik] == iv for ik, iv in input_options.items())]
@@ -77,13 +79,17 @@ class Node:
             sn.generate_all(generators)        
         for lang in generators.keys():
             self._generate(generators)
-
         
     def lexicalize_all(self):
         '''TODO: multiple synsets per node, to allow for outer product'''
         for _, sn in self._subnodes():
             sn.lexicalize_all()
         self._lexicalize()
+        
+    def ungenerate_all(self): # tempting to call this "reset_all", but there are other operations like lexicalize()...
+        for _, sn in self._subnodes():
+            sn.ungenerate_all()
+        self.reset_generated_text()  
         
     ### "protected" functions - silent defaults to be overridden in derived classes as needed ###
     # override this iff a node has any lexical choices to be made
