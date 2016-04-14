@@ -7,18 +7,13 @@ import data
 import nodes 
 
 
-
-class Generator:
+class Analyzer:
+    '''
+    Analyzes the tree and makes nonlocal decisions
+    - select_samples(): makes a concrete selection at nodes with multiple samples [Alice, Bob]
+    '''
     def __init__(self):
-        self.__counter = None # int
-        # would ensure same condition on startup as on manual reset
-        # but omitting it forces the caller to remember to reset before use...
-        #self.reset_generated_counter() 
-        
         self.__num_samples_per_node = None # list
-        
-        
-        self._verb_form_bank = data.VERB_FORMS.get(self.LANG)
         
     def analyze(self, node):
         #print('Generator.analyze', node.type())
@@ -29,6 +24,28 @@ class Generator:
             self.__num_samples_per_node.append(
                 #(node, node.num_samples()))
                 {'node': node, 'max': node.num_samples()})
+                
+    def num_samples(self):
+        return [d['max'] for d in self.__num_samples_per_node]
+        
+    def select_samples(self, selections):
+        assert(len(selections) is len(self.__num_samples_per_node))
+        for selection, d in zip(selections, self.__num_samples_per_node):
+            assert(0 <= selection < d['max'])
+            d['node'].select_sample(selection)
+            
+    def reset_num_samples(self):
+        self.__num_samples_per_node = []
+        
+
+class Generator:
+    def __init__(self):
+        self.__counter = None # int
+        # would ensure same condition on startup as on manual reset
+        # but omitting it forces the caller to remember to reset before use...
+        #self.reset_generated_counter() 
+        
+        self._verb_form_bank = data.VERB_FORMS.get(self.LANG)
         
         
     def generate(self, node):
@@ -41,29 +58,11 @@ class Generator:
             
     def num_generated(self):
         return self.__counter
-        
-    def num_samples(self):
-        return [d['max'] for d in self.__num_samples_per_node]
-        
-    def select_samples(self, selections):
-        assert(len(selections) is len(self.__num_samples_per_node))
-        for selection, d in zip(selections, self.__num_samples_per_node):
-            assert(0 <= selection < d['max'])
-            d['node'].select_sample(selection)
-    
-        #selected_samples = [1 2 3]
-        #for i, d in enumerate(cache):
-        #    #d['selected'] = selected_samples[i]
-        #    
-        #    # no, i want to set the selection directly in the node
-        #    cache[i]['node'].select_sample(selected_samples[i])
-        
             
     def reset_generated_counter(self):
         self.__counter = 0 # for multiple passes through the tree (generating dependencies)
         
-    def reset_num_samples(self):
-        self.__num_samples_per_node = []
+
         
         
     def _generate_lexical(self, node):
@@ -221,6 +220,7 @@ def generator_factory(lang):
 
 
 # module-level singletons
+analyzer = Analyzer()
 generators = { lang: generator_factory(lang) for lang in LANGUAGES }
     
     

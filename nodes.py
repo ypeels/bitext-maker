@@ -68,11 +68,12 @@ class Node:
     #        sn.for_all(operation, **kwargs)
     #    operation(self, **kwargs)
     
-    def analyze_all(self, generators):
+    def analyze_all(self, analyzer):
         for _, sn in self._subnodes():
-            sn.analyze_all(generators)
-        for lang in generators.keys():
-            generators[lang].analyze(self)
+            sn.analyze_all(analyzer)
+        analyzer.analyze(self)
+        #for lang in generators.keys():
+        #    generators[lang].analyze(self)
     
     def generate_all(self, generators):
         for _, sn in self._subnodes():

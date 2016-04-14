@@ -62,20 +62,23 @@ clause.lexicalize_all()
 # okay, i think this is the best tradeoff: Node knows its internal data structure (tree), while Generator knows how to generate
   # looping through languages? no, can just do all languages in parallel
 
+# hmm, should I really be using singletons for this?
+analyzer = generator.analyzer
 generators = generator.generators
 assert(set(generator.generators.keys()) == set(LANGUAGES))
 
 # TODO: only need to analyze # samples for a SINGLE language? well, this more general way permits different sample numbers for different langs
     # but then you'd have to have nested indices... still, it's doable in principle.
-for g in generators.values():
-    g.reset_num_samples() # this would be required to reuse generators for multiple trees...
-clause.analyze_all(generators)
+#for g in generators.values():
+#    g.reset_num_samples() # this would be required to reuse generators for multiple trees...
+analyzer.reset_num_samples() # should this go in Node.analyze_all()?
+clause.analyze_all(analyzer)
 
 
 # note that you opt into multisampling via set_num_samples ABOVE - and that determines the length of the list passed to select_samples() 
-max_selections = generators['en'].num_samples()
-assert(max_selections == generators['zh'].num_samples())
-print(max_selections)
+max_selections = analyzer.num_samples()#generators['en'].num_samples()
+#assert(max_selections == generators['zh'].num_samples())
+#print(max_selections)
 
 def count_digits(bases):
     '''Loop through "variable-base" number, where each digit has a different base, little-endian'''
@@ -115,7 +118,8 @@ for t in count_digits(max_selections):
         # i.e., sample selection is done purely multilingually right now (don't have something like { en: [Bob, Robert], zh: Bob }
             # I suppose this could become QUITE the problem once I move to nounsets... although maybe could work around using YAML references
             # but no, a long-term solution for many languages REQUIRES having multi-entry datasets... otherwise the # refs explodes
-    generators['en'].select_samples(t)
+    #generators['en'].select_samples(t)
+    analyzer.select_samples(t)
 
     # TODO: wrap this in a giant loop that takes into account all candidate madlib choices
     # generate a single sentence (a single choice of madlibs)
