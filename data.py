@@ -25,8 +25,15 @@ class NameSetBank(Bank):
     def __init__(self, filename):
         Bank.__init__(self, filename)
         
+        __data = self._data()
+        
+        # discard dummy entries
+        for i in range(len(__data)-1, -1, -1):
+            if all(name == None for name in __data[i]['nameset'].values()):
+                __data.pop(i)            
+        
         # normalize single-item entries to be lists
-        for item in self._data():
+        for item in __data:
             if type(item['tags']) is str:
                 item['tags'] = [item['tags']]
         
@@ -220,7 +227,12 @@ class NameSet(WordSet):
         return name
         
     def _words(self, lang):
-        return self._data()[lang]
+        try:
+            result = self._data()[lang]
+        except TypeError:
+            import pdb
+            pdb.set_trace()
+        return result
         
 class VerbSet(WordSet):
     def verb(self, lang):
@@ -229,6 +241,7 @@ class VerbSet(WordSet):
         return verb
         
     def _words(self, lang):
+
         return self._data()[lang]
 
             

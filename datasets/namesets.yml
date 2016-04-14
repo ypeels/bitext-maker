@@ -5,7 +5,8 @@
 # dummy entry for copy/pasting
 - tags: []
   nameset: 
-  - {lang: , name: }
+    en:
+    zh:
 
 # hmm, so this is basically a gazetteer?
 # TODO: noun tag hierarchy, so this can just be tagged with "woman"
