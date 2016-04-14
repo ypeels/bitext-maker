@@ -10,12 +10,26 @@ import nodes
 
 class Generator:
     def __init__(self):
-        self.__counter = 0 # COULD set to None, but what's the point? the main use is for multiple passes anyway
+        self.__counter = None # int
+        # would ensure same condition on startup as on manual reset
+        # but omitting it forces the caller to remember to reset before use...
+        #self.reset_generated_counter() 
+        
+        self.__num_samples_per_node = None # list
+        
         
         self._verb_form_bank = data.VERB_FORMS.get(self.LANG)
         
     def analyze(self, node):
-        print('Generator.analyze', node)
+        #print('Generator.analyze', node.type())
+        #if isinstance(node, nodes.LexicalNode):
+        #    print('\tnum_samples:',  node.num_samples())
+        
+        if isinstance(node, nodes.LexicalNode) and node.num_samples() > 1:
+            self.__num_samples_per_node.append(
+                #(node, node.num_samples()))
+                {'node': node, 'max': node.num_samples()})
+        
         
     def generate(self, node):
         if isinstance(node, nodes.LexicalNode):
@@ -27,23 +41,43 @@ class Generator:
             
     def num_generated(self):
         return self.__counter
-            
-    def reset(self):
-        self.__counter = 0 # for re-parsing a tree
         
+    def num_samples(self):
+        return [d['max'] for d in self.__num_samples_per_node]
+        
+    def select_samples(self, selections):
+        assert(len(selections) is len(self.__num_samples_per_node))
+        for selection, d in zip(selections, self.__num_samples_per_node):
+            assert(0 <= selection < d['max'])
+            d['node'].select_sample(selection)
+    
+        #selected_samples = [1 2 3]
+        #for i, d in enumerate(cache):
+        #    #d['selected'] = selected_samples[i]
+        #    
+        #    # no, i want to set the selection directly in the node
+        #    cache[i]['node'].select_sample(selected_samples[i])
+        
+            
+    def reset_generated_counter(self):
+        self.__counter = 0 # for multiple passes through the tree (generating dependencies)
+        
+    def reset_num_samples(self):
+        self.__num_samples_per_node = []
         
         
     def _generate_lexical(self, node):
         # TODO: multiple entries in a node - store tuple of (node, count). do this here once, for all node types
             # - permit multiple names for now and just take the first one as a default
-        print('generator _generate_lexical', node)
-        assert(node.num_datasets(self.LANG) == 1)
+        #print('generator _generate_lexical', node)
+                
         
-        # should I check this here? but then if they ARE all ready, I have to pull them again in _generate_verb(), etc...
-        #dependencies = node.get_dependencies()
-        #if not all(dep.has_generated_text(self.LANG) for dep in dependencies):
-        #    return
-
+        #raise Exception('here is where I COULD select the sample from the LexicalNode ')
+            # actually, shouldn't the samples have been selected elsewhere in a separate step?
+                # no, it MUST be selected elsewhere, to make sure the translation is consistent
+                # you could make a SECONDARY selection up until here, within a nameset/nounset, etc.
+            # yeah, this is just the latest possible point where I could do that
+            # pretty hackish/ad hoc, but i think it should work...
         
         
         node_type = node.type()
@@ -52,9 +86,11 @@ class Generator:
         elif node_type == 'name':        
             # for multiple names (Alice, 爱丽丝): absent any guidance, should just pick the first (default) name?
                 # ugh, I don't want to think about this right now... let's just "solve" this in data
-            assert(node.num_datasets(self.LANG) == 1)
+            #assert(node.num_datasets(self.LANG) == 1)
             #self._generate_name(node) # neither language's names have dependencies right now
-            nameset = node.get_nameset_by_index(0)
+            nameset = node.sample_dataset() #get_dataset_by_index(0) #node.get_nameset_by_index(0)
+            
+            assert(nameset.num_words(self.LANG) == 1)
             name = nameset.name(self.LANG, 0)
             self._generate_node_text(node, name)            
         else:
@@ -86,8 +122,8 @@ class Generator:
             
             
     def _get_verb_base(self, node):
-        assert(node.num_datasets(self.LANG) == 1)
-        verbset = node.get_verbset_by_index(0)
+        #assert(node.num_datasets(self.LANG) == 1)
+        verbset = node.sample_dataset() #get_dataset_by_index(0)#get_verbset_by_index(0)
         return verbset.verb(self.LANG)
                     
         

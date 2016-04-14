@@ -12,6 +12,7 @@ import generator
 #from data import LANGUAGES, TAXONOMY
 #from data import RAW_NOUNS, RAW_NOUNSETS
 
+
 UNIMPLEMENTED_EXCEPTION = Exception('Needs to be implemented in derived class')
 
 
@@ -356,17 +357,37 @@ class LexicalNode(Node):
     '''
     def __init__(self, **options):
         Node.__init__(self, **options)
+        self.__datasets = []
+        
+        # default values: single-sample words (multi-sample: [cat, dog, ...])
         self.__num_samples = 1
+        self.__selected_sample_index = 0
         
     # public
-    def num_datasets(self, lang):
-        return sum(ds.num_words(lang) for ds in self._datasets())
+    def num_datasets(self, lang): # TODO: rename this atrocity
+        # each dataset object could contain more than one "dataset" (nameset, etc.), e.g., en: [Bob, Robert]
+        return sum(ds.num_words(lang) for ds in self.__datasets) 
         
     def num_samples(self):
-        #import pdb; pdb.set_trace()
+        if self.__datasets:
+            assert(self.__num_samples == len(self.__datasets))
+            pass
         return self.__num_samples
+        
     def set_num_samples(self, num):
+        '''Number of samples desired from the candidate datasets'''
         self.__num_samples = num
+        
+    def sample_dataset(self):
+        '''Return the currently selected dataset'''
+        return self.__datasets[self.__selected_sample_index]
+        
+    def select_sample(self, index):
+        if 0 <= index < len(self.__datasets):
+            self.__selected_sample_index = index
+        else:
+            raise Exception('out of range: ' + index) # can't just let the system raise IndexError, because it might not for a WHILE
+        
         
     # pure virtual
     def _lexicalize(self):
@@ -385,18 +406,26 @@ class LexicalNode(Node):
         num_candidates = len(candidates)
         if self.num_samples() > num_candidates:
             self.set_num_samples(num_candidates)
-        self._set_datasets(random.sample(candidates, self.num_samples()))
+
+        # TODO: random sampling (using deterministic candidate bank for test/debugging)
+        # TODO: make the choice a user option
+        #self.__datasets = random.sample(candidates, self.num_samples())
+        self.__datasets = candidates[:self.num_samples()]
+        
+        
+    def __get_dataset_by_index(self, index):
+        return self.__datasets[index]
 
         
         
 # leaf nodes - hmm, are all non-leaf nodes Templated, then?
 class Name(LexicalNode):
-    def __init__(self, **kwargs):
-        LexicalNode.__init__(self, **kwargs)
-        self.__namesets = []
+    #def __init__(self, **kwargs):
+    #    LexicalNode.__init__(self, **kwargs)
+    #    #self.__namesets = []
         
-    def get_nameset_by_index(self, index):
-        return self.__namesets[index]
+    #def get_nameset_by_index(self, index):
+    #    return self.get_dataset_by_index(index) #self.__namesets[index]
         
     def number(self):
         if 'plural' in self._get_option('tags'):
@@ -424,24 +453,24 @@ class Name(LexicalNode):
             
             
     # expose to BASE class ("pure virtual")
-    def _datasets(self):
-        return self.__namesets
-        
-    def _set_datasets(self, datasets):
-        self.__namesets = datasets
+    #def _datasets(self):
+    #    return self.__namesets
+    #    
+    #def _set_datasets(self, datasets):
+    #    self.__namesets = datasets
         
     
 class Verb(LexicalNode):
     def __init__(self, **kwargs):
         LexicalNode.__init__(self, **kwargs)
         self.__category = {} # data.VerbCategory
-        self.__verbsets = [] # data.VerbSet
+        #self.__verbsets = [] # data.VerbSet
         
         # TODO: does this really belong here, in a multilingual data structure?
         self.__tense = 'present' # default tense
         
-    def get_verbset_by_index(self, index):
-        return self.__verbsets[index]
+    #def get_verbset_by_index(self, index):
+    #    return self.get_dataset_by_index(index) #self.__verbsets[index]
         
     def set_category(self, category):
         self.__category = category
@@ -457,12 +486,12 @@ class Verb(LexicalNode):
         # TODO: filter further by, say, semantic tags 
         self._pick_samples(self.__category.all_verbsets())
         
-    # expose to base class
-    def _datasets(self):
-        return self.__verbsets
-        
-    def _set_datasets(self, datasets):
-        self.__verbsets = datasets
+    ## expose to base class
+    #def _datasets(self):
+    #    return self.__verbsets
+    #    
+    #def _set_datasets(self, datasets):
+    #    self.__verbsets = datasets
 
 
 

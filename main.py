@@ -50,8 +50,8 @@ A, B = [np._get_subnode('N') for np in [S, O]]
 A.add_options({'tags': ['woman']})
 B.add_options({'tags': ['man']}) # hmm... 
 
-#A.set_num_samples(2)
-#B.set_num_samples(1)
+A.set_num_samples(2)
+B.set_num_samples(3)
 
 
 clause.lexicalize_all()
@@ -65,7 +65,24 @@ clause.lexicalize_all()
 generators = generator.generators
 assert(set(generator.generators.keys()) == set(LANGUAGES))
 
+# TODO: only need to analyze # samples for a SINGLE language? well, this more general way permits different sample numbers for different langs
+    # but then you'd have to have nested indices... still, it's doable in principle.
+for g in generators.values():
+    g.reset_num_samples() # this would be required to reuse generators for multiple trees...
 clause.analyze_all(generators)
+
+#for g in generators.values():
+#    g.select_samples([1, 1])
+# current idiosyncrasy: any single generator can perform 
+    # this is because sample selection is performed directly on the polylingual tree
+    # i.e., sample selection is done purely multilingually right now (don't have something like { en: [Bob, Robert], zh: Bob }
+        # I suppose this could become QUITE the problem once I move to nounsets... although maybe could work around using YAML references
+        # but no, a long-term solution for many languages REQUIRES having multi-entry datasets... otherwise the # refs explodes
+
+# note that you opt into multisampling via set_num_samples ABOVE - and that determines the length of the list passed to select_samples() 
+generators['en'].select_samples([0,0])
+
+raise Exception('next: get tuples and then loop over them. how do you loop over a variable number of counters? "long addition" with carry?')
 
 # TODO: wrap this in a giant loop that takes into account all candidate madlib choices
 # generate a single sentence (a single choice of madlibs)
@@ -74,19 +91,13 @@ while not all(clause.has_generated_text(lang) for lang in LANGUAGES):
     
     # reset the generators' counters for a pass through the whole tree
     for g in generators.values():
-        g.reset()
+        g.reset_generated_counter()
 
     clause.generate_all(generators)
     if not all(clause.has_generated_text(lang) or generators[lang].num_generated() > 0 for lang in LANGUAGES):
         raise Exception('full pass through tree did not generate anything - cyclic dependencies?')
         
-        
-    
-    # after the whole pass, 
-        # if root node has been generated for all langs, just spit out the result
-        # else not all the symbols have been generated, check to see how many generations were made this pass.
-            # if something WAS generated, make another pass
-            # else FAILURE - cyclic dependency? could output placeholders like V(S) instead of the real words
+
 
 
 with open('output.txt', 'w', encoding='utf8') as output:

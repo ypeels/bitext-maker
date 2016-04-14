@@ -28,7 +28,8 @@
     zh: 鲍勃
     # TODO: mark direct en as a feasible alternative to zh transliteration - or does that go in the generator?
       # no, you can't put it in the generator, because then you'd have to distinguish native and transliterated zh names
-      
+
+# n.b. this current workaround does NOT scale to multiple languages!      
 - tags: [man]
   nameset: 
     <<: *Bob
