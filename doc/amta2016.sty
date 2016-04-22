@@ -1,0 +1,236 @@
+%%%% MT Summit 2016 Macros (LaTeX)
+%%%% This is based on the ECJ Macros (Journal of Evolutionary Computation)
+%%%% 
+%%%% Style File (LaTeX2e)
+%%%% Dec 25, 2000 
+%%%% THIS FILE SHOULD BE NAMED mtsummit2016.sty
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% Physical page layout
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\parskip=0.00in
+\setlength\voffset{0in}
+\setlength\topmargin{-.5in}
+\setlength\headheight{.5in}   
+\setlength\headsep{0.5in}
+\setlength\textheight{8.25in} 
+
+\setlength\hoffset{0in}
+\evensidemargin .75in 
+\oddsidemargin .75in
+\setlength\textwidth{5.25in}
+%\setlength\columnsep{0.25in}  
+\newlength\titlebox 
+\setlength\titlebox{2.375in} 
+%\setlength\footheight{0pt}   
+\setlength\footskip{0.3in}
+\thispagestyle{empty}        
+\flushbottom \sloppy
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  MAKETITLE 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Author information can be set in various styles:
+% For several authors from the same institution:
+% \author{Author 1 \and ... \and Author n \\
+%         \addr{Address line} \\ ... \\ \addr{Address line}}
+% if the names do not fit well on one line use
+%         Author 1 \\ {\bf Author 2} \\ ... \\ {\bf Author n} \\
+% To start a seperate ``row'' of authors use \AND, as in
+% \author{Author 1 \\ \addr{Address line} \\  ... \\ \addr{Address line}
+%         \AND
+%         Author 2 \\ \addr{Address line} \\ ... \\ \addr{Address line} \And
+%         Author 3 \\ \addr{Address line} \\ ... \\ \addr{Address line}}
+%
+% Title stuff, borrowed in part from aaai92.sty
+% MakeTitle stuff, borrowed in part from jair.sty 
+
+\newlength\aftertitskip     \newlength\beforetitskip
+\newlength\interauthorskip  \newlength\aftermaketitskip
+
+%% Changeable parameters.
+\setlength\aftertitskip{1.2cm}
+\setlength\beforetitskip{1cm}
+\setlength\interauthorskip{0in}
+\setlength\aftermaketitskip{.11in}
+
+%% overall definition of maketitle, @maketitle does the real work
+\def\maketitle{\par
+\vspace*{-0.625in}\linewidth\hsize \toptitlebar 
+ \begingroup
+   \def\thefootnote{\fnsymbol{footnote}}
+   \def\@makefnmark{\hbox to 0pt{$^{\@thefnmark}$\hss}}
+   \@maketitle \@thanks
+ \endgroup
+ \setcounter{footnote}{0}
+ \let\maketitle\relax \let\@maketitle\relax
+ \gdef\@thanks{}\gdef\@author{}\gdef\@title{}\let\thanks\relax}
+
+\def\@startauthor{\flushleft \normalsize}
+\def\@endauthor{}
+\def\@maketitle{\vbox{\hsize\textwidth
+ \linewidth\hsize \vskip \beforetitskip
+ {\begin{center} \LARGE\bf \@title \end{center}} \vskip \aftertitskip
+ {\def\and{\unskip\enspace{\rm and}\enspace}%
+  \def\addr{\normalsize}%
+  \def\name{\large}%
+  \def\AND{\@endauthor\rm\hss \vskip \interauthorskip \@startauthor}
+  \@startauthor \@author \@endauthor}
+  \vskip \aftermaketitskip
+\bottomtitlebar \vskip 0.1in plus 2fil minus 0.1in 
+}}
+
+%%%%%%%%%%%%%%% 
+% ABSTRACT 
+%%%%%%%%%%%%%%% 
+
+\renewenvironment{abstract}{{\noindent\small\bf 
+Abstract}\vspace*{-0.1in}\begin{quote}\small}{\par\end{quote}\vskip 1ex}
+
+%%%%%%%%%%%%%%% 
+% KEYWORDS 
+%%%%%%%%%%%%%%% 
+
+\newenvironment{keywords}{{\vspace*{-0.1in}\noindent\small\bf
+Keywords}\vspace*{-0.1in}\begin{quote}\small}{\par\end{quote}\vskip 1ex}
+
+\newenvironment{references}{\vspace*{.2in}
+\noindent
+{\large \bf References}
+\setlength{\parindent}{-10em}
+\begin{description}}{\end{description}}
+
+\def\acknowledgments{\vspace*{.2in}
+\noindent
+{\large \bf Acknowledgments}
+\vspace*{1ex}
+}
+
+%%%%%%%%%%%%%%% 
+% APPENDICES 
+%%%%%%%%%%%%%%% 
+
+\def\appendices{\vspace*{.2in}
+\noindent
+{\large \bf Appendix}
+\appendix
+\vspace*{1ex}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Sections with less space 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\def\section{\@startsection {section}{1}{\z@}{-2.0ex plus 
+    -0.5ex minus -.2ex}{1.5ex plus 0.3ex minus .2ex}{\large\bf\raggedright}} 
+\def\subsection{\@startsection{subsection}{2}{\z@}{-1.8ex plus 
+    -0.5ex minus -.2ex}{0.8ex plus .2ex}{\normalsize\bf\raggedright}} 
+\def\subsubsection{\@startsection{subsubsection}{3}{\z@}{-1.5ex plus 
+   -0.5ex minus -.2ex}{0.5ex plus .2ex}{\normalsize\bf\raggedright}} 
+\def\paragraph{\@startsection{paragraph}{4}{\z@}{1.5ex plus 
+   0.5ex minus .2ex}{-1em}{\normalsize\bf}} 
+\def\subparagraph{\@startsection{subparagraph}{5}{\z@}{1.5ex plus 
+   0.5ex minus .2ex}{-1em}{\normalsize\bf}} 
+\def\subsubsubsection{\vskip 5pt{\noindent\normalsize\rm\raggedright}} 
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Footnotes 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\footnotesep 6.65pt % 
+\skip\footins 9pt plus 4pt minus 2pt 
+\def\footnoterule{\kern-3pt \hrule width 5pc \kern 2.6pt } 
+\setcounter{footnote}{0} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Pagestyle
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%\def\ShortHeader#1#2#3#4#5#6{\def\ps@amtaps{\let\@mkboth\@gobbletwo%
+\def\mtsummitHeader#1#2#3#4#5#6{\def\ps@front{\let\@mkboth\@gobbletwo%
+% \def\@oddfoot{\footnotesize \copyright #4 by the Massachusetts
+% Institute of Technology  \hfill Evolutionary Computation #1(#2): #3}%
+\def\@oddfoot{}%
+\def\@oddhead{}\def\@evenhead{}}%
+\thispagestyle{front}
+
+\def\firstpageno#1{\setcounter{page}{#1}}
+
+\def\ps@mtsummitps{\let\@mkboth\@gobbletwo%
+\def\@oddhead{\hfill {\small #5}}%
+%%% \def\@oddfoot{{\footnotesize {Evolutionary Computation ~~ Volume
+%%% #1, Number #2}} \hfil {\thepage}}}
+\def\@oddfoot{}}
+\def\@evenhead{{\small #6} \hfil }%
+%%%\def\@evenfoot{{\thepage} \hfil {\footnotesize {Evolutionary Computation} ~~ Volume #1, Number #2}}%
+\def\@evenfoot{{\thepage} \hfil {}}%
+\pagestyle{mtsummitps}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%
+%% Paragraphs  ETC
+%%%%%%%%%%%%%%%%%%%%%%%%
+
+\parindent 20pt 
+\topsep 4pt plus 1pt minus 2pt 
+\partopsep 1pt plus 0.5pt minus 0.5pt 
+\itemsep 2pt plus 1pt minus 0.5pt 
+\parsep 2pt plus 1pt minus 0.5pt 
+\parskip 12pt
+ 
+\leftmargin 2em \leftmargini\leftmargin \leftmarginii 2em 
+\leftmarginiii 1.5em \leftmarginiv 1.0em \leftmarginv .5em  
+\leftmarginvi .5em 
+\labelwidth\leftmargini\advance\labelwidth-\labelsep \labelsep 5pt 
+ 
+\abovedisplayskip 7pt plus2pt minus5pt% 
+\belowdisplayskip \abovedisplayskip 
+\abovedisplayshortskip  0pt plus3pt%    
+\belowdisplayshortskip  4pt plus3pt minus3pt% 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  FONTS
+%%  The choices were between 1-pt and 1.5-pt leading 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\tiny{\@setsize\tiny{9pt}\vipt\@vipt} 
+\def\scriptsize{\@setsize\scriptsize{10pt}\viipt\@viipt} 
+\def\footnotesize{\@setsize\footnotesize{11pt}\viiipt\@viiipt} 
+\def\small{\@setsize\small{12pt}\ixpt\@ixpt} 
+\def\@normalsize{\@setsize\normalsize{13pt}\xpt\@xpt} 
+\def\large{\@setsize\large{14pt}\xipt\@xipt} 
+\def\Large{\@setsize\Large{18pt}\xivpt\@xivpt} 
+\def\LARGE{\@setsize\LARGE{22pt}\xviipt\@xviipt} 
+\def\huge{\@setsize\huge{25pt}\xxpt\@xxpt} 
+\def\Huge{\@setsize\Huge{30pt}\xxvpt\@xxvpt} 
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  TITLEBARS 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\toptitlebar{ 
+\hrule height.25pt
+\vskip .25in} 
+ 
+\def\bottomtitlebar{ 
+\vskip .25in 
+\hrule height.25pt 
+\vskip .01in} 
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% END of mtsummit2016.sty 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
