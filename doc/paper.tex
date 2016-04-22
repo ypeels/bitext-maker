@@ -1,0 +1,73 @@
+% Yes, this requires flipping flags to compile for different conferences...
+% But you can press Ctrl+T while editing in TeXworks without having to change windows!
+
+
+
+% conditional compilation
+\def\buildemnlp{0}
+\def\buildamta{1}
+\def\buildtarget{\buildamta} % required to be a single character for \if
+
+% emnlp2016.sty, included by header-emnlp.tex, does NOT tolerate ANY surrounding \else statements...
+% an if/else if/... or ifcase statement would have been preferred...
+% but \documentclass is declared in the header file, which results in some hidden error-checking:
+    % unsupported \buildtarget will fail to build (``\usepackage before \documentclass'')
+    % duplicate target values (e.g., emnlp=amta=0) will fail to build (``two \documentclass commands'')
+\if \buildtarget \buildemnlp    
+    \input{header-emnlp.tex}
+    \newcommand\mycitep[1]{\cite{#1}}     % conference-specific ``glue code''
+    \newcommand\mynewcite[1]{\newcite{#1}}
+\fi
+\if \buildtarget \buildamta    
+    \input{header-amta.tex}
+    \newcommand\mycitep[1]{\citep{#1}} 
+    \newcommand\mynewcite[1]{\cite{#1}}  
+\fi
+    
+% Add support for snippets of \zh{中文}
+\usepackage{CJK}
+\usepackage[utf8]{inputenc}
+\newcommand\zh[1]{\begin{CJK}{UTF8}{gbsn}#1\end{CJK}}
+
+
+
+\begin{document}
+\maketitle
+
+
+
+
+\begin{abstract}
+Hello, World!
+
+Here is some normal spacing.
+
+\zh{你好，世界！}
+\end{abstract}
+
+
+
+\section{Test}
+
+The quick brown fox jumps over the lazy dog.
+
+At some point, I will almost definitely be citing Moses \mycitep{moses}
+
+
+
+% these are so short that it's probably better to have it in literally instead of using \input
+\if \buildtarget \buildamta    
+    \small
+    \bibliographystyle{apalike}
+\else \if \buildtarget \buildemnlp
+    %Note that emnlp2016.bst chokes if there are 0 citations in your paper.    
+    %\mynewcite{moses}    
+    \bibliographystyle{emnlp2016}
+\else
+    % some extra error checking, which could not be used with emnlp2016.sty
+    \GenericError{}{Invalid buildtarget - \buildtarget}
+\fi \fi
+
+\bibliography{references}
+
+\end{document}
