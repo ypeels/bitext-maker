@@ -11,6 +11,8 @@ from taxonomy import Taxonomy
 from utility import DATA_DIR, LANGUAGES # kept in separate file for fast unit testing
 from yaml_reader import read_file
 
+UNIMPLEMENTED_EXCEPTION = Exception('Needs to be implemented in derived class')
+
 # TODO: put Bank classes into their own file(s) once the interface is stable enough
 class Bank:
     '''Base class that reads a single YAML file'''
@@ -20,7 +22,7 @@ class Bank:
     def _data(self):
         '''expose to derived classes'''
         return self.__data
-
+        
 class NameSetBank(Bank):    
     def __init__(self, filename):
         Bank.__init__(self, filename)
@@ -47,6 +49,16 @@ class NameSetBank(Bank):
         # TODO: handle single-tag case where it's not even a list?
         # TODO: share code with NounSetBank? is it worth sacrificing clarity just to DRY out 2 lines?
         return [NameSet(item['nameset']) for item in self._data() 
+            for tag in item['tags'] if TAXONOMY.isa(tag, target_tag)]
+            
+class NounSetBank(Bank):
+    def all_nounsets(self):
+        result = [NounSet(item['nounset']) for item in self._data()]
+        assert(len(result) > 0)
+        return result
+        
+    def find_tagged(self, target_tag):
+        return [NounSet(item['nounset']) for item in self._data()
             for tag in item['tags'] if TAXONOMY.isa(tag, target_tag)]
 
             
@@ -209,11 +221,15 @@ class WordSet:
         return "WordSet({})".format(self.__data.__repr__())
 
     def num_words(self, lang):
+        '''This function returns >1 if the WordSet for a language contains a LIST of candidates (e.g., { en: [man, person] ...}'''
         words = self._words(lang)
         if type(words) is str:
             return 1
         else:
             return len(words)
+            
+    def _words(self, lang):
+        raise UNIMPLEMENTED_EXCEPTION
         
     # ugh, expose to derived classes...
     def _data(self):
@@ -223,16 +239,26 @@ class NameSet(WordSet):
     def name(self, lang, index):
         name = self._data()[lang]
         assert(type(name) is str)
-        assert(index is 0)
+        assert(index is 0) # not handling multiple candidates yet (num_words > 0)
         return name
         
     def _words(self, lang):
-        try:
-            result = self._data()[lang]
-        except TypeError:
-            import pdb
-            pdb.set_trace()
+        #try:
+        result = self._data()[lang]
+        #except TypeError:
+        #    import pdb
+        #    pdb.set_trace()
         return result
+        
+class NounSet(WordSet):
+    def noun(self, lang, index):
+        noun = self._data()[lang]
+        assert(type(noun) is str)
+        assert(index is 0)
+        return noun
+    
+    def _words(self, lang):
+        return self._data()[lang]
         
 class VerbSet(WordSet):
     def verb(self, lang):
@@ -250,12 +276,10 @@ class VerbSet(WordSet):
 # TODO: move classes to a separate file, if they ever want to be used externally without having to load all these files
     # but that seems unlikely, since these are FILE INTERFACE classes
 
-RAW_NOUNS = { lang: read_file(DATA_DIR + 'nouns_{}.yml'.format(lang)) for lang in LANGUAGES }
-RAW_NOUNSETS = read_file(DATA_DIR + 'nounsets.yml')
-
-        
 NAME_BANK = NameSetBank(DATA_DIR + 'namesets.yml')
 # TODO: load language-specific name files, for any languages that might have noun declensions
+
+NOUNSET_BANK = NounSetBank(DATA_DIR + 'nounsets.yml')
 
 TAXONOMY = Taxonomy(DATA_DIR + 'taxonomy.yml')
 VERBSET_BANK = VerbSetBank(DATA_DIR + 'verbsets/')

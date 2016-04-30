@@ -95,7 +95,8 @@ class Node:
     ### "protected" functions - silent defaults to be overridden in derived classes as needed ###
     # override this iff a node has any lexical choices to be made
     def _lexicalize(self):
-        pass
+        #pass
+        raise UNIMPLEMENTED_EXCEPTION
         
     def _subnodes(self):
         return []
@@ -202,6 +203,10 @@ class TemplatedNode(Node):
         for lang in generators.keys():
             if all(sn.has_generated_text(lang) for _, sn in self._subnodes()) and not self.has_generated_text(lang):  
                 generators[lang].generate(self)
+                
+    def _lexicalize(self):
+        '''Currently assuming TemplatedNodes are not lexicalized (do not need to choose any words from database)'''
+        pass
                 
     def _subnodes(self):
         return self.__subnodes.items()
@@ -369,6 +374,11 @@ class LexicalNode(Node):
     '''
     Collects operations over multiple VerbSets, etc.
     These operations don't really belong in Node or TemplatedNode
+    
+    Order of operations...
+    set_num_samples() - # samples to pick (default = 1)
+    _pick_samples() - pick a minibatch
+    select_sample() - selects one concrete sample from the picked minibatch
     '''
     def __init__(self, **options):
         Node.__init__(self, **options)
@@ -379,7 +389,7 @@ class LexicalNode(Node):
         self.__selected_sample_index = 0
         
     # public
-    def num_datasets(self, lang): # TODO: rename this atrocity
+    def total_num_datasets(self, lang): # TODO: rename this atrocity
         # each dataset object could contain more than one "dataset" (nameset, etc.), e.g., en: [Bob, Robert]
         return sum(ds.num_words(lang) for ds in self.__datasets) 
         
@@ -393,16 +403,14 @@ class LexicalNode(Node):
         '''Number of samples desired from the candidate datasets'''
         self.__num_samples = num
         
-    def sample_dataset(self):
-        '''Return the currently selected dataset'''
-        return self.__datasets[self.__selected_sample_index]
-        
     def select_sample(self, index):
+        assert(self.__datasets) # remember to call _pick_samples() at the end of _lexicalize()...
         if 0 <= index < len(self.__datasets):
             self.__selected_sample_index = index
         else:
-            raise Exception('out of range: ' + index) # can't just let the system raise IndexError, because it might not for a WHILE
-        
+            import pdb; pdb.set_trace()
+            raise Exception('out of range: {}/{}'.format(index, len(self.__datasets))) 
+            # can't just let the system raise IndexError, because it might not for a WHILE before it actually uses index to access
         
     # pure virtual
     def _lexicalize(self):
@@ -419,6 +427,7 @@ class LexicalNode(Node):
     # protected - used by derived classes
     def _pick_samples(self, candidates):
         num_candidates = len(candidates)
+        assert(num_candidates > 0)
         if self.num_samples() > num_candidates:
             self.set_num_samples(num_candidates)
 
@@ -426,30 +435,45 @@ class LexicalNode(Node):
         # TODO: make the choice a user option
         #self.__datasets = random.sample(candidates, self.num_samples())
         self.__datasets = candidates[:self.num_samples()]
-        
+
+    def _sample_dataset(self):
+        '''Return the currently selected dataset'''
+        return self.__get_dataset_by_index(self.__selected_sample_index)
         
     def __get_dataset_by_index(self, index):
         return self.__datasets[index]
 
         
-        
-# leaf nodes - hmm, are all non-leaf nodes Templated, then?
-class Name(LexicalNode):
-    #def __init__(self, **kwargs):
-    #    LexicalNode.__init__(self, **kwargs)
-    #    #self.__namesets = []
-        
-    #def get_nameset_by_index(self, index):
-    #    return self.get_dataset_by_index(index) #self.__namesets[index]
-        
+class GenericNoun(LexicalNode): 
+    '''Abstract base class to share code with Name, Noun, Pronoun, ...'''
     def number(self):
         if 'plural' in self._get_option('tags'):
             return 'plural'
         else:
             return 'singular'
             
+    def person(self):
+        raise UNIMPLEMENTED_EXCEPTION
+        
+        
+# leaf nodes - hmm, are all non-leaf nodes Templated, then?
+class Name(GenericNoun):
+    #def __init__(self, **kwargs):
+    #    LexicalNode.__init__(self, **kwargs)
+    #    #self.__namesets = []
+        
+    #def get_nameset_by_index(self, index):
+    #    return self.get_dataset_by_index(index) #self.__namesets[index]
+            
     def person(self): # a name is always third person
         return 3
+        
+    def name(self, lang):
+        nameset = self._sample_dataset() #get_dataset_by_index(0) #node.get_nameset_by_index(0)
+        
+        assert(nameset.num_words(lang) == 1)
+        name = nameset.name(lang, 0)
+        return name
         
     def _lexicalize(self):
         assert(self._get_option('tags') is not None)
@@ -475,6 +499,26 @@ class Name(LexicalNode):
     #    
     #def _set_datasets(self, datasets):
     #    self.__namesets = datasets
+    
+class Noun(GenericNoun):
+    def person(self):
+        return 3
+        
+    def noun(self, lang):
+        nounset = self._sample_dataset()
+        assert(nounset.num_words(lang) == 1)
+        return nounset.noun(lang, 0)
+        
+    def _lexicalize(self):
+        semantic_tags = [tag for tag in self._get_option('tags') if type(tag) is str]
+        assert(len(semantic_tags) <= 1)
+        if semantic_tags:
+            candidates = data.NOUNSET_BANK.find_tagged(semantic_tags[0])   
+        else:
+            candidates = data.NOUNSET_BANK.all_nounsets()
+        self._pick_samples(candidates)
+        
+
         
     
 class Verb(LexicalNode):
@@ -494,6 +538,10 @@ class Verb(LexicalNode):
         
     def get_tense(self):
         return self.__tense
+        
+    def verb(self, lang):    
+        verbset = self._sample_dataset()
+        return verbset.verb(lang)
         
     # DELETE ME: debugging interfaces
     def _category(self):
@@ -527,6 +575,8 @@ def node_factory(type, **kwargs):
     # leaf nodes
     elif type == 'name':
         factory = Name
+    elif type == 'noun':
+        factory = Noun
     elif type == 'verb':
         factory = Verb
         

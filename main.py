@@ -26,23 +26,27 @@ assert(__name__ == '__main__') # for now
 clause = nodes.node_factory('Clause')
 clause.set_template('transitive')
 clause.set_verb_category('action.possession') 
-clause._create_subnodes()
-
+clause._create_subnodes()   # TODO: roll this into set_template() - n.b. currently must occur after set_verb_category()?
+                            # - well, the long-term goal is to throw all this ugliness into a metascript...
 
 S, V, O = [clause._get_subnode(sym) for sym in 'SVO']
 
+S.set_template('name')
+#O.set_template('name')
+O.set_template('noun'); O.add_options({'tags': ['abstract']})
 for n in [S, O]:
-    n.set_template('name')
-    n._create_subnodes()
+#    n.set_template('name')
+    n._create_subnodes() 
+
     
 A, B = [np._get_subnode('N') for np in [S, O]]
 #A.add_options({'tags': ['woman']})
-S.add_options({'tags': ['woman']}) # gets propagated down now, even if called AFTER A and B have been created
+#S.add_options({'tags': ['woman']}) # gets propagated down now, even if called AFTER A and B have been created
 #B.add_options({'tags': ['man']}) # hmm... 
 
 
-A.set_num_samples(10)
-B.set_num_samples(10)
+A.set_num_samples(4)
+B.set_num_samples(5)
 
 
 clause.lexicalize_all() # uses tags/constraints from above to choose namesets, verbsets, etc. to be sampled
@@ -67,7 +71,11 @@ max_selections = analyzer.num_samples()
 
 # this is a BIT more flexible than making it a member of Analyzer, since it can also be called externally
 def count_digits(bases):
-    '''Loop through "variable-base" number, where each digit has a different base, little-endian'''
+    '''
+    Exhaustively loop through "variable-base" number, where each digit has a different base, little-endian
+    
+    TODO: nested bases, like [(3, (4, 5))], or however it is that I decide to represent language-specific synsets
+    '''
     assert(all(type(d) is int and d > 1 for d in bases))
     
     digits = [0] * len(bases)

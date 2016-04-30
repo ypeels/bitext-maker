@@ -87,11 +87,11 @@ class Generator:
                 # ugh, I don't want to think about this right now... let's just "solve" this in data
             #assert(node.num_datasets(self.LANG) == 1)
             #self._generate_name(node) # neither language's names have dependencies right now
-            nameset = node.sample_dataset() #get_dataset_by_index(0) #node.get_nameset_by_index(0)
-            
-            assert(nameset.num_words(self.LANG) == 1)
-            name = nameset.name(self.LANG, 0)
-            self._generate_node_text(node, name)            
+            name = node.name(self.LANG)
+            self._generate_node_text(node, name)
+   
+        elif node_type == 'noun':
+            self._generate_noun(node) # punt to subclass
         else:
             raise Exception('Unimplemented node type ' + node_type)
             
@@ -118,12 +118,16 @@ class Generator:
             result = [generated_symbols.get(token, token) for token in template ]
             
             node.set_generated_text(lang, ' '.join(result))
-            
+        
+    def _get_noun_base(self, node):
+        return node.noun(self.LANG)
+
             
     def _get_verb_base(self, node):
         #assert(node.num_datasets(self.LANG) == 1)
-        verbset = node.sample_dataset() #get_dataset_by_index(0)#get_verbset_by_index(0)
-        return verbset.verb(self.LANG)
+        #verbset = node.sample_dataset() #get_dataset_by_index(0)#get_verbset_by_index(0)
+        #return verbset.verb(self.LANG)
+        return node.verb(self.LANG)
                     
         
     
@@ -135,8 +139,9 @@ class EnGenerator(Generator):
     def __init__(self):
         Generator.__init__(self)
         
-        
-        
+    def _generate_noun(self, node):
+        noun = self._get_noun_base(node)
+        self._generate_node_text(node, noun)        
         
         
     def _generate_verb(self, node):
@@ -174,6 +179,12 @@ class EnGenerator(Generator):
         else:
             raise Exception('Unimplemented: irregular en verbs')
             
+            
+    # name modification is actually kind of annoying
+        # Envious, Alice killed Bob.
+            # this ordering is only available to the SUBJECT...
+        # Alice, envious, killed Bob.
+            
         
     # UGH, i'm not quite sure the current flow of control handles MULTIPLE names gracefully, which was the whole POINT of this
       # and then there's the issue of dependencies to worry about (multiple passes through the tree, just for ONE name tuple choice)
@@ -197,12 +208,17 @@ class EnGenerator(Generator):
     
 class ZhGenerator(Generator):
     LANG = 'zh'    
-        
+    
+    def _generate_noun(self, node):
+        noun = self._get_noun_base(node)
+        self._generate_node_text(node, noun)
         
     # ah, conjugation-free Chinese...
     def _generate_verb(self, node):
         verb = self._get_verb_base(node)
         self._generate_node_text(node, verb)
+        
+    
         
     
     
