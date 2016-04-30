@@ -3,6 +3,7 @@
 # TODO: tags, like [divisible]? (important for English - "eat the hot dog" vs. "eat food")
   # alternative: multiple taxonomies, as "high up" as possible - e.g., indivisible: animal
     # but then you'd have to make 2 passes through the file to mark all animals as indivisible - use isa()
+    # oh wait, you can just check the genealogy for all REGISTERED ancestors, not just for yourself (see code)
 
 living:
   animal:
@@ -10,3 +11,5 @@ living:
       man:
       woman:
       
+animate:
+  animal:
