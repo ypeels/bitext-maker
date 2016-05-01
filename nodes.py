@@ -452,6 +452,9 @@ class LexicalNode(Node):
         
 class GenericNoun(LexicalNode): 
     '''Abstract base class to share code with Name, Noun, Pronoun, ...'''
+    def has_modifiers(self):
+        return bool(self._subnodes())
+    
     def number(self):
         #if 'plural' in self._get_option('tags'): # should this really be lumped with semantic tags? well, it is language-independent...
         number_options = self._get_option('number')

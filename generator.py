@@ -114,7 +114,7 @@ class Generator:
             template_text = node.get_template_text(lang)
             template = template_text.split()
         
-            # TODO!!! handle modifiers here, right? need to insert them INTO the template...
+            # TODO!!! handle modifiers here, right? need to insert them INTO the template... but in a language-dependent way...
             
             # populate the template - get(key, default value)
             result = [generated_symbols.get(token, token) for token in template ]
@@ -144,7 +144,9 @@ class EnGenerator(Generator):
     def _generate_noun(self, node):
         noun_base = self._get_noun_base(node)
         if node.number() == 'singular':
-            noun = noun_base
+            assert(not node.has_modifiers())
+            assert('object' in node._get_option('tags'))
+            noun = 'the ' + noun_base
         else:
             noun = self.__pluralize_noun(noun_base)
             
@@ -229,7 +231,13 @@ class ZhGenerator(Generator):
     
     def _generate_noun(self, node):
         noun = self._get_noun_base(node)
-        self._generate_node_text(node, noun)
+        if node.number() == 'singular':            
+            self._generate_node_text(node, noun)
+        else:
+            assert('object' in node._get_option('tags')) # for now, assume countable? 一些时间 != times...
+            assert(not node.has_modifiers()) # would need to check modifiers for "pluralizers" like CD
+            self._generate_node_text(node, '一些 ' + noun)
+        
         
     # ah, conjugation-free Chinese...
     def _generate_verb(self, node):

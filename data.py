@@ -30,6 +30,7 @@ class NameSetBank(Bank):
         __data = self._data()
         
         # discard dummy entries
+        # TODO: save them elsewhere, if I ever wanted to make them available programmatically - otherwise, they're just glorified comments...
         for i in range(len(__data)-1, -1, -1):
             if all(name == None for name in __data[i]['nameset'].values()):
                 __data.pop(i)            
