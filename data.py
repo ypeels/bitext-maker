@@ -39,8 +39,8 @@ class NameSetBank(Bank):
             if type(item['tags']) is str:
                 item['tags'] = [item['tags']]
         
-    def _makeN(self, item):
-        raise Exception('Unimplemented in abstract base class' + __class__)
+    #def _makeN(self, item):
+    #    raise Exception('Unimplemented in abstract base class' + __class__)
         
     def all_namesets(self):
         return [NameSet(item['nameset']) for item in self._data()]
@@ -140,6 +140,9 @@ class Template:
         
     def head_symbols(self):
         return [s for s in self.symbols() if 'head' in self.description_for_symbol(s)]
+        
+    def options_for_symbol(self, symbol):
+        return self.__data['symbols'][symbol]['options']
         
     def symbols(self):
         return self.__symbols.keys()
@@ -305,6 +308,7 @@ VERB_FORMS = { lang: VerbFormBank(DATA_DIR + 'verbs_{}.yml'.format(lang)) for la
 
 TEMPLATE_DIR = DATA_DIR + 'templates/'
 CLAUSE_TEMPLATE_BANK = TemplateBank(TEMPLATE_DIR + 'clause_templates.yml')
+CUSTOM_TEMPLATE_BANK = TemplateBank(TEMPLATE_DIR + 'custom_templates.yml')
 NP_TEMPLATE_BANK = TemplateBank(TEMPLATE_DIR + 'np_templates.yml')
 
 

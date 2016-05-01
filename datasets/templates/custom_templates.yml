@@ -1,0 +1,17 @@
+test:
+  symbols:
+    X:
+      type: noun
+      description: head
+      
+      # TODO: propagate these down
+      options:
+        tags: object 
+        number: singular
+      
+
+  templates:
+    en: 
+      template: It can be a very complex thing , the X .
+    zh: 
+      template: X 是 一 个 非常 复杂 的 事物 。

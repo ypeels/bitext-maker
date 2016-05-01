@@ -23,34 +23,50 @@ assert(__name__ == '__main__') # for now
     # BUT, don't you have to create a public API with which you reach down into the tree?
 # I think that ideally there would be some kind of metadata format that can specify all this 
     
-clause = nodes.node_factory('Clause')
-clause.set_template('transitive')
-clause.set_verb_category('action.possession') 
-clause._create_subnodes()   # TODO: roll this into set_template() - n.b. currently must occur after set_verb_category()?
-                            # - well, the long-term goal is to throw all this ugliness into a metascript...
+def make_transitive_clause():    
+    clause = nodes.node_factory('Clause')
+    clause.set_template('transitive')
+    clause.set_verb_category('action.possession') 
+    clause._create_subnodes()   # TODO: roll this into set_template() - n.b. currently must occur after set_verb_category()?
+                                # - well, the long-term goal is to throw all this ugliness into a metascript...
 
-S, V, O = [clause._get_subnode(sym) for sym in 'SVO']
+    S, V, O = [clause._get_subnode(sym) for sym in 'SVO']
 
-S.set_template('name')
-#O.set_template('name')
-O.set_template('noun'); O.add_options({'tags': ['abstract']})
-for n in [S, O]:
-#    n.set_template('name')
-    n._create_subnodes() 
 
+    S.set_template('name')
+    #O.set_template('name')
+    O.set_template('noun'); O.add_options({'tags': ['object']}); 
+    #O.add_options({'number': ['plural']}) # TODO: how to pluralize more robustly?? set_plural() would not be scalable to other options...
+    for n in [S, O]:
+    #    n.set_template('name')
+        n._create_subnodes() 
+
+        
+    A, B = [np._get_subnode('N') for np in [S, O]] # calling "protected" functions externally is a bad sign/smell]
+    A.add_options({'tags': ['woman']})
+    #S.add_options({'tags': ['woman']}) # gets propagated down now, even if called AFTER A and B have been created
+    #B.add_options({'tags': ['man']}) # hmm... 
+    if B.type() == 'noun':
+        B.set_plural() # this would raise AttributeError on Name anyway
     
-A, B = [np._get_subnode('N') for np in [S, O]]
-#A.add_options({'tags': ['woman']})
-#S.add_options({'tags': ['woman']}) # gets propagated down now, even if called AFTER A and B have been created
-#B.add_options({'tags': ['man']}) # hmm... 
+    A.set_num_samples(4)
+    B.set_num_samples(5)
 
-
-A.set_num_samples(4)
-B.set_num_samples(5)
-
-
-clause.lexicalize_all() # uses tags/constraints from above to choose namesets, verbsets, etc. to be sampled
-
+    clause.lexicalize_all() # uses tags/constraints from above to choose namesets, verbsets, etc. to be sampled
+    
+    return clause
+ 
+def make_custom():
+    '''Experimenting with large, custom template'''
+    custom = nodes.node_factory('CustomTemplate')
+    custom.set_template('test')
+    custom._create_subnodes()
+    custom._get_subnode('X').set_num_samples(10)
+    custom.lexicalize_all()
+    return custom
+ 
+#clause = make_transitive_clause()
+clause = make_custom()
 
 ### 2. Generate sentences ###
 

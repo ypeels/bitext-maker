@@ -27,7 +27,7 @@ class Node:
         self.__generated_text = None # { 'en': 'Alice' ... }
         
         # just store them for now and figure out what to do with them later... can always use dict.pop()
-        self.__type = options.pop('type')
+        self.__type = options.pop('type') # n.b. this modifies the original data structure!! 
         self.__options = options # need to instantiate even if empty - that way can query if empty
         
     def add_dependency(self, node, **kwargs):
@@ -38,12 +38,17 @@ class Node:
         assert(type(options) is dict)
         
         # TODO: allow multiple sources for monolingual tags...
-        assert(all(type(v) is list for v in options.values()))
+        #assert(all(type(v) is list for v in options.values()))
         for key, value in options.items():
             old_value = self.__options.get(key) or []
             # TODO: change self.__options to defaultdict(list) and just use +=? meh, doesn't even save any lines
-            self.__options[key] = old_value + value
-      
+            # TODO: handle duplicate options? or does that not matter??
+            if type(value) is list:
+                new_value = value
+            else:
+                new_value = [value]
+            self.__options[key] = old_value + new_value
+            
     def generated_text(self, lang):
         return self.__generated_text.get(lang, '')
     def has_generated_text(self, lang):
@@ -173,9 +178,10 @@ class TemplatedNode(Node):
             self.__subnodes = { s: node_factory(self._type_for_symbol(s))
                 for s in self._symbols() }
                 
+            # language-specific syntax tags 
             for symbol, subnode in self.__subnodes.items():
                 subnode.add_options({'tags': self._tags_for_symbol(symbol)})
-            
+           
             # hook up dependencies between NODES and their data - all nodes must have been instantiated first
             # add_dependency() should allow pronouns to work all the way across the tree...right?
             for s in self._symbols():                
@@ -194,13 +200,16 @@ class TemplatedNode(Node):
     def _tags_for_symbol(self, symbol):
         tags = self._syntax_tags_for_symbol(symbol)
         if tags:
-            return [tags]
+            if type(tags) is list:
+                return tags
+            else:
+                return [tags]
         else:
             return []
             
     ### "protected" - these override the base class ###
     def _generate(self, generators):
-        assert(self._subnodes())
+        assert(self._ready_to_create_subnodes()) #self._subnodes())
         for lang in generators.keys():
             if all(sn.has_generated_text(lang) for _, sn in self._subnodes()) and not self.has_generated_text(lang):  
                 generators[lang].generate(self)
@@ -235,6 +244,8 @@ class TemplatedNode(Node):
     def _syntax_tags_for_symbol(self, symbol):
         return self.__template.syntax_tags_for_symbol(symbol)
 
+    def _template(self):
+        return self.__template
 
     def _template_id(self):
         return self.__template_id
@@ -244,11 +255,7 @@ class TemplatedNode(Node):
         
     #### "private" functions - not intended to be called outside this class ###        
         
-    ### TODO: delete these debugging aliases ###
-    def _template(self):
-        return self.__template
-    def _template_id(self):
-        return self.__template_id
+
 
 
 
@@ -291,34 +298,27 @@ class Clause(TemplatedNode):
         if V:           
             V.set_category(self.__verb_category)
     
-
-                
-
-        
-
     def _tags_for_symbol(self, symbol): 
         semantic_tags = self.__verb_category.tags_for_symbol(symbol) or []
         assert(type(semantic_tags) is list)
         
         return TemplatedNode._tags_for_symbol(self, symbol) + semantic_tags
+    
         
+        
+class CustomTemplate(TemplatedNode):
+    def __init__(self, **kwargs): 
+        TemplatedNode.__init__(self, data.CUSTOM_TEMPLATE_BANK, **kwargs)
 
-        
-
-
-
-        
-        
-    # notice that populating the nodes is a separate step from just constructing them
-    #def populate_nodes(self):
-        
-        
-
-    ### DELETE ME: debugging interfaces ###
-
-        
-        
-
+    def _ready_to_create_subnodes(self):
+        return self.has_template()
+    
+    def _create_subnodes(self):
+        TemplatedNode._create_subnodes(self)
+        for sym in self._symbols():
+            self.add_options(self._template().options_for_symbol(sym))
+        # pass other language-independent options from template
+        # TODO: refactor this into TemplatedNode and the awkward _tags/_deps system?
     
         
         
@@ -385,6 +385,7 @@ class LexicalNode(Node):
         Node.__init__(self, **options)
         self.__datasets = []
         self.__modifiers = []
+        #raise Exception('I am here - adding modifier infrastructure')
         
         # default values: single-sample words (multi-sample: [cat, dog, ...])
         self.__num_samples = 1
@@ -579,7 +580,9 @@ def node_factory(type, **kwargs):
     #print('create_node', type, kwargs)
     # Templated (and thus non-leaf?) nodes
     if type == 'Clause':
-        factory = Clause        
+        factory = Clause    
+    elif type == 'CustomTemplate':
+        factory = CustomTemplate
     elif type == 'NP':
         factory = NounPhrase
         
