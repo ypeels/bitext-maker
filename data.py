@@ -62,10 +62,17 @@ class NounSetBank(Bank):
             for tag in item['tags'] if TAXONOMY.isa(tag, target_tag)]
 
             
-            
 class TemplateBank(Bank):
     def get_template_by_id(self, id):
         return Template(self._data()[id])
+        
+class NounFormBank(Bank):
+    def get(self, word):
+        nf = self._data().get(word)
+        if nf:
+            return NounForms(nf)
+        else:
+            return None
         
 class VerbFormBank(Bank):
     def get(self, word):
@@ -199,18 +206,26 @@ class VerbCategory:
     def template_id(self):
         return self.__data['template']
         
-class VerbForms:
+class WordForms:
     def __init__(self, data):
         self.__data = data
         
     def __repr__(self): # meh, this is okay, right? it's pretty definitive (no other data)...
-        return "VerbForms({})".format(self.__data.__repr__())
+        return "{}({})".format(self.__class__, self.__data.__repr__())
         
+    def _get(self, key):
+        return self.__data.get(key)
+        
+class NounForms(WordForms):
+    def get(self, key):
+        return self._get(key) # hmm, all this does is expose the base class's raw accessor...
+        
+class VerbForms(WordForms):       
     def get_form(self, form):        
-        return self.__data[form]
+        return self._get(form)
         
     def is_regular(self):
-        return not bool(self.__data.get('irregular'))
+        return not bool(self._get('irregular'))
 
 
 class WordSet:        
@@ -280,18 +295,12 @@ NAME_BANK = NameSetBank(DATA_DIR + 'namesets.yml')
 # TODO: load language-specific name files, for any languages that might have noun declensions
 
 NOUNSET_BANK = NounSetBank(DATA_DIR + 'nounsets.yml')
+NOUN_FORMS = { lang: NounFormBank(DATA_DIR + 'nouns_{}.yml'.format(lang)) for lang in LANGUAGES }
 
 TAXONOMY = Taxonomy(DATA_DIR + 'taxonomy.yml')
-VERBSET_BANK = VerbSetBank(DATA_DIR + 'verbsets/')
 
-VERB_FORMS = {}
-for lang in LANGUAGES:
-    verb_file = DATA_DIR + 'verbs_{}.yml'.format(lang)
-    try:
-        VERB_FORMS[lang] = VerbFormBank(verb_file)
-    except FileNotFoundError as e:
-        print('Skipping verb file for {} - tenseless like zh, right?'.format(lang))
-        # TODO: some sort of dummy dict so that verbs['zh'][<anything>] == <anything>, or something similar?
+VERBSET_BANK = VerbSetBank(DATA_DIR + 'verbsets/')
+VERB_FORMS = { lang: VerbFormBank(DATA_DIR + 'verbs_{}.yml'.format(lang)) for lang in LANGUAGES }
 
 
 TEMPLATE_DIR = DATA_DIR + 'templates/'

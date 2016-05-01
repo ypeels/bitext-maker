@@ -92,14 +92,15 @@ class Node:
             sn.ungenerate_all()
         self.reset_generated_text()  
         
-    ### "protected" functions - silent defaults to be overridden in derived classes as needed ###
+    ### "pure virtual" functions - to be implemented in derived classes ###
     # override this iff a node has any lexical choices to be made
     def _lexicalize(self):
-        #pass
         raise UNIMPLEMENTED_EXCEPTION
         
     def _subnodes(self):
-        return []
+        raise UNIMPLEMENTED_EXCEPTION
+        
+    ### "protected" functions - for use in derived classes ###
         
     # convenience function for derived classes... breaks encapsulation... but only if you have a valid key?
     def _get_option(self, key):
@@ -383,6 +384,7 @@ class LexicalNode(Node):
     def __init__(self, **options):
         Node.__init__(self, **options)
         self.__datasets = []
+        self.__modifiers = []
         
         # default values: single-sample words (multi-sample: [cat, dog, ...])
         self.__num_samples = 1
@@ -417,6 +419,9 @@ class LexicalNode(Node):
         raise UNIMPLEMENTED_EXCEPTION
         
     # override base class
+    def _subnodes(self):
+        return self.__modifiers
+    
     def _generate(self, generators):
         assert(not self._subnodes())
         for lang in generators.keys():
@@ -447,9 +452,12 @@ class LexicalNode(Node):
 class GenericNoun(LexicalNode): 
     '''Abstract base class to share code with Name, Noun, Pronoun, ...'''
     def number(self):
-        if 'plural' in self._get_option('tags'):
+        #if 'plural' in self._get_option('tags'): # should this really be lumped with semantic tags? well, it is language-independent...
+        number_options = self._get_option('number')
+        if number_options and 'plural' in number_options:
             return 'plural'
         else:
+            # TODO: some nouns might override and be always plural...
             return 'singular'
             
     def person(self):
@@ -464,7 +472,7 @@ class Name(GenericNoun):
         
     #def get_nameset_by_index(self, index):
     #    return self.get_dataset_by_index(index) #self.__namesets[index]
-            
+    
     def person(self): # a name is always third person
         return 3
         
@@ -508,6 +516,9 @@ class Noun(GenericNoun):
         nounset = self._sample_dataset()
         assert(nounset.num_words(lang) == 1)
         return nounset.noun(lang, 0)
+        
+    def set_plural(self): # just not available in Name, although could call add_options directly, or on parent node...
+        self.add_options({'number': ['plural']})
         
     def _lexicalize(self):
         semantic_tags = [tag for tag in self._get_option('tags') if type(tag) is str]

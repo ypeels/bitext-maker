@@ -45,6 +45,7 @@ class Generator:
         # but omitting it forces the caller to remember to reset before use...
         #self.reset_generated_counter() 
         
+        self._noun_form_bank = data.NOUN_FORMS.get(self.LANG)
         self._verb_form_bank = data.VERB_FORMS.get(self.LANG)
         
         
@@ -87,6 +88,7 @@ class Generator:
                 # ugh, I don't want to think about this right now... let's just "solve" this in data
             #assert(node.num_datasets(self.LANG) == 1)
             #self._generate_name(node) # neither language's names have dependencies right now
+            assert(node.number() == 'singular') # TODO: plural names, like Greeks? that would affect English subject-verb agreement
             name = node.name(self.LANG)
             self._generate_node_text(node, name)
    
@@ -140,7 +142,15 @@ class EnGenerator(Generator):
         Generator.__init__(self)
         
     def _generate_noun(self, node):
-        noun = self._get_noun_base(node)
+        noun_base = self._get_noun_base(node)
+        if node.number() == 'singular':
+            noun = noun_base
+        else:
+            noun = self.__pluralize_noun(noun_base)
+            
+            
+        # TODO: modify the noun
+            
         self._generate_node_text(node, noun)        
         
         
@@ -178,6 +188,14 @@ class EnGenerator(Generator):
             
         else:
             raise Exception('Unimplemented: irregular en verbs')
+            
+            
+    def __pluralize_noun(self, noun_base):
+        noun_forms = self._noun_form_bank.get(noun_base)
+        if noun_forms and noun_forms.get('NNS'):
+            return noun_forms.get('NNS')
+        else:
+            return noun_base + 's'
             
             
     # name modification is actually kind of annoying
