@@ -1,0 +1,41 @@
+# determiners
+# - oh you DO need forms in en - this/these, that/those... and zh segmenter actually treats 这些 as atomic
+
+# a dummy entry for copy/pasting - will get discarded by DeterminerSetBank
+- tags: []
+  detset:
+    en: 
+    zh: 
+    
+# TODO: en PDT's (all, half, both [~a], such [a], nary [a], many [a])
+# TODO: en WDT's - maybe they match up with zh DT?
+    
+#- tags: [quantifier]
+#  detset: 
+#    en: some
+#    zh: 一些 # TODO: the less common: 有些
+#  # the purpose of plural would be two-fold: 
+#  # or should this get hard-coded into the generator?
+#  number: plural 
+
+# TODO: collapse quantified "things" like "every thing"
+- tags: [quantifier]
+  detset:
+    en: every
+    zh: 每
+    
+  
+
+# there's also "some" as a determiner, like "some idiot"
+
+- tags: [demonstrative]
+  detset: 
+    en: this
+    zh: 这
+    
+- tags: [demonstrative]
+  detset: 
+    en: that
+    zh: 那
+
+

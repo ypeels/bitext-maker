@@ -37,6 +37,7 @@ transitive:
   # pro: human-friendly data migration if data format ever changes?
   
 # TODO: syntax-checker - pending format changes...
+  # but can pyyaml specify line numbers?
 
 
   example: Alice|S kicks|V Bob|O .
@@ -44,7 +45,7 @@ transitive:
   symbols:
     V: 
       type: verb
-      description: head verb
+      description: head verb # hmm, code currently passes tags down to nodes with "head" in description...
     S: 
       type: NP
       description: subject  
@@ -54,6 +55,7 @@ transitive:
 
 
   # purely syntactic - semantics are in "verbsets"
+  # TODO: descriptions for language-specific tags
   templates:
     en: 
       template: S V O .

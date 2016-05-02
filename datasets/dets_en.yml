@@ -1,0 +1,10 @@
+# this would be more relevant for languages with fully inflected, adjective-like determiners
+
+every:
+
+# it's tempting to just write "that: those", but that would probably result in code that's inconsistent with other languages
+that: 
+  plural: those
+
+this: 
+  plural: these

@@ -1,7 +1,8 @@
 # pinyin: romanization, for alphabetization purposes
 # NN: the noun (Chinese treebank tag)
 # M: measure word (default 个)
-  # is there any word that CAN'T use 个? well, you could just flag it if it ever comes up...
+  # Q: is there any word that CAN'T use 个? well, you could just flag it if it ever comes up...
+  # A: words that are not countable (but then couldn't they use 种?)
 
 东西:  
   pinyin: dong1 xi1
@@ -14,6 +15,14 @@
 人们: 
   pinyin: ren2 men
   tags: plural   # hmm
+  
+  
+  # TODO: M2 for pluralization? like 一群狼? or is this anglicizing things too far?
+  
+  
+时间:
+  pinyin: shi2 jian1
+  M: 段
   
 世界:
   pinyin: shi4 jie4

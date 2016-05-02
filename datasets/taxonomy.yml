@@ -13,3 +13,14 @@ living:
       
 animate:
   animal:
+  
+physical:  
+  object:
+    animal:
+  material: # hmm, some words can be both, like "cloth"...
+    
+abstract:
+  duration:
+  event:
+  idea:
+  

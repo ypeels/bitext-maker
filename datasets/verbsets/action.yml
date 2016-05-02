@@ -16,7 +16,7 @@
   # this is pretty important, if I'm gonna separate this off into a separate file. 
   # heck, it was probably important for a SINGLE file, since it was gonna overflow onto a different page
 # n.b. if all top-level keys are preceded by file name, there should be no inter-file collisions
-  
+ 
 # proposal (hypothesis): all verbs in each semantic category can be modified with the same PP set.
 action.possession:
   # TODO: PP-style modifications, before all verbs in the set - probably with an example
@@ -39,3 +39,6 @@ action.possession:
     zh: 独有
     
   # well, generator needs to have knowledge about who is S and who is O in order to decline/inflect nouns...
+  
+  
+  # TODO: custom templates for multi-purpose verbs like "do" - ugh, does that require tweaking this data structure?

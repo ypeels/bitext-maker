@@ -15,9 +15,11 @@ man:
 person: 
   NNS: people # TODO: "persons", as in "persons of interest"
 
+# it's tempting to delete these entries, but a blank entry confirms that somebody has done and checked the data input
 right:
 
 thing:
   
+time:
   
 # any words whose morphology changes with meaning can be marked with extra tags

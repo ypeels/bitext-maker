@@ -16,6 +16,10 @@ class Analyzer:
         self.__num_samples_per_node = None # list
         
     def analyze(self, node):
+        '''
+        Given a tree node as input, stores that node's max # samples if it's greater than 1
+        - this information is used by the external loop, which varies the lexical choices globally.
+        '''
         #print('Generator.analyze', node.type())
         #if isinstance(node, nodes.LexicalNode):
         #    print('\tnum_samples:',  node.num_samples())
@@ -45,6 +49,7 @@ class Generator:
         # but omitting it forces the caller to remember to reset before use...
         #self.reset_generated_counter() 
         
+        self._det_form_bank = data.DET_FORMS.get(self.LANG)
         self._noun_form_bank = data.NOUN_FORMS.get(self.LANG)
         self._verb_form_bank = data.VERB_FORMS.get(self.LANG)
         
@@ -81,8 +86,8 @@ class Generator:
         
         
         node_type = node.type()
-        if node_type == 'verb':
-            self._generate_verb(node)
+        if node_type == 'determiner':
+            self._generate_determiner(node)
         elif node_type == 'name':        
             # for multiple names (Alice, 爱丽丝): absent any guidance, should just pick the first (default) name?
                 # ugh, I don't want to think about this right now... let's just "solve" this in data
@@ -90,10 +95,11 @@ class Generator:
             #self._generate_name(node) # neither language's names have dependencies right now
             assert(node.number() == 'singular') # TODO: plural names, like Greeks? that would affect English subject-verb agreement
             name = node.name(self.LANG)
-            self._generate_node_text(node, name)
-   
+            self._generate_node_text(node, name)   
         elif node_type == 'noun':
-            self._generate_noun(node) # punt to subclass
+            self._generate_noun(node) # punt to subclass            
+        elif node_type == 'verb':
+            self._generate_verb(node)
         else:
             raise Exception('Unimplemented node type ' + node_type)
             
@@ -121,6 +127,9 @@ class Generator:
             
             node.set_generated_text(lang, ' '.join(result))
         
+    def _get_det_base(self, node):
+        return node.determiner(self.LANG)
+        
     def _get_noun_base(self, node):
         return node.noun(self.LANG)
 
@@ -138,22 +147,34 @@ class Generator:
 class EnGenerator(Generator):
     LANG = 'en'
 
-    def __init__(self):
-        Generator.__init__(self)
+    #def __init__(self):
+    #    Generator.__init__(self)
+        
+    def _generate_determiner(self, node):
+        #assert(node.type() == 'determiner') # let's not do this - you'd have to do this for EVERY language...
+        det_base = self._get_det_base(node)
+        
+        forms = self._det_form_bank.get(det_base) or {}
+        
+        targets = node.targets()
+        assert(len(targets) is 1) # TODO: multiple targets - which would go by NEAREST? "this cat and dogs"? hmm
+        
+        #import pdb; pdb.set_trace()
+        det = forms.get(targets[0].number(), det_base)
+        
+        
+        # singular or plural form of determiner?
+        self._generate_node_text(node, det)
         
     def _generate_noun(self, node):
-        noun_base = self._get_noun_base(node)
+        noun_base = self._get_noun_base(node)  
         if node.number() == 'singular':
-            assert(not node.has_modifiers())
-            assert('object' in node._get_option('tags'))
-            noun = 'the ' + noun_base
+            noun = noun_base
         else:
             noun = self.__pluralize_noun(noun_base)
-            
-            
-        # TODO: modify the noun
-            
-        self._generate_node_text(node, noun)        
+        modified_noun = self.__modify_noun(node, noun)
+        self._generate_node_text(node, modified_noun)
+      
         
         
     def _generate_verb(self, node):
@@ -192,6 +213,66 @@ class EnGenerator(Generator):
             raise Exception('Unimplemented: irregular en verbs')
             
             
+    def __modify_noun(self, node, noun):
+        '''Precondition: noun is passed in fully inflected (e.g., pluralized)'''
+        
+        words = []
+
+        
+        # ADJP's... should I reach deeper down instead, to get more complete info from the real modifier, instead of these placeholder?
+        modifiers = list(node.modifiers()) # make a copy (trashed immediately)
+
+        # determiner goes at the very front
+        dets = [m for m in modifiers if m.template_id() == 'determiner']
+        modifiers = [m for m in modifiers if m not in dets]
+        if not dets: 
+            if node.number() == 'singular':
+                if 'object' in node._get_option('tags'):
+                    words.append('the')
+                else:
+                    raise Exception('TODO: unmodified singular noun that is not an #object')
+        else:
+            assert(len(dets) is 1) # forget about PDTs ("all the gold") for now
+            words.append(dets[0].generated_text(self.LANG))
+            
+        
+        if len(modifiers) > 0:
+            raise Exception('TODO: handle other modifiers')
+                    
+        words.append(noun)
+                    
+                    
+        return ' '.join(words)
+                    
+        
+        
+        # this subroutine would have to play the role of a template, setting the order of modifiers and their targets
+            # this is because templates as currently implemented cannot handle variable numbers of symbols
+            # also, there are semantics-related ordering issues..
+            
+            # it looks like this could get VERY complicated...
+        
+
+        
+
+        
+        
+        
+        #if node.number() == 'singular':
+        #    
+        #    
+        #        # add 'the' only if there are no demonstratives
+        #    
+        #        noun = '<EnGenerator._generate_noun TODO: modifiers> ' + noun_base
+        #        
+        #    else:
+        #        if 'object' in node._get_option('tags'):
+        #            noun = 'the ' + noun_base
+        #        else:
+        #            raise Exception('TODO: unmodified singular noun that is not an #object')
+        #else:
+        #    noun = self.__pluralize_noun(noun_base)
+            
     def __pluralize_noun(self, noun_base):
         noun_forms = self._noun_form_bank.get(noun_base)
         if noun_forms and noun_forms.get('NNS'):
@@ -228,6 +309,9 @@ class EnGenerator(Generator):
     
 class ZhGenerator(Generator):
     LANG = 'zh'    
+    
+    def _generate_determiner(self, node):
+        self._generate_node_text(node, '<DT>')
     
     def _generate_noun(self, node):
         noun = self._get_noun_base(node)

@@ -23,6 +23,26 @@ class Bank:
         '''expose to derived classes'''
         return self.__data
         
+        
+class DeterminerSetBank(Bank):
+    def __init__(self, filename):
+        Bank.__init__(self, filename)
+        
+        __data = self._data()
+        
+        # discard dummy entries - basically same as NameSetBank
+        for i in range(len(__data)-1, -1, -1):
+            if all(det == None for det in __data[i]['detset'].values()):
+                __data.pop(i)     
+
+    def all_detsets(self):
+        result = [DeterminerSet(item['detset']) for item in self._data()]
+        assert(len(result) > 0)
+        return result
+        
+    def find_tagged(self, target_tag):
+        return [DeterminerSet(item['detset']) for item in self._data() if target_tag in item['tags']]
+        
 class NameSetBank(Bank):    
     def __init__(self, filename):
         Bank.__init__(self, filename)
@@ -66,6 +86,14 @@ class NounSetBank(Bank):
 class TemplateBank(Bank):
     def get_template_by_id(self, id):
         return Template(self._data()[id])
+        
+class DeterminerFormBank(Bank):
+    def get(self, word):
+        df = self._data().get(word)
+        if df:
+            return DeterminerForms(df)
+        else:
+            return None
         
 class NounFormBank(Bank):
     def get(self, word):
@@ -134,7 +162,7 @@ class Template:
         return 'Template({})'.format(self.__data)
         
     def description_for_symbol(self, symbol):
-        return self.__data['symbols'][symbol].get('description')
+        return self.__data['symbols'][symbol].get('description') or []
         
     def deps_for_symbol(self, symbol):
         return self.__deps_per_symbol[symbol]
@@ -217,12 +245,16 @@ class WordForms:
     def __repr__(self): # meh, this is okay, right? it's pretty definitive (no other data)...
         return "{}({})".format(self.__class__, self.__data.__repr__())
         
-    def _get(self, key):
-        return self.__data.get(key)
+    def _get(self, key, default=None):
+        return self.__data.get(key, default)
+        
+class DeterminerForms(WordForms):
+    def get(self, key, default=None):
+        return self._get(key, default)
         
 class NounForms(WordForms):
-    def get(self, key):
-        return self._get(key) # hmm, all this does is expose the base class's raw accessor...
+    def get(self, key, default=None):
+        return self._get(key, default) # hmm, all this does is expose the base class's raw accessor...
         
 class VerbForms(WordForms):       
     def get_form(self, form):        
@@ -247,37 +279,44 @@ class WordSet:
         else:
             return len(words)
             
+    def word(self, lang, index):
+        word = self._data()[lang]
+        assert(type(word) is str)
+        assert(index is 0) # not handling multiple candidates yet (num_words > 1)
+        return word
+            
     def _words(self, lang):
-        raise UNIMPLEMENTED_EXCEPTION
+        #raise UNIMPLEMENTED_EXCEPTION
+        return self._data()[lang] or []
         
     # ugh, expose to derived classes...
     def _data(self):
         return self.__data
         
+class DeterminerSet(WordSet):
+    def determiner(self, lang, index):
+        return WordSet.word(self, lang, index)
+            
+    #def _words(self, lang):
+        
 class NameSet(WordSet):
     def name(self, lang, index):
-        name = self._data()[lang]
-        assert(type(name) is str)
-        assert(index is 0) # not handling multiple candidates yet (num_words > 0)
-        return name
+        return WordSet.word(self, lang, index)
+        #name = self._data()[lang]
+        #assert(type(name) is str)
+        #assert(index is 0) 
+        #return name
         
-    def _words(self, lang):
-        #try:
-        result = self._data()[lang]
-        #except TypeError:
-        #    import pdb
-        #    pdb.set_trace()
-        return result
+    #def _words(self, lang):
+    #    result = self._data()[lang] # wait, why is this polymorphic? in CASE data formats differ between Name/Noun/etc.?
+    #    return result
         
 class NounSet(WordSet):
     def noun(self, lang, index):
-        noun = self._data()[lang]
-        assert(type(noun) is str)
-        assert(index is 0)
-        return noun
+        return WordSet.word(self, lang, index)
     
-    def _words(self, lang):
-        return self._data()[lang]
+    #def _words(self, lang):
+    #    return self._data()[lang]
         
 class VerbSet(WordSet):
     def verb(self, lang):
@@ -285,9 +324,8 @@ class VerbSet(WordSet):
         assert(type(verb) is str)
         return verb
         
-    def _words(self, lang):
-
-        return self._data()[lang]
+    #def _words(self, lang):
+    #    return self._data()[lang]
 
             
             
@@ -295,6 +333,9 @@ class VerbSet(WordSet):
 # TODO: move classes to a separate file, if they ever want to be used externally without having to load all these files
     # but that seems unlikely, since these are FILE INTERFACE classes
 
+DETSET_BANK = DeterminerSetBank(DATA_DIR + 'detsets.yml')
+DET_FORMS = { lang: DeterminerFormBank(DATA_DIR + 'dets_{}.yml'.format(lang)) for lang in LANGUAGES }
+    
 NAME_BANK = NameSetBank(DATA_DIR + 'namesets.yml')
 # TODO: load language-specific name files, for any languages that might have noun declensions
 
@@ -308,6 +349,7 @@ VERB_FORMS = { lang: VerbFormBank(DATA_DIR + 'verbs_{}.yml'.format(lang)) for la
 
 
 TEMPLATE_DIR = DATA_DIR + 'templates/'
+ADJP_TEMPLATE_BANK = TemplateBank(TEMPLATE_DIR + 'adjp_templates.yml')
 CLAUSE_TEMPLATE_BANK = TemplateBank(TEMPLATE_DIR + 'clause_templates.yml')
 CUSTOM_TEMPLATE_BANK = TemplateBank(TEMPLATE_DIR + 'custom_templates.yml')
 NP_TEMPLATE_BANK = TemplateBank(TEMPLATE_DIR + 'np_templates.yml')

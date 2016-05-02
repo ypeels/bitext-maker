@@ -1,0 +1,32 @@
+# templates that can modify nouns (or names - TODO)
+
+
+adjective:
+  example: this|DT
+  symbols:
+    J: { type: adjective }
+  templates:
+    en: { template: J }
+    zh: { template: J }
+
+
+determiner:
+  example: this|DT
+  symbols:
+    D: 
+      type: determiner
+      description: head # needed to propagate down target
+    
+  templates:
+    en: { template: D }
+    zh: { template: D }
+    
+number:
+  example: one|CD
+  symbols:
+    N: { type: number }
+  templates:
+    en: { template: N }
+    zh: { template: N }
+    
+  # TODO: get rid of literal modifier templates altogether? better off piecing together words in code?

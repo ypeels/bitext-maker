@@ -2,6 +2,7 @@
 Nodes make up the primary "parse tree" data structure
 '''
 
+import collections
 import random
 
 import data # read data from databases - giant, read-only globals
@@ -28,29 +29,30 @@ class Node:
         
         # just store them for now and figure out what to do with them later... can always use dict.pop()
         self.__type = options.pop('type') # n.b. this modifies the original data structure!! 
-        self.__options = options # need to instantiate even if empty - that way can query if empty
+        self.__options = collections.defaultdict(list, options) # need to instantiate even if empty - that way can query if empty
         
     def add_dependency(self, node, **kwargs):
         self.__dependencies.append((node, kwargs))
         
         
     def add_options(self, options):
-        assert(type(options) is dict)
+        assert(type(options) is dict or type(options) is collections.defaultdict)
         
         # TODO: allow multiple sources for monolingual tags...
         #assert(all(type(v) is list for v in options.values()))
         for key, value in options.items():
-            old_value = self.__options.get(key) or []
-            # TODO: change self.__options to defaultdict(list) and just use +=? meh, doesn't even save any lines
             # TODO: handle duplicate options? or does that not matter??
             if type(value) is list:
-                new_value = value
+                new_values = value
             else:
-                new_value = [value]
-            self.__options[key] = old_value + new_value
+                new_values = [value]
+                
+            for nv in new_values:
+                if not nv in self.__options[key]:
+                    self.__options[key] += [nv]
             
     def generated_text(self, lang):
-        return self.__generated_text.get(lang, '')
+        return self.__generated_text[lang] # throw an exception to reveal premature accesses #.get(lang, '')
     def has_generated_text(self, lang):
         return bool(self.__generated_text.get(lang))
     def set_generated_text(self, lang, text):
@@ -85,9 +87,28 @@ class Node:
             sn.generate_all(generators)        
         for lang in generators.keys():
             self._generate(generators)
+            
+    # not very pretty, but should get the job done...
+    def get_all_lexical_nodes(self):
+        '''used by external loop to call set_num_samples, instead of having to reach deep down into the tree manually'''
+        if issubclass(type(self), LexicalNode):
+            lexical_nodes = [self]
+        else:
+            lexical_nodes = []        
+            
+        for _, sn in self._subnodes():
+            lexical_nodes += sn.get_all_lexical_nodes()
+        return lexical_nodes
+            
         
     def lexicalize_all(self):
         '''TODO: multiple synsets per node, to allow for outer product'''
+        
+        # ugh, previously assumed only templated nodes would have subnodes... 
+        # but now that non-templated lexical nodes have modifiers as subnodes, 
+        # need to make sure that _subnodes() has the right return type...
+        assert(all(type(i) is tuple for i in self._subnodes()))
+        
         for _, sn in self._subnodes():
             sn.lexicalize_all()
         self._lexicalize()
@@ -103,17 +124,19 @@ class Node:
         raise UNIMPLEMENTED_EXCEPTION
         
     def _subnodes(self):
+        '''Needs to return an iterable over the subnodes'''
         raise UNIMPLEMENTED_EXCEPTION
         
     ### "protected" functions - for use in derived classes ###
         
     # convenience function for derived classes... breaks encapsulation... but only if you have a valid key?
     def _get_option(self, key):
-        return self.__options.get(key)
+        return self.__options[key] #.get(key, []) # it's a defaultdict(list) now
         
     # ugh, breaking encapsulation to give access to NounPhrase ... but it's only "vertical" encapsulation, right?
     def _options(self):
         return self.__options
+        
         
         
 
@@ -140,6 +163,12 @@ class TemplatedNode(Node):
         return "{type}({template})".format(type=self.__class__, template=self.__template)
         
     ### "public" API - for use outside this class ###
+    def add_modifier(self, modifier_node):
+        assert(len(self._get_headnodes()) <= 1) # TODO: handle applying modifier to multiple head nodes (red cats and dogs)
+        assert(len(self._get_headnodes()) > 0) # TODO: ignore add_modifier() on headless node? or raise Exception?
+        for head in self._get_headnodes():  
+            head.add_modifier(modifier_node) # convention for now: modifiers belong to (lexical) head nodes
+    
     def add_options(self, options):
         Node.add_options(self, options)    
         for symbol, subnode in self.__subnodes.items():
@@ -161,6 +190,11 @@ class TemplatedNode(Node):
         assert(type(self.__template) == data.Template)
         self.__template_id = id
         
+        if self._ready_to_create_subnodes():
+            self._create_subnodes()
+        
+    def template_id(self):
+        return self._template_id()
 
         
         
@@ -171,8 +205,9 @@ class TemplatedNode(Node):
         
     ### "protected" functions - default implementations, MAY be overridden in derived classes ###
     def _create_subnodes(self):
-        if self._ready_to_create_subnodes():
-            assert(not self.__subnodes) # this function should only be called once, for initialization 
+        if not self.__subnodes and self._ready_to_create_subnodes():
+            # new implementation ignores multiple calls to this function - to simplify enclosing logic
+            #assert(not self.__subnodes) # this function should only be called once, for initialization 
         
             # requires symbols to be unique... but they SHOULD be, since they're in a dict
             self.__subnodes = { s: node_factory(self._type_for_symbol(s))
@@ -191,8 +226,7 @@ class TemplatedNode(Node):
             
             
             self.__headnodes = [self._get_subnode(s) for s in self.__template.head_symbols()]
-            assert(len(self.__headnodes) == 1)            
-            #import pdb; pdb.set_trace()
+            assert(len(self.__headnodes) <= 1)            
             # TODO: alter head upon transformation
 
             
@@ -256,9 +290,6 @@ class TemplatedNode(Node):
     #### "private" functions - not intended to be called outside this class ###        
         
 
-
-
-
 class Clause(TemplatedNode):
     '''A node that is headed by a verb'''
     def __init__(self, **kwargs): 
@@ -280,12 +311,15 @@ class Clause(TemplatedNode):
         if self._template_id() == category.template_id():
             self.__verb_category_id = id
             self.__verb_category = category
+            
+            self.__bequeath_verb_category()
+            
         else:
             raise Exception('incompatible template', id, self._template_id())
     
     # overrides
     def _ready_to_create_subnodes(self):
-        return self.has_template() and self.has_verb_category()
+        return self.has_template() #and self.has_verb_category()  set_verb_category() now also triggers propagation to subnodes
     
     # hey, notice that you don't really have to order the symbols until generation time anyway, even if specified by templates
     def _create_subnodes(self):
@@ -293,16 +327,21 @@ class Clause(TemplatedNode):
         
         # head node gets special treatment
         # alternative: _create_nodes_subclass() call in base class and override here. 
-        V = self._get_subnode('V')
-        assert(V)
-        if V:           
-            V.set_category(self.__verb_category)
+        self.__bequeath_verb_category()
     
     def _tags_for_symbol(self, symbol): 
-        semantic_tags = self.__verb_category.tags_for_symbol(symbol) or []
-        assert(type(semantic_tags) is list)
+        if self.__verb_category:
+            semantic_tags = self.__verb_category.tags_for_symbol(symbol) or []
+            assert(type(semantic_tags) is list)
+            
+            return TemplatedNode._tags_for_symbol(self, symbol) + semantic_tags
+        else:
+            return []
         
-        return TemplatedNode._tags_for_symbol(self, symbol) + semantic_tags
+    def __bequeath_verb_category(self):
+        V = self._get_subnode('V')
+        if self.__verb_category and V:
+            V.set_category(self.__verb_category)
     
         
         
@@ -330,7 +369,8 @@ class NounPhrase(TemplatedNode):
         '''singular or plural?'''
         heads = self._get_headnodes()
         assert(len(heads) > 0)
-        
+
+        # wow, i got WAY ahead of myself, huh?
         if len(self._get_headnodes()) > 1:
             return 'plural' # in a disjunction like "candy or dogs", only one should be marked as a headword, right?
         else:
@@ -371,6 +411,33 @@ class NounPhrase(TemplatedNode):
         # VP-NP - who knows!
         
         
+        
+class ModifierNode(TemplatedNode):
+    def __init__(self, bank, **kwargs):
+        TemplatedNode.__init__(self, bank, **kwargs)
+        #self.__targets = [] 
+        
+    def add_target(self, target_node):
+        assert(issubclass(type(target_node), LexicalNode))
+        
+        #self.__targets.append(target_node)
+        
+        # ugh, but i should propagate this down to its head, right?
+        for head in self._get_headnodes():
+            head.add_target(target_node)
+        
+        
+class AdjectivePhrase(ModifierNode):
+    def __init__(self, **kwargs): 
+        ModifierNode.__init__(self, data.ADJP_TEMPLATE_BANK, **kwargs)
+        
+    def _ready_to_create_subnodes(self):
+        return self.has_template()
+        
+        
+        
+        
+        
 class LexicalNode(Node):
     '''
     Collects operations over multiple VerbSets, etc.
@@ -385,23 +452,38 @@ class LexicalNode(Node):
         Node.__init__(self, **options)
         self.__datasets = []
         self.__modifiers = []
+        self.__targets = [] # allows for multiple targets, like "little boys and girls" - but this kind of breaks the assumption that modifiers target WORDS
         #raise Exception('I am here - adding modifier infrastructure')
         
         # default values: single-sample words (multi-sample: [cat, dog, ...])
-        self.__num_samples = 1
+        self.__num_samples = 1 #options.pop('num_samples', 1) # not quite - would have to propagate down from parent
         self.__selected_sample_index = 0
         
     # public
-    def total_num_datasets(self, lang): # TODO: rename this atrocity
-        # each dataset object could contain more than one "dataset" (nameset, etc.), e.g., en: [Bob, Robert]
-        return sum(ds.num_words(lang) for ds in self.__datasets) 
+    def modifiers(self): # used directly by generator... but I'm not totally sure I should be exposing something this powerful
+        return self.__get_modifiers() 
+    def has_modifiers(self):
+        return bool(self.__modifiers) #self._subnodes())        
+    def add_modifier(self, modifier_node):
+        # perform error-checking as to whether the modifier is compatible
+        if modifier_node.type() in self._compatible_modifier_types():
+            #raise Exception('I am in the middle of adding determiners')
+            
+            # add to subnode list - with None to hack into the previously templated-only subnode format of (symbol, node)
+            self.__modifiers.append((None, modifier_node))
+            
+            # because the tree is generated from bottom up, the modifier needs to store a link to its target, in case it depends on it
+                # example: this cat/these cats
+            modifier_node.add_target(self)            
+            
+        else:
+            raise Exception('Tried to modify {} with {} - incompatible'.format(self.type(), modifier_node.type()))
         
     def num_samples(self):
         if self.__datasets:
             assert(self.__num_samples == len(self.__datasets))
             pass
         return self.__num_samples
-        
     def set_num_samples(self, num):
         '''Number of samples desired from the candidate datasets'''
         self.__num_samples = num
@@ -414,20 +496,41 @@ class LexicalNode(Node):
             import pdb; pdb.set_trace()
             raise Exception('out of range: {}/{}'.format(index, len(self.__datasets))) 
             # can't just let the system raise IndexError, because it might not for a WHILE before it actually uses index to access
+
+    # some words can be both modifiers and targets (adv > adj > noun)
+    def add_target(self, target_node):
+        # TODO: check whether target is SEMANTICALLY compatible with modifier...
+        self.__targets.append(target_node)
         
-    # pure virtual
-    def _lexicalize(self):
+    def targets(self):
+        return self.__targets
+
+            
+    def total_num_datasets(self, lang): # TODO: rename this atrocity
+        # each dataset object could contain more than one "dataset" (nameset, etc.), e.g., en: [Bob, Robert]
+        return sum(ds.num_words(lang) for ds in self.__datasets) 
+     
+    # pure virtual - must be implemented by derived classes
+    def _get_lexical_candidates(self):
         raise UNIMPLEMENTED_EXCEPTION
+     
+    # empty default to be overridden by derived classes as needed
+    def _compatible_modifier_types(self):
+        '''Check whether modifier is SYNTACTICALLY compatible with this target'''
+        return set()
         
     # override base class
-    def _subnodes(self):
-        return self.__modifiers
-    
     def _generate(self, generators):
-        assert(not self._subnodes())
+        #assert(not self._subnodes()) # LexicalNode now may have modifiers as subnodes
         for lang in generators.keys():
             if not self.has_generated_text(lang):
                 generators[lang].generate(self)
+
+    def _lexicalize(self):
+        self._pick_samples(self._get_lexical_candidates())
+                
+    def _subnodes(self):
+        return self.__modifiers
                 
         
     # protected - used by derived classes
@@ -448,16 +551,38 @@ class LexicalNode(Node):
         
     def __get_dataset_by_index(self, index):
         return self.__datasets[index]
+        
+    def __get_modifiers(self):
+        # probably don't want to return the ACTUAL data structure
+        return [node for _, node in self.__modifiers]
 
+        
+class Determiner(LexicalNode):
+    def add_modifier(self, _):
+        raise Exception('do not modify Determiner nodes - are you trying PDT? how about hooking on a second DT?')
+        
+    def determiner(self, lang):
+        detset = self._sample_dataset()
+        assert(detset.num_words(lang) is 1)
+        return detset.determiner(lang, 0)
+        
+    def _get_lexical_candidates(self):
+        tags = [t for t in (self._get_option('tags') or []) if type(t) is str]
+        assert(len(tags) <= 1)
+        if tags:            
+            candidates = data.DETSET_BANK.find_tagged(tags[0])
+        else:
+            candidates = data.DETSET_BANK.all_detsets()
+        return candidates
+        
+        
         
 class GenericNoun(LexicalNode): 
     '''Abstract base class to share code with Name, Noun, Pronoun, ...'''
-    def has_modifiers(self):
-        return bool(self._subnodes())
-    
     def number(self):
         #if 'plural' in self._get_option('tags'): # should this really be lumped with semantic tags? well, it is language-independent...
-        number_options = self._get_option('number')
+        number_options = self._get_option('number')        
+        assert(not number_options or not('plural' in number_options and 'singular' in number_options))
         if number_options and 'plural' in number_options:
             return 'plural'
         else:
@@ -487,7 +612,7 @@ class Name(GenericNoun):
         name = nameset.name(lang, 0)
         return name
         
-    def _lexicalize(self):
+    def _get_lexical_candidates(self):
         assert(self._get_option('tags') is not None)
         semantic_tags = [tag for tag in self._get_option('tags') if type(tag) is str]
         assert(len(semantic_tags) <= 1)
@@ -497,12 +622,10 @@ class Name(GenericNoun):
         else:
             candidates = data.NAME_BANK.all_namesets()
             
-           
-        self._pick_samples(candidates)
+        return candidates
             
 
         
-        #self.__namesets = self._sample(candidates)
             
             
     # expose to BASE class ("pure virtual")
@@ -524,14 +647,17 @@ class Noun(GenericNoun):
     def set_plural(self): # just not available in Name, although could call add_options directly, or on parent node...
         self.add_options({'number': ['plural']})
         
-    def _lexicalize(self):
-        semantic_tags = [tag for tag in self._get_option('tags') if type(tag) is str]
+    def _compatible_modifier_types(self):
+        return { 'ADJP' }
+        
+    def _get_lexical_candidates(self):
+        semantic_tags = [tag for tag in self._get_option('tags') if type(tag) is str] 
         assert(len(semantic_tags) <= 1)
         if semantic_tags:
             candidates = data.NOUNSET_BANK.find_tagged(semantic_tags[0])   
         else:
             candidates = data.NOUNSET_BANK.all_nounsets()
-        self._pick_samples(candidates)
+        return candidates
         
 
         
@@ -562,9 +688,9 @@ class Verb(LexicalNode):
     def _category(self):
         return self.__category
         
-    def _lexicalize(self):
+    def _get_lexical_candidates(self):
         # TODO: filter further by, say, semantic tags 
-        self._pick_samples(self.__category.all_verbsets())
+        return self.__category.all_verbsets()
         
     ## expose to base class
     #def _datasets(self):
@@ -581,15 +707,19 @@ def node_factory(type, **kwargs):
     '''Object factory that will instantiate the appropriate class, with an optional dict of tags, etc.'''
     
     #print('create_node', type, kwargs)
-    # Templated (and thus non-leaf?) nodes
-    if type == 'Clause':
+    # Templated nodes
+    if type == 'ADJP':
+        factory = AdjectivePhrase
+    elif type == 'Clause':
         factory = Clause    
     elif type == 'CustomTemplate':
         factory = CustomTemplate
     elif type == 'NP':
         factory = NounPhrase
         
-    # leaf nodes
+    # lexical nodes (not necessarily leaf nodes - may have modifiers)
+    elif type == 'determiner':
+        factory = Determiner
     elif type == 'name':
         factory = Name
     elif type == 'noun':

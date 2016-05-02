@@ -27,30 +27,44 @@ def make_transitive_clause():
     clause = nodes.node_factory('Clause')
     clause.set_template('transitive')
     clause.set_verb_category('action.possession') 
-    clause._create_subnodes()   # TODO: roll this into set_template() - n.b. currently must occur after set_verb_category()?
-                                # - well, the long-term goal is to throw all this ugliness into a metascript...
 
     S, V, O = [clause._get_subnode(sym) for sym in 'SVO']
-
-
-    S.set_template('name')
+    S.set_template('name'); S.add_options({'tags': ['man']})
     #O.set_template('name')
     O.set_template('noun'); O.add_options({'tags': ['object']}); 
     #O.add_options({'number': ['plural']}) # TODO: how to pluralize more robustly?? set_plural() would not be scalable to other options...
-    for n in [S, O]:
-    #    n.set_template('name')
-        n._create_subnodes() 
 
         
-    A, B = [np._get_subnode('N') for np in [S, O]] # calling "protected" functions externally is a bad sign/smell]
-    A.add_options({'tags': ['woman']})
+    #A, B = [np._get_subnode('N') for np in [S, O]] # calling "protected" functions externally is a bad sign/smell]
+    #A.add_options({'tags': ['woman']})
     #S.add_options({'tags': ['woman']}) # gets propagated down now, even if called AFTER A and B have been created
     #B.add_options({'tags': ['man']}) # hmm... 
-    if B.type() == 'noun':
-        B.set_plural() # this would raise AttributeError on Name anyway
+    #if B.type() == 'noun': B.set_plural() # this would raise AttributeError on Name anyway
+    #if type(B) is nodes.Noun: B.set_plural()
     
-    A.set_num_samples(4)
-    B.set_num_samples(5)
+    #A.set_num_samples(2)
+    #B.set_num_samples(5)
+    
+    # looks like you should be able to add a modifier to S or O, and it would get transferred down to the head child
+    
+    
+    # add a determiner. oooooo
+    # TODO: does this logic really belong here?
+    adjp = nodes.node_factory('ADJP') 
+    adjp.set_template('determiner')
+    adjp.add_options({'tags': ['demonstrative']})
+    O.add_modifier(adjp)
+    
+    lexical_nodes = clause.get_all_lexical_nodes() # n.b. you would have to rerun this every time you modified the tree... 
+    determiners = [n for n in lexical_nodes if n.type() == 'determiner']
+    #assert(len(determiners) is 1)
+    for d in determiners:
+        d.set_num_samples(5)
+    
+    
+
+    
+    
 
     clause.lexicalize_all() # uses tags/constraints from above to choose namesets, verbsets, etc. to be sampled
     
@@ -65,25 +79,12 @@ def make_custom():
     custom.lexicalize_all()
     return custom
  
-#clause = make_transitive_clause()
-clause = make_custom()
+clauses = [ None
+    , make_transitive_clause()
+    #, make_custom()
+    ]
 
 ### 2. Generate sentences ###
-
-# hmm, should I really be using singletons for this?
-analyzer = generator.analyzer
-generators = generator.generators
-assert(set(generator.generators.keys()) == set(LANGUAGES))
-
-# TODO: only need to analyze # samples for a SINGLE language? well, this more general way permits different sample numbers for different langs
-    # but then you'd have to have nested indices... still, it's doable in principle.
-# this would be required to reuse analyzer  for multiple trees...should this go in Node.analyze_all()?
-analyzer.reset_num_samples() 
-clause.analyze_all(analyzer)
-
-
-# note that you opt into multisampling via set_num_samples ABOVE - and that determines the length of the list passed to select_samples() 
-max_selections = analyzer.num_samples()
 
 # this is a BIT more flexible than making it a member of Analyzer, since it can also be called externally
 def count_digits(bases):
@@ -113,36 +114,53 @@ def count_digits(bases):
         
         assert(0 <= place <= len(digits))
         overflow = (place == len(digits))
+
+
+def generate_all(clause, outputs):
+    # TODO: only need to analyze # samples for a SINGLE language? well, this more general way permits different sample numbers for different langs
+        # but then you'd have to have nested indices... still, it's doable in principle.
+    # this would be required to reuse analyzer  for multiple trees...should this go in Node.analyze_all()?
+    analyzer.reset_num_samples() 
+    clause.analyze_all(analyzer)
+
+
+    # note that you opt into multisampling via set_num_samples ABOVE - and that determines the length of the list passed to select_samples() 
+    max_selections = analyzer.num_samples()
+
+    # currently generating ALL samples
+    for t in count_digits(max_selections):
+        clause.ungenerate_all()
+
+        analyzer.select_samples(t)
+
+        # TODO: wrap this in a giant loop that takes into account all candidate madlib choices
+        # generate a single sentence (a single choice of madlibs)
+        while not all(clause.has_generated_text(lang) for lang in LANGUAGES):
+            #print('taking another pass through the tree')
             
+            # reset the generators' counters for a pass through the whole tree
+            for g in generators.values():
+                g.reset_generated_counter()
+
+            clause.generate_all(generators)
+            if not all(clause.has_generated_text(lang) or generators[lang].num_generated() > 0 for lang in LANGUAGES):
+                raise Exception('full pass through tree did not generate anything - cyclic dependencies?')
+            
+        print(clause.generated_text('en'))
         
-        
+        for lang in LANGUAGES:
+            outputs[lang].write(clause.generated_text(lang) + '\n')
+    
+    
+# hmm, should I really be using singletons for this?
+analyzer = generator.analyzer
+generators = generator.generators
+assert(set(generator.generators.keys()) == set(LANGUAGES))
+
 outputs = { lang: open('output_{}.txt'.format(lang), 'w', encoding='utf8') for lang in LANGUAGES }
-
-# currently generating ALL samples
-for t in count_digits(max_selections):
-    clause.ungenerate_all()
-
-    analyzer.select_samples(t)
-
-    # TODO: wrap this in a giant loop that takes into account all candidate madlib choices
-    # generate a single sentence (a single choice of madlibs)
-    while not all(clause.has_generated_text(lang) for lang in LANGUAGES):
-        #print('taking another pass through the tree')
-        
-        # reset the generators' counters for a pass through the whole tree
-        for g in generators.values():
-            g.reset_generated_counter()
-
-        clause.generate_all(generators)
-        if not all(clause.has_generated_text(lang) or generators[lang].num_generated() > 0 for lang in LANGUAGES):
-            raise Exception('full pass through tree did not generate anything - cyclic dependencies?')
-        
-    print(clause.generated_text('en'))
-    
-    for lang in LANGUAGES:
-        outputs[lang].write(clause.generated_text(lang) + '\n')
-    
-
+for c in clauses:
+    if c:
+        generate_all(c, outputs)
 for o in outputs.values():
     o.close()
 
