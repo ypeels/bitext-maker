@@ -40,7 +40,7 @@ def make_transitive_clause():
     #S.add_options({'tags': ['woman']}) # gets propagated down now, even if called AFTER A and B have been created
     #B.add_options({'tags': ['man']}) # hmm... 
     #if B.type() == 'noun': B.set_plural() # this would raise AttributeError on Name anyway
-    #if type(B) is nodes.Noun: B.set_plural()
+    #if type(B) is nodes.Noun: B.set_plural() # alternative using Python types; more brittle?
     
     #A.set_num_samples(2)
     #B.set_num_samples(5)
@@ -60,6 +60,10 @@ def make_transitive_clause():
     #assert(len(determiners) is 1)
     for d in determiners:
         d.set_num_samples(5)
+        
+    for node in lexical_nodes:
+        if node.type() == 'name':
+            node.set_num_samples(5)
     
     
 

@@ -146,9 +146,6 @@ class Generator:
     
 class EnGenerator(Generator):
     LANG = 'en'
-
-    #def __init__(self):
-    #    Generator.__init__(self)
         
     def _generate_determiner(self, node):
         #assert(node.type() == 'determiner') # let's not do this - you'd have to do this for EVERY language...
@@ -214,10 +211,14 @@ class EnGenerator(Generator):
             
             
     def __modify_noun(self, node, noun):
-        '''Precondition: noun is passed in fully inflected (e.g., pluralized)'''
-        
-        words = []
+        '''Precondition: noun is passed in fully inflected (e.g., pluralized)'''        
+        # this subroutine would have to play the role of a template, setting the order of modifiers and their targets
+            # this is because templates as currently implemented cannot handle variable numbers of symbols
+            # also, there are semantics-related ordering issues..
+            
+            # it looks like this could get VERY complicated...
 
+        words = []
         
         # ADJP's... should I reach deeper down instead, to get more complete info from the real modifier, instead of these placeholder?
         modifiers = list(node.modifiers()) # make a copy (trashed immediately)
@@ -225,54 +226,27 @@ class EnGenerator(Generator):
         # determiner goes at the very front
         dets = [m for m in modifiers if m.template_id() == 'determiner']
         modifiers = [m for m in modifiers if m not in dets]
-        if not dets: 
+        if dets: 
+            assert(len(dets) is 1) # forget about PDTs ("all the gold") for now
+            words.append(dets[0].generated_text(self.LANG))
+        else:
             if node.number() == 'singular':
                 if 'object' in node._get_option('tags'):
                     words.append('the')
                 else:
                     raise Exception('TODO: unmodified singular noun that is not an #object')
-        else:
-            assert(len(dets) is 1) # forget about PDTs ("all the gold") for now
-            words.append(dets[0].generated_text(self.LANG))
-            
+
         
         if len(modifiers) > 0:
             raise Exception('TODO: handle other modifiers')
                     
         words.append(noun)
                     
-                    
         return ' '.join(words)
                     
         
         
-        # this subroutine would have to play the role of a template, setting the order of modifiers and their targets
-            # this is because templates as currently implemented cannot handle variable numbers of symbols
-            # also, there are semantics-related ordering issues..
-            
-            # it looks like this could get VERY complicated...
         
-
-        
-
-        
-        
-        
-        #if node.number() == 'singular':
-        #    
-        #    
-        #        # add 'the' only if there are no demonstratives
-        #    
-        #        noun = '<EnGenerator._generate_noun TODO: modifiers> ' + noun_base
-        #        
-        #    else:
-        #        if 'object' in node._get_option('tags'):
-        #            noun = 'the ' + noun_base
-        #        else:
-        #            raise Exception('TODO: unmodified singular noun that is not an #object')
-        #else:
-        #    noun = self.__pluralize_noun(noun_base)
-            
     def __pluralize_noun(self, noun_base):
         noun_forms = self._noun_form_bank.get(noun_base)
         if noun_forms and noun_forms.get('NNS'):
@@ -311,16 +285,58 @@ class ZhGenerator(Generator):
     LANG = 'zh'    
     
     def _generate_determiner(self, node):
-        self._generate_node_text(node, '<DT>')
+        targets = node.targets()
+        assert(len(targets) is 1)
+        assert(targets[0].type() == 'noun')
+                
+        words = self._get_det_base(node) # string instead of list, to enable segmentation antics
+                
+        target = targets[0]
+        assert('object' in target._get_option('tags')) # so that "DT 些" has a plural meaning (*这 些 水). so horribly brittle...        
+        
+        if target.number() == 'singular':
+            noun = self._get_noun_base(target)
+            noun_form = self._noun_form_bank.get(noun)
+            measure_word = noun_form.get('M')
+            assert(type(measure_word) is str) # TODO: allow multiple measure words, like using 个 instead of 件 from time to time
+            words += ' ' + measure_word
+            
+        else:
+            words += '些'
+        
+        self._generate_node_text(node, words)
+        
+        
+        # WARNING: this is using data from noun forms (nouns_zh.yml) as METADATA (not noun data per se)... but that's okay, right?
+        
+        
+        # *每 个 这 个 东西
     
     def _generate_noun(self, node):
-        noun = self._get_noun_base(node)
-        if node.number() == 'singular':            
-            self._generate_node_text(node, noun)
+        noun = self._get_noun_base(node) # no inflections
+        self._generate_node_text(node, noun)
+        
+        # based on EnGenerator.__modify_noun() - hmmmm that's not very DRY...
+        words = []
+        modifiers = list(node.modifiers()) 
+        
+        dets = [m for m in modifiers if m.template_id() == 'determiner']
+        modifiers = [m for m in modifiers if m not in dets]
+        
+        if dets:
+            assert(len(dets) is 1) 
+            words.append(dets[0].generated_text(self.LANG))
+            
         else:
-            assert('object' in node._get_option('tags')) # for now, assume countable? 一些时间 != times...
-            assert(not node.has_modifiers()) # would need to check modifiers for "pluralizers" like CD
-            self._generate_node_text(node, '一些 ' + noun)
+            if node.number() != 'singular':
+                assert('object' in node._get_option('tags')) # for now, assume countable? 一些时间 != times...
+                assert(not node.has_modifiers()) # would need to check modifiers for "pluralizers" like CD
+                words.append('一些')
+
+        words.append(noun)
+        
+        self._generate_node_text(node, ' '.join(words))
+
         
         
     # ah, conjugation-free Chinese...
