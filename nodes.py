@@ -60,7 +60,7 @@ class Node:
     def reset_generated_text(self):
         self.__generated_text = {}
 
-    def get_dependencies(self, **input_options):
+    def get_dependencies(self, **input_options): # input_options is here to mirror add_dependency() - deps can vary with language
         return [dep for (dep, options) in self.__dependencies if all(options[ik] == iv for ik, iv in input_options.items())]
 
     def type(self):

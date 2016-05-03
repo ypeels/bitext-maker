@@ -177,7 +177,7 @@ class EnGenerator(Generator):
     def _generate_verb(self, node):
         # should depend on subject
         # also depends on tense... presumed present for now
-        dependencies = node.get_dependencies()
+        dependencies = node.get_dependencies(lang=self.LANG)
         if not all(dep.has_generated_text(self.LANG) for dep in dependencies):
             return
             
