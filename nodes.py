@@ -443,10 +443,6 @@ class ModifierNode(TemplatedNode):
         assert(target_node not in self.__targets)
         self.__targets.append(target_node)
         
-        ## store a back reference - initially intended just for counting purposes (bare nouns might need 'the' by default, say)
-        #target_node.increment_modifier_count()
-
-        
     def targets(self):
         return tuple(self.__targets) # makes the LIST read-only, but individual nodes still aren't...
         
@@ -475,43 +471,13 @@ class LexicalNode(Node):
     def __init__(self, **options):
         Node.__init__(self, **options)
         self.__datasets = []
-        #self.__modifiers = []
-        #self.__num_modifiers = 0
         self.__parent = None # Node
-        #self.__targets = [] # allows for multiple targets, like "little boys and girls" - but this kind of breaks the assumption that modifiers target WORDS
-        #raise Exception('I am here - adding modifier infrastructure')
         
         # default values: single-sample words (multi-sample: [cat, dog, ...])
         self.__num_samples = 1 #options.pop('num_samples', 1) # not quite - would have to propagate down from parent
         self.__selected_sample_index = 0
         
     # public
-    
-    # originally had this phased out after changing it so that modifiers live in TemplatedNodes
-    # but Generator still needs to check, e.g., whether a noun is a bare noun
-    #def modifiers(self): 
-    # '''used directly by generator... but I'm not totally sure I should be exposing something this powerful'''
-    #    return self.__get_modifiers() 
-    #def has_modifiers(self):
-    #    return self.__num_modifiers > 0 #bool(self.__modifiers) #self._subnodes())        
-    #def increment_modifier_count(self):
-    #    self.__num_modifiers += 1 # let's try "need to know"
-    #def add_modifier(self, modifier_node):
-    #    # TODO: perform error-checking as to whether the modifier is compatible
-    #    if modifier_node.type() in self._compatible_modifier_types():
-    #        #raise Exception('I am in the middle of adding determiners')
-    #        
-    #        # add to subnode list - with None to hack into the previously templated-only subnode format of (symbol, node)
-    #        self.__modifiers.append((None, modifier_node))
-    #        
-    #        # because the tree is generated from bottom up, the modifier needs to store a link to its target, in case it depends on it
-    #            # example: this cat/these cats
-    #            # TODO: merge with existing "dependency" framework?
-    #        modifier_node.add_target(self)            
-    #        
-    #    else:
-    #        raise Exception('Tried to modify {} with {} - incompatible'.format(self.type(), modifier_node.type()))
-        
     def num_samples(self):
         if self.__datasets:
             assert(self.__num_samples == len(self.__datasets))
@@ -554,7 +520,7 @@ class LexicalNode(Node):
         
     # override base class
     def _generate(self, generators):
-        #assert(not self._subnodes()) # LexicalNode now may have modifiers as subnodes
+        assert(not self._subnodes()) # LexicalNode now may have modifiers as subnodes
         for lang in generators.keys():
             if not self.has_generated_text(lang):
                 generators[lang].generate(self)
@@ -584,10 +550,7 @@ class LexicalNode(Node):
         
     def __get_dataset_by_index(self, index):
         return self.__datasets[index]
-        
-    #def __get_modifiers(self):
-    #    # probably don't want to return the ACTUAL data structure
-    #    return [node for _, node in self.__modifiers]
+
 
         
 class Determiner(LexicalNode):

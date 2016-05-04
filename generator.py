@@ -193,12 +193,8 @@ class EnGenerator(Generator):
         noun_base = self._get_noun_base(node)  
         if node.number() == 'singular':
             noun = noun_base            
-        #    if not node.has_modifiers() and 'object' in node._get_option('tags'):
-        #        noun = 'the ' + noun # hmm, back to this ugliness again            
         else:
             noun = self.__pluralize_noun(noun_base)
-        #modified_noun = self.__modify_noun(node, noun)
-        #self._generate_node_text(node, modified_noun)
         self._generate_node_text(node, noun)
       
         
@@ -208,7 +204,6 @@ class EnGenerator(Generator):
         # also depends on tense... presumed present for now
         dependencies = node.get_dependencies(lang=self.LANG)
         if not all(dep.has_generated_text(self.LANG) for dep in dependencies):
-            #import pdb; pdb.set_trace()
             #return # vestigial? was I overengineering some hypothetical case where you have to wait for dependency's generated surface form?
             pass
             
@@ -253,8 +248,6 @@ class EnGenerator(Generator):
         modifiers = [m for m in modifiers if m not in dets]
         
         assert(len(node._get_headnodes()) is 1)
-        #import pdb; pdb.set_trace()
-        
         if dets: 
             assert(len(dets) is 1) # forget about PDTs ("all the gold") for now
             result.append(dets[0].generated_text(self.LANG))
