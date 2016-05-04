@@ -171,7 +171,7 @@ class TemplatedNode(Node):
     
     def add_options(self, options):
         Node.add_options(self, options)    
-        for _, subnode in self.__subnodes.items():
+        for _, subnode in self._subnodes():
             subnode.add_options(self._options())
     
     # used by Generator
@@ -247,7 +247,7 @@ class TemplatedNode(Node):
             
     ### "protected" - these override the base class ###
     def _generate(self, generators):
-        assert(self._ready_to_create_subnodes()) #self._subnodes())
+        assert(self._subnodes()) #self._ready_to_create_subnodes()) #self._subnodes())
         for lang in generators.keys():
             if all(sn.has_generated_text(lang) for _, sn in self._subnodes()) and not self.has_generated_text(lang):  
                 generators[lang].generate(self)
