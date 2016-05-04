@@ -7,6 +7,7 @@ import random
 
 import data # read data from databases - giant, read-only globals
 import generator
+import utility
 
 # a bit more typing in the short run, but should be very helpful and sanity-preserving in the long run
 #from data import CLAUSE_TEMPLATE_BANK, NAME_BANK, VERBSET_BANK
@@ -79,14 +80,12 @@ class Node:
         for _, sn in self._subnodes():
             sn.analyze_all(analyzer)
         analyzer.analyze(self)
-        #for lang in generators.keys():
-        #    generators[lang].analyze(self)
     
     def generate_all(self, generators):
         for _, sn in self._subnodes():
             sn.generate_all(generators)        
-        for lang in generators.keys():
-            self._generate(generators)
+        #for lang in generators.keys():
+        self._generate(generators)
             
     # not very pretty, but should get the job done...
     def get_all_lexical_nodes(self):
@@ -172,11 +171,12 @@ class TemplatedNode(Node):
     
     def add_options(self, options):
         Node.add_options(self, options)    
-        for symbol, subnode in self.__subnodes.items():
+        for _, subnode in self.__subnodes.items():
             subnode.add_options(self._options())
     
+    # used by Generator
     def generated_symbols(self, lang):
-        return { symbol: subnode.generated_text(lang) for symbol, subnode in self.__subnodes.items() if subnode.has_generated_text(lang) }
+        return { symbol: subnode.generated_text(lang) for symbol, subnode in self._subnodes() if subnode.has_generated_text(lang) }
             
     def get_template_text(self, lang):
         return self.__template.template_text(lang)
