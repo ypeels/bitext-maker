@@ -67,22 +67,26 @@ class Node:
     def type(self):
         return self.__type
         
+    # default implementation - override for nodes that could potentially have modifiers
+    def has_modifiers(self):
+        return False
+        
     ### tree-walking operations ###
     
     # TODO: use generic tree traversal operation to DRY out code... meh, confusing and not really worth it for now
     #def for_all(self, operation, **kwargs):
     #    '''Bottom-up tree traversal'''
-    #    for _, sn in self._subnodes():
+    #    for sn in self._subnodes():
     #        sn.for_all(operation, **kwargs)
     #    operation(self, **kwargs)
     
     def analyze_all(self, analyzer):
-        for _, sn in self._subnodes():
+        for sn in self._subnodes():
             sn.analyze_all(analyzer)
         analyzer.analyze(self)
     
     def generate_all(self, generators):
-        for _, sn in self._subnodes():
+        for sn in self._subnodes():
             sn.generate_all(generators)        
         #for lang in generators.keys():
         self._generate(generators)
@@ -95,7 +99,7 @@ class Node:
         else:
             lexical_nodes = []        
             
-        for _, sn in self._subnodes():
+        for sn in self._subnodes():
             lexical_nodes += sn.get_all_lexical_nodes()
         return lexical_nodes
             
@@ -106,14 +110,14 @@ class Node:
         # ugh, previously assumed only templated nodes would have subnodes... 
         # but now that non-templated lexical nodes have modifiers as subnodes, 
         # need to make sure that _subnodes() has the right return type...
-        assert(all(type(i) is tuple for i in self._subnodes()))
+        assert(all(issubclass(type(i), Node) for i in self._subnodes()))
         
-        for _, sn in self._subnodes():
+        for sn in self._subnodes():
             sn.lexicalize_all()
         self._lexicalize()
         
     def ungenerate_all(self): # tempting to call this "reset_all", but there are other operations like lexicalize()...
-        for _, sn in self._subnodes():
+        for sn in self._subnodes():
             sn.ungenerate_all()
         self.reset_generated_text()  
         
@@ -148,7 +152,8 @@ class TemplatedNode(Node):
         Node.__init__(self, **kwargs)
         
         self.__headnodes = [] # Node
-        self.__subnodes = {}
+        self.__symbol_subnodes = {}
+        self.__modifier_subnodes = []
         
         assert(bank) # catch uninitialization errors
         self.__template_bank = bank
@@ -164,20 +169,28 @@ class TemplatedNode(Node):
     ### "public" API - for use outside this class ###
     def add_modifier(self, modifier_node):
         # TODO: check whether target is SEMANTICALLY compatible with modifier...
+        assert(modifier_node not in self.__modifier_subnodes)
+        self.__modifier_subnodes.append(modifier_node)
+        
         assert(len(self._get_headnodes()) <= 1) # TODO: handle applying modifier to multiple head nodes (red cats and dogs)
         assert(len(self._get_headnodes()) > 0) # TODO: ignore add_modifier() on headless node? or raise Exception?
         for head in self._get_headnodes():  
-            head.add_modifier(modifier_node) # convention for now: modifiers belong to (lexical) head nodes
+            #head.add_modifier(modifier_node) # convention for now: modifiers belong to (lexical) head nodes
+            modifier_node.add_target(head) # TODO: merge with existing "dependency" framework?
+    def has_modifiers(self):
+        return bool(self.__modifier_subnodes)
     
+    # uh, isn't this way too powerful? sample usage??
     def add_options(self, options):
         '''Propagate any externally-specified options down to head node'''
         Node.add_options(self, options)    
-        for subnode in self._get_headnodes(): #_, subnode in self._subnodes():
+        for subnode in self._get_headnodes(): #subnode in self._subnodes(): # no, that's WAY too powerful
             subnode.add_options(self._options())
     
     # used by Generator
-    def generated_symbols(self, lang):
-        return { symbol: subnode.generated_text(lang) for symbol, subnode in self._subnodes() if subnode.has_generated_text(lang) }
+    def generated_symbols(self, lang):    
+        return { symbol: subnode.generated_text(lang) 
+            for symbol, subnode in self.__symbol_subnodes.items() if subnode.has_generated_text(lang) }
             
     def get_template_text(self, lang):
         return self.__template.template_text(lang)
@@ -207,15 +220,16 @@ class TemplatedNode(Node):
         
     ### "protected" functions - default implementations, MAY be overridden in derived classes ###
     def _create_subnodes(self):
-        if not self.__subnodes and self._ready_to_create_subnodes():
+        '''Creates only the subnodes specified by the template - no modifiers'''
+        if not self.__symbol_subnodes and self._ready_to_create_subnodes():
             # new implementation ignores multiple calls to this function - to simplify enclosing logic
             #assert(not self.__subnodes) # this function should only be called once, for initialization 
         
             # requires symbols to be unique... but they SHOULD be, since they're in a dict
-            self.__subnodes = { s: node_factory(self._type_for_symbol(s))
+            self.__symbol_subnodes = { s: node_factory(self._type_for_symbol(s))
                 for s in self._symbols() }
                 
-            for symbol, subnode in self.__subnodes.items():
+            for symbol, subnode in self.__symbol_subnodes.items():
                 # language-specific syntax tags 
                 subnode.add_options({'tags': self._tags_for_symbol(symbol)})
                 
@@ -227,7 +241,7 @@ class TemplatedNode(Node):
             for s in self._symbols():                
                 for lang, deps in self._deps_for_symbol(s).items():
                     for d in deps:
-                        self.__subnodes[s].add_dependency(self.__subnodes[d], lang=lang)
+                        self.__symbol_subnodes[s].add_dependency(self.__symbol_subnodes[d], lang=lang)
             
             
             self.__headnodes = [self._get_subnode(s) for s in self.__template.head_symbols()]
@@ -250,7 +264,7 @@ class TemplatedNode(Node):
     def _generate(self, generators):
         assert(self._subnodes()) #self._ready_to_create_subnodes()) #self._subnodes())
         for lang in generators.keys():
-            if all(sn.has_generated_text(lang) for _, sn in self._subnodes()) and not self.has_generated_text(lang):  
+            if all(sn.has_generated_text(lang) for sn in self._subnodes()) and not self.has_generated_text(lang):  
                 generators[lang].generate(self)
                 
     def _lexicalize(self):
@@ -258,7 +272,7 @@ class TemplatedNode(Node):
         pass
                 
     def _subnodes(self):
-        return self.__subnodes.items()
+        return self.__symbol_subnodes.values()
 
 
     ### "protected" functions - available to derived classes ###
@@ -268,7 +282,7 @@ class TemplatedNode(Node):
         return self.__template.deps_for_symbol(symbol)
         
     def _get_subnode(self, symbol):
-        return self.__subnodes.get(symbol)
+        return self.__symbol_subnodes.get(symbol)
         
     def _get_headnodes(self):
         return self.__headnodes
@@ -424,6 +438,7 @@ class ModifierNode(TemplatedNode):
         
     def add_target(self, target_node):
         assert(issubclass(type(target_node), LexicalNode))
+        assert(target_node not in self.__targets)
         self.__targets.append(target_node)
 
         
@@ -455,7 +470,7 @@ class LexicalNode(Node):
     def __init__(self, **options):
         Node.__init__(self, **options)
         self.__datasets = []
-        self.__modifiers = []
+        #self.__modifiers = []
         self.__parent = None # Node
         #self.__targets = [] # allows for multiple targets, like "little boys and girls" - but this kind of breaks the assumption that modifiers target WORDS
         #raise Exception('I am here - adding modifier infrastructure')
@@ -465,25 +480,25 @@ class LexicalNode(Node):
         self.__selected_sample_index = 0
         
     # public
-    def modifiers(self): # used directly by generator... but I'm not totally sure I should be exposing something this powerful
-        return self.__get_modifiers() 
-    def has_modifiers(self):
-        return bool(self.__modifiers) #self._subnodes())        
-    def add_modifier(self, modifier_node):
-        # perform error-checking as to whether the modifier is compatible
-        if modifier_node.type() in self._compatible_modifier_types():
-            #raise Exception('I am in the middle of adding determiners')
-            
-            # add to subnode list - with None to hack into the previously templated-only subnode format of (symbol, node)
-            self.__modifiers.append((None, modifier_node))
-            
-            # because the tree is generated from bottom up, the modifier needs to store a link to its target, in case it depends on it
-                # example: this cat/these cats
-                # TODO: merge with existing "dependency" framework?
-            modifier_node.add_target(self)            
-            
-        else:
-            raise Exception('Tried to modify {} with {} - incompatible'.format(self.type(), modifier_node.type()))
+    #def modifiers(self): # used directly by generator... but I'm not totally sure I should be exposing something this powerful
+    #    return self.__get_modifiers() 
+    #def has_modifiers(self):
+    #    return bool(self.__modifiers) #self._subnodes())        
+    #def add_modifier(self, modifier_node):
+    #    # perform error-checking as to whether the modifier is compatible
+    #    if modifier_node.type() in self._compatible_modifier_types():
+    #        #raise Exception('I am in the middle of adding determiners')
+    #        
+    #        # add to subnode list - with None to hack into the previously templated-only subnode format of (symbol, node)
+    #        self.__modifiers.append((None, modifier_node))
+    #        
+    #        # because the tree is generated from bottom up, the modifier needs to store a link to its target, in case it depends on it
+    #            # example: this cat/these cats
+    #            # TODO: merge with existing "dependency" framework?
+    #        modifier_node.add_target(self)            
+    #        
+    #    else:
+    #        raise Exception('Tried to modify {} with {} - incompatible'.format(self.type(), modifier_node.type()))
         
     def num_samples(self):
         if self.__datasets:
@@ -506,7 +521,6 @@ class LexicalNode(Node):
         if 0 <= index < len(self.__datasets):
             self.__selected_sample_index = index
         else:
-            #import pdb; pdb.set_trace()
             raise Exception('out of range: {}/{}'.format(index, len(self.__datasets))) 
             # can't just let the system raise IndexError, because it might not for a WHILE before it actually uses index to access
         
@@ -537,7 +551,7 @@ class LexicalNode(Node):
         self._pick_samples(self._get_lexical_candidates())
                 
     def _subnodes(self):
-        return self.__modifiers
+        return [] #return self.__modifiers
                 
         
     # protected - used by derived classes
