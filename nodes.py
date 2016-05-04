@@ -164,6 +164,7 @@ class TemplatedNode(Node):
         
     ### "public" API - for use outside this class ###
     def add_modifier(self, modifier_node):
+        # TODO: check whether target is SEMANTICALLY compatible with modifier...
         assert(len(self._get_headnodes()) <= 1) # TODO: handle applying modifier to multiple head nodes (red cats and dogs)
         assert(len(self._get_headnodes()) > 0) # TODO: ignore add_modifier() on headless node? or raise Exception?
         for head in self._get_headnodes():  
@@ -422,17 +423,8 @@ class ModifierNode(TemplatedNode):
         
     def add_target(self, target_node):
         assert(issubclass(type(target_node), LexicalNode))
-        
         self.__targets.append(target_node)
-        
-        ## ugh, but i should propagate this down to its head, right?
-        #raise Exception('''
-        #    no, actually, to symmetrize with S-V dependencies, I think DT should query its parent (ADJP) for its target.
-        #    that way, target/modifier "bonds" are set all in one go, without any propagation. 
-        #    (well, the through-query is KIND of a propagation...
-        #    ''')
-        #for head in self._get_headnodes():
-        #    head.add_target(target_node)
+
         
     def targets(self):
         return tuple(self.__targets) # makes the LIST read-only, but individual nodes still aren't...
@@ -516,16 +508,9 @@ class LexicalNode(Node):
             #import pdb; pdb.set_trace()
             raise Exception('out of range: {}/{}'.format(index, len(self.__datasets))) 
             # can't just let the system raise IndexError, because it might not for a WHILE before it actually uses index to access
-
-    ## some words can be both modifiers and targets (adv > adj > noun)
-    #def add_target(self, target_node):
-    #    # TODO: check whether target is SEMANTICALLY compatible with modifier...
-    #    self.__targets.append(target_node)
         
     def targets(self):
         return self.parent().targets()
-        #return self.__targets
-
             
     def total_num_datasets(self, lang): # TODO: rename this atrocity
         # each dataset object could contain more than one "dataset" (nameset, etc.), e.g., en: [Bob, Robert]
@@ -560,11 +545,11 @@ class LexicalNode(Node):
         assert(num_candidates > 0)
         if self.num_samples() > num_candidates:
             self.set_num_samples(num_candidates)
-
-        # TODO: random sampling (using deterministic candidate bank for test/debugging)
-        # TODO: make the choice a user option
-        #self.__datasets = random.sample(candidates, self.num_samples())
-        self.__datasets = candidates[:self.num_samples()]
+        
+        if utility.USE_RANDOM:
+            self.__datasets = random.sample(candidates, self.num_samples())
+        else:
+            self.__datasets = candidates[:self.num_samples()]
 
     def _sample_dataset(self):
         '''Return the currently selected dataset'''
