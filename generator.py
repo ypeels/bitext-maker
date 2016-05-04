@@ -102,7 +102,7 @@ class Generator:
             assert(not node.has_modifiers()) # TODO: insert verb modifiers into Clause template
             self._generate_verb(node)
         else:
-            raise Exception('Unimplemented node type ' + node_type)
+            raise Exception('Unimplemented lexical node type ' + node_type)
             
     def _generate_node_text(self, node, text):
         node.set_generated_text(self.LANG, text)
@@ -118,34 +118,54 @@ class Generator:
                 # adding modifiers MAY introduce collisions
                 # another concern is how transformations would affect this
             
-            
-            template_text = node.get_template_text(lang)
-            template = template_text.split()
         
             # TODO!!! handle modifiers here, right? need to insert them INTO the template... but in a language-dependent way...
+            # so, modifiers are all fully generated - just have to figure out their ordering now
             # hmm, needs to check all subnodes for modifiers? 
-            if node.has_modifiers():
-                raise Exception('here')
-                import pdb; pdb.set_trace()
+            template = self._modify_template(node)
             
             # populate the template - get(key, default value)
             result = [generated_symbols.get(token, token) for token in template ]
             
             node.set_generated_text(lang, ' '.join(result))
+            
+        else:
+            raise Exception('in single-pass generation, should never get here')
         
     def _get_det_base(self, node):
-        return node.determiner(self.LANG)
-        
+        return node.determiner(self.LANG)        
     def _get_noun_base(self, node):
-        return node.noun(self.LANG)
-
-            
+        return node.noun(self.LANG)            
     def _get_verb_base(self, node):
         #assert(node.num_datasets(self.LANG) == 1)
         #verbset = node.sample_dataset() #get_dataset_by_index(0)#get_verbset_by_index(0)
         #return verbset.verb(self.LANG)
         return node.verb(self.LANG)
-                    
+        
+    def _get_unmodified_template(self, node):
+        template_text = node.get_template_text(self.LANG)
+        return template_text.split() 
+        
+    def _modify_template(self, node):
+        '''
+        Example input template: [S V O]
+        Example return value: [S quickly V O]
+        '''
+        assert(issubclass(type(node), nodes.TemplatedNode))
+                
+        if node.type() == 'NP':
+            result = self._modify_np(node)
+        elif node.type() in ['ADJP', 'Clause']:
+            assert(not node.has_modifiers())
+            result = self._get_unmodified_template(node)
+        else:
+            raise Exception('Unimplemented template modification: {}'.format(node.type()))
+            
+        assert(type(result) is list and all(type(item) is str for item in result))
+        return result
+        
+              
+             
         
     
     
@@ -172,7 +192,9 @@ class EnGenerator(Generator):
     def _generate_noun(self, node):
         noun_base = self._get_noun_base(node)  
         if node.number() == 'singular':
-            noun = noun_base
+            noun = noun_base            
+        #    if not node.has_modifiers() and 'object' in node._get_option('tags'):
+        #        noun = 'the ' + noun # hmm, back to this ugliness again            
         else:
             noun = self.__pluralize_noun(noun_base)
         #modified_noun = self.__modify_noun(node, noun)
@@ -217,41 +239,40 @@ class EnGenerator(Generator):
             
         else:
             raise Exception('Unimplemented: irregular en verbs')
+
+    def _modify_np(self, node):
+        template = self._get_unmodified_template(node)
+        
+        result = [] # most of this logic recycles nicely from the version where modifiers were owned by the LexicalNode itself
+        modifiers = list(node.modifiers()) # make a copy (trashed immediately)
+        
+        # TODO there are semantics-related ordering issues.. it looks like this could get VERY complicated...
+        
+        # determiner goes at the very front
+        dets = [m for m in modifiers if m.template_id() == 'determiner']
+        modifiers = [m for m in modifiers if m not in dets]
+        
+        assert(len(node._get_headnodes()) is 1)
+        #import pdb; pdb.set_trace()
+        
+        if dets: 
+            assert(len(dets) is 1) # forget about PDTs ("all the gold") for now
+            result.append(dets[0].generated_text(self.LANG))
+        else:
+            if node.number() == 'singular' and node.template_id() == 'noun':
+                if 'object' in node._get_option('tags'):
+                    result.append('the')
+                else:
+                    raise Exception('TODO: unmodified singular noun that is not an #object')
+                    
+        if len(modifiers) > 0:            
+            raise Exception('TODO: handle other modifiers')
             
+        result += template
+
+        return result
             
-    #def __modify_noun(self, node, noun):
-    #    '''Precondition: noun is passed in fully inflected (e.g., pluralized)'''        
-    #    # this subroutine would have to play the role of a template, setting the order of modifiers and their targets
-    #        # this is because templates as currently implemented cannot handle variable numbers of symbols
-    #        # also, there are semantics-related ordering issues..
-    #        
-    #        # it looks like this could get VERY complicated...
-    #
-    #    words = []
-    #    
-    #    # ADJP's... should I reach deeper down instead, to get more complete info from the real modifier, instead of these placeholder?
-    #    modifiers = list(node.modifiers()) # make a copy (trashed immediately)
-    #
-    #    # determiner goes at the very front
-    #    dets = [m for m in modifiers if m.template_id() == 'determiner']
-    #    modifiers = [m for m in modifiers if m not in dets]
-    #    if dets: 
-    #        assert(len(dets) is 1) # forget about PDTs ("all the gold") for now
-    #        words.append(dets[0].generated_text(self.LANG))
-    #    else:
-    #        if node.number() == 'singular':
-    #            if 'object' in node._get_option('tags'):
-    #                words.append('the')
-    #            else:
-    #                raise Exception('TODO: unmodified singular noun that is not an #object')
-    #
-    #    
-    #    if len(modifiers) > 0:
-    #        raise Exception('TODO: handle other modifiers')
-    #                
-    #    words.append(noun)
-    #                
-    #    return ' '.join(words)
+
                     
         
         
@@ -325,34 +346,38 @@ class ZhGenerator(Generator):
         noun = self._get_noun_base(node) # no inflections
         self._generate_node_text(node, noun)
         
-        ## based on EnGenerator.__modify_noun() - hmmmm that's not very DRY...
-        #words = []
-        #modifiers = list(node.modifiers()) 
-        #
-        #dets = [m for m in modifiers if m.template_id() == 'determiner']
-        #modifiers = [m for m in modifiers if m not in dets]
-        #
-        #if dets:
-        #    assert(len(dets) is 1) 
-        #    words.append(dets[0].generated_text(self.LANG))
-        #    
-        #else:
-        #    if node.number() != 'singular':
-        #        assert('object' in node._get_option('tags')) # for now, assume countable? 一些时间 != times...
-        #        assert(not node.has_modifiers()) # would need to check modifiers for "pluralizers" like CD
-        #        words.append('一些')
-        #
-        #words.append(noun)
-        #
-        #self._generate_node_text(node, ' '.join(words))
-
-        
-        
     # ah, conjugation-free Chinese...
     def _generate_verb(self, node):
         verb = self._get_verb_base(node)
         self._generate_node_text(node, verb)
         
+        
+    def _modify_np(self, node):
+        template = self._get_unmodified_template(node)
+
+        # based on EnGenerator.__modify_np() - hmmmm that's not very DRY...
+        result = []
+        modifiers = list(node.modifiers()) 
+        
+        dets = [m for m in modifiers if m.template_id() == 'determiner']
+        modifiers = [m for m in modifiers if m not in dets]
+        
+        if dets:
+            assert(len(dets) is 1) 
+            result.append(dets[0].generated_text(self.LANG))
+            
+        else:
+            if node.number() != 'singular':
+                assert('object' in node._get_option('tags')) # for now, assume countable? 一些时间 != times...
+                assert(not node.has_modifiers()) # would need to check modifiers for "pluralizers" like CD
+                result.append('一些')
+        
+        if len(modifiers) > 0:
+            raise Exception('TODO: handle other modifiers')
+        
+        result += template
+
+        return result
     
         
     

@@ -175,10 +175,11 @@ class TemplatedNode(Node):
         assert(len(self._get_headnodes()) <= 1) # TODO: handle applying modifier to multiple head nodes (red cats and dogs)
         assert(len(self._get_headnodes()) > 0) # TODO: ignore add_modifier() on headless node? or raise Exception?
         for head in self._get_headnodes():  
-            #head.add_modifier(modifier_node) # convention for now: modifiers belong to (lexical) head nodes
             modifier_node.add_target(head) # TODO: merge with existing "dependency" framework?
     def has_modifiers(self):
         return bool(self.__modifier_subnodes)
+    def modifiers(self):
+        return self.__modifier_subnodes[:] # probably don't want to return the actual data structure...
     
     # uh, isn't this way too powerful? sample usage??
     def add_options(self, options):
@@ -205,8 +206,8 @@ class TemplatedNode(Node):
         assert(type(self.__template) == data.Template)
         self.__template_id = id
         
-        if self._ready_to_create_subnodes():
-            self._create_subnodes()
+        if self._can_create_symbol_subnodes():
+            self._create_symbol_subnodes()
         
     def template_id(self):
         return self._template_id()
@@ -215,13 +216,13 @@ class TemplatedNode(Node):
         
     ### "pure virtual" functions - to be implemented in derived classes ###
     # not needed per se (duck typing will get it), but still valuable to document what this function is
-    def _ready_to_create_subnodes(self):
+    def _can_create_symbol_subnodes(self):
         raise UNIMPLEMENTED_EXCEPTION
         
     ### "protected" functions - default implementations, MAY be overridden in derived classes ###
-    def _create_subnodes(self):
+    def _create_symbol_subnodes(self):
         '''Creates only the subnodes specified by the template - no modifiers'''
-        if not self.__symbol_subnodes and self._ready_to_create_subnodes():
+        if not self.__symbol_subnodes and self._can_create_symbol_subnodes():
             # new implementation ignores multiple calls to this function - to simplify enclosing logic
             #assert(not self.__subnodes) # this function should only be called once, for initialization 
         
@@ -272,7 +273,7 @@ class TemplatedNode(Node):
         pass
                 
     def _subnodes(self):
-        return self.__symbol_subnodes.values()
+        return self.__modifier_subnodes + list(self.__symbol_subnodes.values())
 
 
     ### "protected" functions - available to derived classes ###
@@ -337,15 +338,16 @@ class Clause(TemplatedNode):
             raise Exception('incompatible template', id, self._template_id())
     
     # overrides
-    def _ready_to_create_subnodes(self):
+    def _can_create_symbol_subnodes(self):
         return self.has_template() #and self.has_verb_category()  set_verb_category() now also triggers propagation to subnodes
     
     # hey, notice that you don't really have to order the symbols until generation time anyway, even if specified by templates
-    def _create_subnodes(self):
-        TemplatedNode._create_subnodes(self)
+    def _create_symbol_subnodes(self):
+        TemplatedNode._create_symbol_subnodes(self)
         
         # head node gets special treatment
         # alternative: _create_nodes_subclass() call in base class and override here. 
+        # TODO: use add_option instead somehow?
         self.__bequeath_verb_category()
     
     def _tags_for_symbol(self, symbol): 
@@ -368,10 +370,10 @@ class CustomTemplate(TemplatedNode):
     def __init__(self, **kwargs): 
         TemplatedNode.__init__(self, data.CUSTOM_TEMPLATE_BANK, **kwargs)
 
-    def _ready_to_create_subnodes(self):
+    def _can_create_symbol_subnodes(self):
         return self.has_template()
     
-    def _create_subnodes(self):
+    def _create_symbol_subnodes(self):
         TemplatedNode._create_subnodes(self)
         for sym in self._symbols():
             self.add_options(self._template().options_for_symbol(sym))
@@ -408,11 +410,11 @@ class NounPhrase(TemplatedNode):
         
         
     # overrides
-    def _ready_to_create_subnodes(self):
+    def _can_create_symbol_subnodes(self):
         return self.has_template()
         
-    def _create_subnodes(self):
-        TemplatedNode._create_subnodes(self)
+    def _create_symbol_subnodes(self):
+        TemplatedNode._create_symbol_subnodes(self)
     
         # propagate tags from parent node into head word
         # TODO: handle "multiple headwords" correctly (Alice and Bob and...)
@@ -440,6 +442,9 @@ class ModifierNode(TemplatedNode):
         assert(issubclass(type(target_node), LexicalNode))
         assert(target_node not in self.__targets)
         self.__targets.append(target_node)
+        
+        ## store a back reference - initially intended just for counting purposes (bare nouns might need 'the' by default, say)
+        #target_node.increment_modifier_count()
 
         
     def targets(self):
@@ -450,7 +455,7 @@ class AdjectivePhrase(ModifierNode):
     def __init__(self, **kwargs): 
         ModifierNode.__init__(self, data.ADJP_TEMPLATE_BANK, **kwargs)
         
-    def _ready_to_create_subnodes(self):
+    def _can_create_symbol_subnodes(self):
         return self.has_template()
         
         
@@ -471,6 +476,7 @@ class LexicalNode(Node):
         Node.__init__(self, **options)
         self.__datasets = []
         #self.__modifiers = []
+        #self.__num_modifiers = 0
         self.__parent = None # Node
         #self.__targets = [] # allows for multiple targets, like "little boys and girls" - but this kind of breaks the assumption that modifiers target WORDS
         #raise Exception('I am here - adding modifier infrastructure')
@@ -480,12 +486,18 @@ class LexicalNode(Node):
         self.__selected_sample_index = 0
         
     # public
-    #def modifiers(self): # used directly by generator... but I'm not totally sure I should be exposing something this powerful
+    
+    # originally had this phased out after changing it so that modifiers live in TemplatedNodes
+    # but Generator still needs to check, e.g., whether a noun is a bare noun
+    #def modifiers(self): 
+    # '''used directly by generator... but I'm not totally sure I should be exposing something this powerful'''
     #    return self.__get_modifiers() 
     #def has_modifiers(self):
-    #    return bool(self.__modifiers) #self._subnodes())        
+    #    return self.__num_modifiers > 0 #bool(self.__modifiers) #self._subnodes())        
+    #def increment_modifier_count(self):
+    #    self.__num_modifiers += 1 # let's try "need to know"
     #def add_modifier(self, modifier_node):
-    #    # perform error-checking as to whether the modifier is compatible
+    #    # TODO: perform error-checking as to whether the modifier is compatible
     #    if modifier_node.type() in self._compatible_modifier_types():
     #        #raise Exception('I am in the middle of adding determiners')
     #        
@@ -573,9 +585,9 @@ class LexicalNode(Node):
     def __get_dataset_by_index(self, index):
         return self.__datasets[index]
         
-    def __get_modifiers(self):
-        # probably don't want to return the ACTUAL data structure
-        return [node for _, node in self.__modifiers]
+    #def __get_modifiers(self):
+    #    # probably don't want to return the ACTUAL data structure
+    #    return [node for _, node in self.__modifiers]
 
         
 class Determiner(LexicalNode):
