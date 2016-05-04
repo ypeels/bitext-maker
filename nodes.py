@@ -181,7 +181,6 @@ class TemplatedNode(Node):
     def modifiers(self):
         return self.__modifier_subnodes[:] # probably don't want to return the actual data structure...
     
-    # uh, isn't this way too powerful? sample usage??
     def add_options(self, options):
         '''Propagate any externally-specified options down to head node'''
         Node.add_options(self, options)    
@@ -245,7 +244,7 @@ class TemplatedNode(Node):
                         self.__symbol_subnodes[s].add_dependency(self.__symbol_subnodes[d], lang=lang)
             
             
-            self.__headnodes = [self._get_subnode(s) for s in self.__template.head_symbols()]
+            self.__headnodes = [self._get_symbol_subnode(s) for s in self.__template.head_symbols()]
             assert(len(self.__headnodes) <= 1)            
             # TODO: alter head upon transformation
 
@@ -282,7 +281,7 @@ class TemplatedNode(Node):
     def _deps_for_symbol(self, symbol):
         return self.__template.deps_for_symbol(symbol)
         
-    def _get_subnode(self, symbol):
+    def _get_symbol_subnode(self, symbol):
         return self.__symbol_subnodes.get(symbol)
         
     def _get_headnodes(self):
@@ -360,7 +359,7 @@ class Clause(TemplatedNode):
             return []
         
     def __bequeath_verb_category(self):
-        V = self._get_subnode('V')
+        V = self._get_symbol_subnode('V')
         if self.__verb_category and V:
             V.set_category(self.__verb_category)
     
@@ -374,7 +373,7 @@ class CustomTemplate(TemplatedNode):
         return self.has_template()
     
     def _create_symbol_subnodes(self):
-        TemplatedNode._create_subnodes(self)
+        TemplatedNode._create_symbol_subnodes(self)
         for sym in self._symbols():
             self.add_options(self._template().options_for_symbol(sym))
         # pass other language-independent options from template

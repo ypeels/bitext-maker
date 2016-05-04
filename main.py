@@ -23,17 +23,17 @@ assert(__name__ == '__main__') # for now
     # BUT, don't you have to create a public API with which you reach down into the tree?
 # I think that ideally there would be some kind of metadata format that can specify all this 
     
-def make_transitive_clause():    
+def make_transitive_clause(number='singular', use_determiner=False):    
     clause = nodes.node_factory('Clause')
     clause.set_template('transitive')
     clause.set_verb_category('action.possession') 
 
-    S, V, O = [clause._get_subnode(sym) for sym in 'SVO']
+    S, V, O = [clause._get_symbol_subnode(sym) for sym in 'SVO']
     #S.set_template('noun'); S.add_options({'tags': ['object']})#, 'number': 'plural'})
-    S.set_template('name'); S.add_options({'tags': ['man']})
+    O.set_template('name'); O.add_options({'tags': ['man']})
     #O.set_template('name')
-    O.set_template('noun'); O.add_options({'tags': ['object']}); 
-    #O.add_options({'number': ['plural']}) # TODO: how to pluralize more robustly?? set_plural() would not be scalable to other options...
+    S.set_template('noun'); S.add_options({'tags': ['object']})
+    S.add_options({'number': [number]}) # TODO: how to pluralize more robustly?? set_plural() would not be scalable to other options...
 
         
     #A, B = [np._get_subnode('N') for np in [S, O]] # calling "protected" functions externally is a bad sign/smell]
@@ -52,10 +52,11 @@ def make_transitive_clause():
     
     # add a determiner. oooooo
     # TODO: does this logic really belong here?
-    adjp = nodes.node_factory('ADJP') 
-    adjp.set_template('determiner')
-    adjp.add_options({'tags': ['demonstrative']})
-    O.add_modifier(adjp)
+    if use_determiner:
+        adjp = nodes.node_factory('ADJP') 
+        adjp.set_template('determiner')
+        adjp.add_options({'tags': ['demonstrative']})
+        S.add_modifier(adjp)
     
     lexical_nodes = clause.get_all_lexical_nodes() # n.b. you would have to rerun this every time you modified the tree... 
     determiners = [n for n in lexical_nodes if n.type() == 'determiner']
@@ -63,9 +64,9 @@ def make_transitive_clause():
     for d in determiners:
         d.set_num_samples(5)
         
-    for node in lexical_nodes:
-        if node.type() == 'name':
-            node.set_num_samples(5)
+    #for node in lexical_nodes:
+    #    if node.type() == 'name':
+    #        node.set_num_samples(5)
     
     
 
@@ -80,15 +81,25 @@ def make_custom():
     '''Experimenting with large, custom template'''
     custom = nodes.node_factory('CustomTemplate')
     custom.set_template('test')
-    custom._create_subnodes()
-    custom._get_subnode('X').set_num_samples(10)
+    
+    noun_phrases = [n for n in custom.get_all_lexical_nodes() if n.type() == 'NP']    
+    X = custom._get_symbol_subnode('X')
+    X.set_template('noun')
+    for word in custom.get_all_lexical_nodes():
+        word.set_num_samples(10)
     custom.lexicalize_all()
     return custom
  
+ 
+ 
 clauses = [ None
     , make_transitive_clause()
-    #, make_custom()
+    , make_transitive_clause('plural')
+    , make_transitive_clause(use_determiner=True)
+    , make_transitive_clause('plural', use_determiner=True)
+    , make_custom()
     ]
+    
 
 ### 2. Generate sentences ###
 

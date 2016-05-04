@@ -155,7 +155,7 @@ class Generator:
                 
         if node.type() == 'NP':
             result = self._modify_np(node)
-        elif node.type() in ['ADJP', 'Clause']:
+        elif node.type() in ['ADJP', 'Clause', 'CustomTemplate']:
             assert(not node.has_modifiers())
             result = self._get_unmodified_template(node)
         else:
