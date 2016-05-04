@@ -170,8 +170,9 @@ class TemplatedNode(Node):
             head.add_modifier(modifier_node) # convention for now: modifiers belong to (lexical) head nodes
     
     def add_options(self, options):
+        '''Propagate any externally-specified options down to head node'''
         Node.add_options(self, options)    
-        for _, subnode in self._subnodes():
+        for subnode in self._get_headnodes(): #_, subnode in self._subnodes():
             subnode.add_options(self._options())
     
     # used by Generator
