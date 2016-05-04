@@ -144,12 +144,13 @@ def generate_all(clause, outputs):
         while not all(clause.has_generated_text(lang) for lang in LANGUAGES):
             #print('taking another pass through the tree')
             
+            # TODO: this is now vestigial, right? don't really need this if it's always just a single pass....
             # reset the generators' counters for a pass through the whole tree
             for g in generators.values():
                 g.reset_generated_counter()
 
             clause.generate_all(generators)
-            if not all(clause.has_generated_text(lang) or generators[lang].num_generated() > 0 for lang in LANGUAGES):
+            if not all(clause.has_generated_text(lang) for lang in LANGUAGES) or not all(g.num_generated() > 0 for g in generators.values()):
                 raise Exception('full pass through tree did not generate anything - cyclic dependencies?')
                 
             # multipass was actually vestigial - single pass should suffice now, right? (EnGenerator._generate_verb())
