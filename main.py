@@ -29,6 +29,7 @@ def make_transitive_clause():
     clause.set_verb_category('action.possession') 
 
     S, V, O = [clause._get_subnode(sym) for sym in 'SVO']
+    #S.set_template('noun'); S.add_options({'tags': ['object']})#, 'number': 'plural'})
     S.set_template('name'); S.add_options({'tags': ['man']})
     #O.set_template('name')
     O.set_template('noun'); O.add_options({'tags': ['object']}); 
@@ -39,6 +40,7 @@ def make_transitive_clause():
     #A.add_options({'tags': ['woman']})
     #S.add_options({'tags': ['woman']}) # gets propagated down now, even if called AFTER A and B have been created
     #B.add_options({'tags': ['man']}) # hmm... 
+    #if A.type() == 'noun': A.set_plural()
     #if B.type() == 'noun': B.set_plural() # this would raise AttributeError on Name anyway
     #if type(B) is nodes.Noun: B.set_plural() # alternative using Python types; more brittle?
     
@@ -149,6 +151,12 @@ def generate_all(clause, outputs):
             clause.generate_all(generators)
             if not all(clause.has_generated_text(lang) or generators[lang].num_generated() > 0 for lang in LANGUAGES):
                 raise Exception('full pass through tree did not generate anything - cyclic dependencies?')
+                
+            # multipass was actually vestigial - single pass should suffice now, right? (EnGenerator._generate_verb())
+            # I guess now I'm assuming all metadata has been set before even entering the generation phase... horribly inflexible?
+            assert(all(clause.has_generated_text(lang) for lang in LANGUAGES))
+            break
+            
             
         print(clause.generated_text('en'))
         

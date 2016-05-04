@@ -99,6 +99,7 @@ class Generator:
         elif node_type == 'noun':
             self._generate_noun(node) # punt to subclass            
         elif node_type == 'verb':
+            assert(not node.has_modifiers()) # TODO: insert verb modifiers into Clause template
             self._generate_verb(node)
         else:
             raise Exception('Unimplemented node type ' + node_type)
@@ -179,7 +180,9 @@ class EnGenerator(Generator):
         # also depends on tense... presumed present for now
         dependencies = node.get_dependencies(lang=self.LANG)
         if not all(dep.has_generated_text(self.LANG) for dep in dependencies):
-            return
+            #import pdb; pdb.set_trace()
+            #return # vestigial? was I overengineering some hypothetical case where you have to wait for dependency's generated surface form?
+            pass
             
         assert(len(dependencies) <= 1) # just subject-verb for now
         subject_node = dependencies[0]

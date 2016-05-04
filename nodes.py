@@ -213,9 +213,12 @@ class TemplatedNode(Node):
             self.__subnodes = { s: node_factory(self._type_for_symbol(s))
                 for s in self._symbols() }
                 
-            # language-specific syntax tags 
             for symbol, subnode in self.__subnodes.items():
+                # language-specific syntax tags 
                 subnode.add_options({'tags': self._tags_for_symbol(symbol)})
+                
+                if issubclass(type(subnode), LexicalNode):
+                    subnode.set_parent(self) # for modifiers to query parent node for target
            
             # hook up dependencies between NODES and their data - all nodes must have been instantiated first
             # add_dependency() should allow pronouns to work all the way across the tree...right?
@@ -415,16 +418,24 @@ class NounPhrase(TemplatedNode):
 class ModifierNode(TemplatedNode):
     def __init__(self, bank, **kwargs):
         TemplatedNode.__init__(self, bank, **kwargs)
-        #self.__targets = [] 
+        self.__targets = [] 
         
     def add_target(self, target_node):
         assert(issubclass(type(target_node), LexicalNode))
         
-        #self.__targets.append(target_node)
+        self.__targets.append(target_node)
         
-        # ugh, but i should propagate this down to its head, right?
-        for head in self._get_headnodes():
-            head.add_target(target_node)
+        ## ugh, but i should propagate this down to its head, right?
+        #raise Exception('''
+        #    no, actually, to symmetrize with S-V dependencies, I think DT should query its parent (ADJP) for its target.
+        #    that way, target/modifier "bonds" are set all in one go, without any propagation. 
+        #    (well, the through-query is KIND of a propagation...
+        #    ''')
+        #for head in self._get_headnodes():
+        #    head.add_target(target_node)
+        
+    def targets(self):
+        return tuple(self.__targets) # makes the LIST read-only, but individual nodes still aren't...
         
         
 class AdjectivePhrase(ModifierNode):
@@ -452,7 +463,8 @@ class LexicalNode(Node):
         Node.__init__(self, **options)
         self.__datasets = []
         self.__modifiers = []
-        self.__targets = [] # allows for multiple targets, like "little boys and girls" - but this kind of breaks the assumption that modifiers target WORDS
+        self.__parent = None # Node
+        #self.__targets = [] # allows for multiple targets, like "little boys and girls" - but this kind of breaks the assumption that modifiers target WORDS
         #raise Exception('I am here - adding modifier infrastructure')
         
         # default values: single-sample words (multi-sample: [cat, dog, ...])
@@ -474,6 +486,7 @@ class LexicalNode(Node):
             
             # because the tree is generated from bottom up, the modifier needs to store a link to its target, in case it depends on it
                 # example: this cat/these cats
+                # TODO: merge with existing "dependency" framework?
             modifier_node.add_target(self)            
             
         else:
@@ -488,22 +501,30 @@ class LexicalNode(Node):
         '''Number of samples desired from the candidate datasets'''
         self.__num_samples = num
         
+    # originally just intended for modifiers to query parent (say, ADJP) for target node... use with caution
+    def parent(self):
+        return self.__parent
+    def set_parent(self, parent):
+        self.__parent = parent
+        assert(issubclass(type(parent), TemplatedNode))
+        
     def select_sample(self, index):
         assert(self.__datasets) # remember to call _pick_samples() at the end of _lexicalize()...
         if 0 <= index < len(self.__datasets):
             self.__selected_sample_index = index
         else:
-            import pdb; pdb.set_trace()
+            #import pdb; pdb.set_trace()
             raise Exception('out of range: {}/{}'.format(index, len(self.__datasets))) 
             # can't just let the system raise IndexError, because it might not for a WHILE before it actually uses index to access
 
-    # some words can be both modifiers and targets (adv > adj > noun)
-    def add_target(self, target_node):
-        # TODO: check whether target is SEMANTICALLY compatible with modifier...
-        self.__targets.append(target_node)
+    ## some words can be both modifiers and targets (adv > adj > noun)
+    #def add_target(self, target_node):
+    #    # TODO: check whether target is SEMANTICALLY compatible with modifier...
+    #    self.__targets.append(target_node)
         
     def targets(self):
-        return self.__targets
+        return self.parent().targets()
+        #return self.__targets
 
             
     def total_num_datasets(self, lang): # TODO: rename this atrocity
