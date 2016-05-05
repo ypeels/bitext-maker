@@ -550,11 +550,29 @@ class LexicalNode(Node):
     def __get_dataset_by_index(self, index):
         return self.__datasets[index]
 
-
+        
+        
+        
+# TODO: consolidate shared code with Determiner?
+# TODO: semantic filtering
+class Adjective(LexicalNode):
+    def adjective(self, lang):
+        adjset = self._sample_dataset()
+        assert(adjset.num_words(lang) is 1)
+        return adjset.adjective(lang, 0)
+        
+    def _get_lexical_candidates(self):
+        tags = [t for t in (self._get_option('tags') or []) if type(t) is str]
+        assert(len(tags) <= 1)
+        if tags:            
+            candidates = data.ADJSET_BANK.find_tagged(tags[0])
+        else:
+            candidates = data.ADJSET_BANK.all_adjsets()
+        return candidates
         
 class Determiner(LexicalNode):
-    def add_modifier(self, _):
-        raise Exception('do not modify Determiner nodes - are you trying PDT? how about hooking on a second DT?')
+    #def add_modifier(self, _):
+    #    raise Exception('do not modify Determiner nodes - are you trying PDT? how about hooking on a second DT?')
         
     def determiner(self, lang):
         detset = self._sample_dataset()
@@ -696,35 +714,26 @@ class Verb(LexicalNode):
 
 
 
+    
+FACTORY_MAP = {
+    # Templated nodes
+    'ADJP': AdjectivePhrase,
+    'Clause': Clause,
+    'CustomTemplate': CustomTemplate,
+    'NP': NounPhrase,
+    
+    # lexical nodes (not necessarily leaf nodes - may have modifiers)
+    'adjective': Adjective,
+    'determiner': Determiner,
+    'name': Name, 
+    'noun': Noun,
+    'verb': Verb
+}
 
        
 def node_factory(type, **kwargs):
     '''Object factory that will instantiate the appropriate class, with an optional dict of tags, etc.'''
-    
-    #print('create_node', type, kwargs)
-    # Templated nodes
-    if type == 'ADJP':
-        factory = AdjectivePhrase
-    elif type == 'Clause':
-        factory = Clause    
-    elif type == 'CustomTemplate':
-        factory = CustomTemplate
-    elif type == 'NP':
-        factory = NounPhrase
-        
-    # lexical nodes (not necessarily leaf nodes - may have modifiers)
-    elif type == 'determiner':
-        factory = Determiner
-    elif type == 'name':
-        factory = Name
-    elif type == 'noun':
-        factory = Noun
-    elif type == 'verb':
-        factory = Verb
-        
-    else:
-        raise Exception('Unknown node type ' + type)
-        
+    factory = FACTORY_MAP[type] # will raise KeyError if not found
     return factory(type=type, **kwargs)
         
         

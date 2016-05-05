@@ -1,7 +1,7 @@
 test:
   symbols:
     X:
-      type: noun
+      type: NP
       description: head
       
       # TODO: propagate these down

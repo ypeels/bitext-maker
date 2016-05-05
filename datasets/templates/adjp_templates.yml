@@ -2,9 +2,11 @@
 
 
 adjective:
-  example: this|DT
+  example: big|JJ
   symbols:
-    J: { type: adjective }
+    J: 
+      type: adjective
+      description: head
   templates:
     en: { template: J }
     zh: { template: J }
@@ -21,6 +23,9 @@ determiner:
     en: { template: D }
     zh: { template: D }
     
+    
+# hmm, these should be accompanied by significant code components...
+# although the first 10 or so should also probably be brute forced
 number:
   example: one|CD
   symbols:
@@ -28,5 +33,13 @@ number:
   templates:
     en: { template: N }
     zh: { template: N }
+    
+ordinal:
+  example: first|OD
+  symbols:
+    N: { type: number }
+  templates:
+    en: { template: O }
+    zh: { template: O }
     
   # TODO: get rid of literal modifier templates altogether? better off piecing together words in code?

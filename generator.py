@@ -86,13 +86,17 @@ class Generator:
         
         
         node_type = node.type()
-        if node_type == 'determiner':
+        if node_type == 'adjective':
+            assert(self.LANG in ['en', 'zh'])
+            self._generate_node_text(node, node.adjective(self.LANG))
+        elif node_type == 'determiner':
             self._generate_determiner(node)
         elif node_type == 'name':        
             # for multiple names (Alice, 爱丽丝): absent any guidance, should just pick the first (default) name?
                 # ugh, I don't want to think about this right now... let's just "solve" this in data
             #assert(node.num_datasets(self.LANG) == 1)
             #self._generate_name(node) # neither language's names have dependencies right now
+            assert(self.LANG in ['en', 'zh'])
             assert(node.number() == 'singular') # TODO: plural names, like Greeks? that would affect English subject-verb agreement
             name = node.name(self.LANG)
             self._generate_node_text(node, name)   
@@ -258,6 +262,22 @@ class EnGenerator(Generator):
                 else:
                     raise Exception('TODO: unmodified singular noun that is not an #object')
                     
+        # adjectives
+        adjs = [m for m in modifiers if m.template_id() == 'adjective']
+        modifiers = [m for m in modifiers if m not in adjs]
+        if adjs:
+            # no serial comma, to facilitate generation
+            # TODO: add user option for serial comma?
+            # TODO: adjective ordering
+            adj_strings = [a.generated_text(self.LANG) for a in adjs]
+            for a in adj_strings[:-2]:
+                result += [a, ',']
+                
+            if len(adj_strings) >= 2:
+                result += [adj_strings[-2], 'and']
+                
+            result += [adj_strings[-1]]
+                    
         if len(modifiers) > 0:            
             raise Exception('TODO: handle other modifiers')
             
@@ -352,18 +372,31 @@ class ZhGenerator(Generator):
         result = []
         modifiers = list(node.modifiers()) 
         
-        dets = [m for m in modifiers if m.template_id() == 'determiner']
-        modifiers = [m for m in modifiers if m not in dets]
         
+        # determiners
+        dets = [m for m in modifiers if m.template_id() == 'determiner']
+        modifiers = [m for m in modifiers if m not in dets]        
         if dets:
             assert(len(dets) is 1) 
-            result.append(dets[0].generated_text(self.LANG))
-            
+            result.append(dets[0].generated_text(self.LANG))            
         else:
             if node.number() != 'singular':
                 assert('object' in node._get_option('tags')) # for now, assume countable? 一些时间 != times...
                 assert(not node.has_modifiers()) # would need to check modifiers for "pluralizers" like CD
                 result.append('一些')
+        
+        # adjectives
+        adjs = [m for m in modifiers if m.template_id() == 'adjective']
+        modifiers = [m for m in modifiers if m not in adjs]
+        if adjs:
+            # TODO: for more than 1 adj, might want to order them in a more semantically sensible order
+            assert(len(adjs) is 1) 
+            for a in adjs:
+                a = adjs[0].generated_text(self.LANG)
+                result.append(a)            
+                if len(a) > 1:
+                    result.append('的')
+                
         
         if len(modifiers) > 0:
             raise Exception('TODO: handle other modifiers')

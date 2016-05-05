@@ -88,7 +88,7 @@ def make_custom(number='singular', modifiers=[]):
     X = custom._get_symbol_subnode('X')
     X.set_template('noun')
     #X.add_options({'tags': ['object']})
-    X.add_options({'number': [number]})
+    #X.add_options({'number': [number]}) # shouldn't be trying to pluralize "it can be a very complicated thing, X"
     #for word in custom.get_all_lexical_nodes():
     #    word.set_num_samples(10)
         
@@ -109,7 +109,11 @@ clauses = [ None
     , make_transitive_clause(number='plural')
     , make_transitive_clause(modifiers=['determiner'])
     , make_transitive_clause(number='plural', modifiers=['determiner'])
-    #, make_transitive_clause(modifiers=['adjective'])
+    , make_transitive_clause(modifiers=['adjective'])
+    , make_transitive_clause(modifiers=['adjective', 'determiner'])
+    #, make_transitive_clause(modifiers=['adjective', 'determiner', 'adjective']) # works, but has awkward repeated adjs right now
+    #, make_transitive_clause(modifiers=['adjective', 'determiner', 'adjective', 'adjective'])
+    , make_transitive_clause(number='plural', modifiers=['adjective', 'determiner'])
     , make_custom()
     , make_custom(number='plural')
     , make_custom(modifiers=['determiner'])

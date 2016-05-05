@@ -24,6 +24,23 @@ class Bank:
         return self.__data
         
         
+
+class AdjectiveSetBank(Bank):
+    def __init__(self, filename):
+        Bank.__init__(self, filename)
+        __data = self._data()
+        for i in range(len(__data)-1, -1, -1):
+            if all(adj == None for adj in __data[i]['adjset'].values()):
+                __data.pop(i)  
+                
+    def all_adjsets(self):
+        result = [AdjectiveSet(item['adjset']) for item in self._data()]
+        assert(len(result) > 0)
+        return result
+        
+    def find_tagged(self, target_tag):
+        raise Exception('TODO: unimplemented stub')
+        
 class DeterminerSetBank(Bank):
     def __init__(self, filename):
         Bank.__init__(self, filename)
@@ -293,6 +310,10 @@ class WordSet:
     def _data(self):
         return self.__data
         
+class AdjectiveSet(WordSet):
+    def adjective(self, lang, index):
+        return WordSet.word(self, lang, index)
+        
 class DeterminerSet(WordSet):
     def determiner(self, lang, index):
         return WordSet.word(self, lang, index)
@@ -333,6 +354,9 @@ class VerbSet(WordSet):
 # TODO: move classes to a separate file, if they ever want to be used externally without having to load all these files
     # but that seems unlikely, since these are FILE INTERFACE classes
 
+ADJSET_BANK = AdjectiveSetBank(DATA_DIR + 'adjsets.yml')
+# adjectives are not inflected in either zh or en
+    
 DETSET_BANK = DeterminerSetBank(DATA_DIR + 'detsets.yml')
 DET_FORMS = { lang: DeterminerFormBank(DATA_DIR + 'dets_{}.yml'.format(lang)) for lang in LANGUAGES }
     

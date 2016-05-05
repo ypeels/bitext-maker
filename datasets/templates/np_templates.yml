@@ -28,6 +28,7 @@ noun:
   # OR better, I should write out the full template here, and then transformations would TRANSDUCE symbols
   # better still (since you don't want to write out ALL possible verb templates here), write down the transform here somehow
     # e.g. for participle, start with Clause and turn one of the NPs into a target/slot
+  # n.b. infinitives don't take determiners, but gerunds MIGHT ("the killing")
 # TODO: subgroups for conjunctions? but they're only weird as subjects... "The taco and flying a bike"
 # TODO: custom templates 
 # TODO: PP's - hmm, those belong in transformations, maybe stored in some kind of nounset file?
