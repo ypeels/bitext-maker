@@ -23,7 +23,7 @@ assert(__name__ == '__main__') # for now
     # BUT, don't you have to create a public API with which you reach down into the tree?
 # I think that ideally there would be some kind of metadata format that can specify all this 
     
-def make_transitive_clause(number='singular', use_determiner=False):    
+def make_transitive_clause(number='singular', modifiers=[]):    
     clause = nodes.node_factory('Clause')
     clause.set_template('transitive')
     clause.set_verb_category('action.possession') 
@@ -52,10 +52,12 @@ def make_transitive_clause(number='singular', use_determiner=False):
     
     # add a determiner. oooooo
     # TODO: does this logic really belong here?
-    if use_determiner:
+    for mod in modifiers:
+        assert(mod in ['determiner', 'adjective'])
         adjp = nodes.node_factory('ADJP') 
-        adjp.set_template('determiner')
-        adjp.add_options({'tags': ['demonstrative']})
+        adjp.set_template(mod)
+        if mod == 'determiner':
+            adjp.add_options({'tags': ['demonstrative']})
         S.add_modifier(adjp)
     
     lexical_nodes = clause.get_all_lexical_nodes() # n.b. you would have to rerun this every time you modified the tree... 
@@ -77,7 +79,7 @@ def make_transitive_clause(number='singular', use_determiner=False):
     
     return clause
  
-def make_custom():
+def make_custom(number='singular', modifiers=[]):
     '''Experimenting with large, custom template'''
     custom = nodes.node_factory('CustomTemplate')
     custom.set_template('test')
@@ -85,8 +87,18 @@ def make_custom():
     noun_phrases = [n for n in custom.get_all_lexical_nodes() if n.type() == 'NP']    
     X = custom._get_symbol_subnode('X')
     X.set_template('noun')
-    for word in custom.get_all_lexical_nodes():
-        word.set_num_samples(10)
+    #X.add_options({'tags': ['object']})
+    X.add_options({'number': [number]})
+    #for word in custom.get_all_lexical_nodes():
+    #    word.set_num_samples(10)
+        
+    for mod in modifiers:
+        adjp = nodes.node_factory('ADJP') 
+        adjp.set_template(mod)
+        if mod == 'determiner':
+            adjp.add_options({'tags': ['demonstrative']})
+        X.add_modifier(adjp)
+        
     custom.lexicalize_all()
     return custom
  
@@ -94,10 +106,14 @@ def make_custom():
  
 clauses = [ None
     , make_transitive_clause()
-    , make_transitive_clause('plural')
-    , make_transitive_clause(use_determiner=True)
-    , make_transitive_clause('plural', use_determiner=True)
+    , make_transitive_clause(number='plural')
+    , make_transitive_clause(modifiers=['determiner'])
+    , make_transitive_clause(number='plural', modifiers=['determiner'])
+    #, make_transitive_clause(modifiers=['adjective'])
     , make_custom()
+    , make_custom(number='plural')
+    , make_custom(modifiers=['determiner'])
+    , make_custom(number='plural', modifiers=['determiner'])
     ]
     
 
