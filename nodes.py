@@ -9,11 +9,6 @@ import data # read data from databases - giant, read-only globals
 import generator
 import utility
 
-# a bit more typing in the short run, but should be very helpful and sanity-preserving in the long run
-#from data import CLAUSE_TEMPLATE_BANK, NAME_BANK, VERBSET_BANK
-#from data import LANGUAGES, TAXONOMY
-#from data import RAW_NOUNS, RAW_NOUNSETS
-
 
 UNIMPLEMENTED_EXCEPTION = Exception('Needs to be implemented in derived class')
 
@@ -325,7 +320,6 @@ class Clause(TemplatedNode):
     # clauses really need to have semantics figured out before populating the next level down (except blank symbols in participles, etc.)
     def has_verb_category(self):
         return bool(self.__verb_category_id) and bool(self.__verb_category)
-        
     def set_verb_category(self, id):    
         assert(id in data.VERBSET_BANK.categories())
         
@@ -335,7 +329,7 @@ class Clause(TemplatedNode):
             self.__verb_category_id = id
             self.__verb_category = category
             
-            self.__bequeath_verb_category()
+            self.__bequeath_to_subnodes()
             
         else:
             raise Exception('incompatible template', id, self._template_id())
@@ -351,7 +345,7 @@ class Clause(TemplatedNode):
         # head node gets special treatment
         # alternative: _create_nodes_subclass() call in base class and override here. 
         # TODO: use add_option instead somehow?
-        self.__bequeath_verb_category()
+        self.__bequeath_to_subnodes()
     
     def _tags_for_symbol(self, symbol): 
         if self.__verb_category:
@@ -361,12 +355,21 @@ class Clause(TemplatedNode):
             return TemplatedNode._tags_for_symbol(self, symbol) + semantic_tags
         else:
             return []
-        
-    def __bequeath_verb_category(self):
+    
+    def __bequeath_to_subnodes(self):
+        # propagate category down to head verb
         V = self._get_symbol_subnode('V')
         if self.__verb_category and V:
             V.set_category(self.__verb_category)
-    
+            
+            # propagate any other tags down to other symbols
+            for s in self._symbols():
+                tags = self.__verb_category.tags_for_symbol(s)
+                subnode = self._get_symbol_subnode(s)
+                assert(subnode)
+                subnode.add_options({'tags': tags})
+                
+            
         
         
 class CustomTemplate(TemplatedNode):
@@ -669,6 +672,7 @@ class Noun(GenericNoun):
         
     def _get_lexical_candidates(self):
         semantic_tags = [tag for tag in self._get_option('tags') if type(tag) is str] 
+        
         assert(len(semantic_tags) <= 1)
         if semantic_tags:
             candidates = data.NOUNSET_BANK.find_tagged(semantic_tags[0])   
