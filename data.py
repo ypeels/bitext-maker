@@ -4,6 +4,7 @@ Data module - global read-only data, and their related interface classes
 - if you want to test some code quickly, maybe it would just be easier to change DATA_DIR to a folder with small test data
 '''
 import collections
+import copy # for deepcopy (modifying templates...)
 import os
 import random
 
@@ -101,8 +102,8 @@ class NounSetBank(Bank):
 
             
 class TemplateBank(Bank):
-    def get_template_by_id(self, id):
-        return Template(self._data()[id])
+    def get_template_by_id(self, id, readonly=True):
+        return Template(self._data()[id], readonly)
         
 class DeterminerFormBank(Bank):
     def get(self, word):
@@ -162,7 +163,7 @@ class VerbSetBank:
     # well, this is still important, since it separates Data-level logic from Linguistics-level logic
 class Template:
     '''Verb and NP syntax'''
-    def __init__(self, data):
+    def __init__(self, data, readonly=True):
         # "declarations"
         self.__data = {}
         self.__symbols = {}
@@ -172,7 +173,10 @@ class Template:
         #self.__symbol_metadata = collections.defaultdict(collections.defaultdict(dict))
         # e.g., symbol_metadata[symbol]['tags']
         
-        self.__data = data        
+        if readonly:
+            self.__data = data        
+        else:
+            self.__data = copy.deepcopy(data)
         self.__parse()
         
     def __str__(self):

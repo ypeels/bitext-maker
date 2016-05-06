@@ -25,15 +25,20 @@ assert(__name__ == '__main__') # for now
     
 def make_transitive_clause(number='singular', modifiers=[]):    
     clause = nodes.node_factory('Clause')
-    clause.set_template('transitive')
-    clause.set_verb_category('action.possession') 
+    clause.set_template('transitive', readonly=False)
+    
+    clause.set_transformation('participle')
+    
+    # must be called after set_template() now, due to current transformation implementation...
+    clause.set_verb_category('emotion.desire') #'action.possession') 
 
     S, V, O = [clause._get_symbol_subnode(sym) for sym in 'SVO']
-    #S.set_template('noun'); S.add_options({'tags': ['object']})#, 'number': 'plural'})
-    O.set_template('name'); O.add_options({'tags': ['man']})
+    #S.set_template('noun'); #S.add_options({'tags': ['object']})#, 'number': 'plural'})
+    S.set_template('name'); #O.add_options({'tags': ['man']})
     #O.set_template('name')
-    S.set_template('noun'); S.add_options({'tags': ['object']})
-    S.add_options({'number': [number]}) # TODO: how to pluralize more robustly?? set_plural() would not be scalable to other options...
+    #S.set_template('noun'); #S.add_options({'tags': ['animal']})
+    O.set_template('noun'); O.add_options({'tags': ['object']})
+    O.add_options({'number': [number]}) # TODO: how to pluralize more robustly?? set_plural() would not be scalable to other options...
 
         
     #A, B = [np._get_subnode('N') for np in [S, O]] # calling "protected" functions externally is a bad sign/smell]
@@ -58,7 +63,7 @@ def make_transitive_clause(number='singular', modifiers=[]):
         adjp.set_template(mod)
         if mod == 'determiner':
             adjp.add_options({'tags': ['demonstrative']})
-        S.add_modifier(adjp)
+        O.add_modifier(adjp)
     
     lexical_nodes = clause.get_all_lexical_nodes() # n.b. you would have to rerun this every time you modified the tree... 
     determiners = [n for n in lexical_nodes if n.type() == 'determiner']
@@ -106,18 +111,18 @@ def make_custom(number='singular', modifiers=[]):
  
 clauses = [ None
     , make_transitive_clause()
-    , make_transitive_clause(number='plural')
-    , make_transitive_clause(modifiers=['determiner'])
-    , make_transitive_clause(number='plural', modifiers=['determiner'])
-    , make_transitive_clause(modifiers=['adjective'])
-    , make_transitive_clause(modifiers=['adjective', 'determiner'])
-    #, make_transitive_clause(modifiers=['adjective', 'determiner', 'adjective']) # works, but has awkward repeated adjs right now
-    #, make_transitive_clause(modifiers=['adjective', 'determiner', 'adjective', 'adjective'])
+    #, make_transitive_clause(number='plural')
+    #, make_transitive_clause(modifiers=['determiner'])
+    #, make_transitive_clause(number='plural', modifiers=['determiner'])
+    #, make_transitive_clause(modifiers=['adjective'])
+    #, make_transitive_clause(modifiers=['adjective', 'determiner'])
+    ##, make_transitive_clause(modifiers=['adjective', 'determiner', 'adjective']) # works, but has awkward repeated adjs right now
+    ##, make_transitive_clause(modifiers=['adjective', 'determiner', 'adjective', 'adjective'])
     , make_transitive_clause(number='plural', modifiers=['adjective', 'determiner'])
-    , make_custom()
-    , make_custom(number='plural')
-    , make_custom(modifiers=['determiner'])
-    , make_custom(number='plural', modifiers=['determiner'])
+    #, make_custom()
+    #, make_custom(number='plural')
+    #, make_custom(modifiers=['determiner'])
+    #, make_custom(number='plural', modifiers=['determiner'])
     ]
     
 

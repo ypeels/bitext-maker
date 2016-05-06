@@ -37,8 +37,7 @@ action.possession:
     # not common - just testing multiple verbsets
   - en: possess
     zh: 独有
-    
-  # well, generator needs to have knowledge about who is S and who is O in order to decline/inflect nouns...
+
   
   
   # TODO: custom templates for multi-purpose verbs like "do" - ugh, does that require tweaking this data structure?

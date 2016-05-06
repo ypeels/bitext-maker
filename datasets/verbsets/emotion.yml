@@ -1,0 +1,17 @@
+emotion.desire:
+  # TODO: PP-style modifications, before all verbs in the set - probably with an example
+  
+  # see clause_templates.yml
+  template: transitive 
+  
+  # semantic constraints on (the head word of) S, O. TODO: allow override on per-verb basis?
+  tags:
+    O:
+    S: [animal] 
+      # TODO: allow distinction between tags that are required (must match all) and allowed (must match [at least?] one)
+      
+  verbsets:
+  - example: Alice wants cookies .
+    en: want
+    zh: 要
+    

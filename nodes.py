@@ -27,6 +27,7 @@ class Node:
         self.__type = options.pop('type') # n.b. this modifies the original data structure!! 
         self.__options = collections.defaultdict(list, options) # need to instantiate even if empty - that way can query if empty
         
+    # currently only used for subject/verb agreement? (ADJP uses a bidirectional modifier/target system...)
     def add_dependency(self, node, **kwargs):
         self.__dependencies.append((node, kwargs))
         
@@ -155,6 +156,7 @@ class TemplatedNode(Node):
         
         
         # syntactic template
+        self._template_readonly = None # bool - expected to be write-once
         self.__template = None # data.Template
         self.__template_id = ''
         
@@ -199,8 +201,11 @@ class TemplatedNode(Node):
     
     def has_template(self):
         return bool(self.__template_id) and bool(self.__template)    
-    def set_template(self, id):
-        self.__template = self.__template_bank.get_template_by_id(id)
+    def set_template(self, id, readonly=True):
+        assert(self._template_readonly is None)
+        self._template_readonly = readonly
+    
+        self.__template = self.__template_bank.get_template_by_id(id, readonly)
         assert(type(self.__template) == data.Template)
         self.__template_id = id
         
@@ -241,7 +246,6 @@ class TemplatedNode(Node):
                 for lang, deps in self._deps_for_symbol(s).items():
                     for d in deps:
                         self.__symbol_subnodes[s].add_dependency(self.__symbol_subnodes[d], lang=lang)
-            
             
             self.__headnodes = [self._get_symbol_subnode(s) for s in self.__template.head_symbols()]
             assert(len(self.__headnodes) <= 1)            
@@ -285,7 +289,7 @@ class TemplatedNode(Node):
         
     def _get_headnodes(self):
         return self.__headnodes
-    
+   
     def _symbols(self):
         return self.__template.symbols()
         
@@ -305,13 +309,74 @@ class TemplatedNode(Node):
     def _type_for_symbol(self, symbol):
         return self.__template.type_for_symbol(symbol)
         
-    #### "private" functions - not intended to be called outside this class ###        
         
 
-class Clause(TemplatedNode):
+        
+    #### "private" functions - not intended to be called outside this class ###        
+        
+        
+class ModifierNode(TemplatedNode):
+    def __init__(self, bank, **kwargs):
+        TemplatedNode.__init__(self, bank, **kwargs)
+        self.__targets = [] 
+        
+    def add_target(self, target_node):
+        assert(issubclass(type(target_node), LexicalNode))
+        assert(target_node not in self.__targets)
+        assert(self.type() in ['ADJP'])
+        self.__targets.append(target_node)
+        
+    def targets(self):
+        return tuple(self.__targets) # makes the LIST read-only, but individual nodes still aren't...
+        
+        
+        
+class TransformableNode(ModifierNode):        
+    # transformation-related functions, not kept in TemplatedNode
+        # - avoid making TemplatedNode's code more complicated
+        # - also, most subclasses don't need this functionality for now
+    # not kept in ModifierNode, since that covers other classes like ADJP that might never need transforming
+    
+    def __init__(self, bank, **kwargs):
+        ModifierNode.__init__(self, bank, **kwargs)
+        # declare member variables here
+    
+    def set_transformation(self, transformation):    
+        # TODO: read from data and perform transformation accordingly
+        
+        assert(not self._template_readonly)
+        
+        targets = ['S']
+        import pdb; pdb.set_trace()
+
+    
+    # TODO: avoid memory leak (instantiating extra node that is getting converted to a target anyway)
+        # I think my first attempt is going to have transformations being applied after the template has been set
+        # (doesn't it have to, since otherwise, you don't have any subnodes or template to work with?)
+    def _convert_symbol_to_target(self, symbol):
+        assert(symbol in self._symbols())
+        
+        
+        # ugh, wait, shouldn't you need to alter the TEMPLATE ITSELF instead, before calling create_subnodes()?
+            # okay, i guess for a first pass, transformations should be specified when templates are specified? (at least, if nodes are removed)
+            # - avoid spurious dependencies
+        self._pop_symbol_subnode(symbol)
+        
+        # because there's such a sizable code component now:
+        # let's try the reverse development process this time and see if I can implement the transformation in code
+        # THEN see if I can persist the transformation to data
+        
+
+
+    
+
+        
+
+# now subclassing TransformableNode, to allow participles
+class Clause(TransformableNode):
     '''A node that is headed by a verb'''
     def __init__(self, **kwargs): 
-        TemplatedNode.__init__(self, data.CLAUSE_TEMPLATE_BANK, **kwargs)
+        TransformableNode.__init__(self, data.CLAUSE_TEMPLATE_BANK, **kwargs)
         
         self.__verb_category_id = ''
         self.__verb_category = {}
@@ -322,21 +387,30 @@ class Clause(TemplatedNode):
         return bool(self.__verb_category_id) and bool(self.__verb_category)
     def set_verb_category(self, id):    
         assert(id in data.VERBSET_BANK.categories())
+        assert(not self.__verb_category)
         
         # TODO: hmm, what if you want to specify semantic category first, or neither? (like with a participle)
         category = data.VERBSET_BANK.get_category(id)            
         if self._template_id() == category.template_id():
             self.__verb_category_id = id
             self.__verb_category = category
-            
+
+            assert(self._can_create_symbol_subnodes())
+            self._create_symbol_subnodes()
+           
             self.__bequeath_to_subnodes()
             
         else:
             raise Exception('incompatible template', id, self._template_id())
+            
+            
     
     # overrides
     def _can_create_symbol_subnodes(self):
-        return self.has_template() #and self.has_verb_category()  set_verb_category() now also triggers propagation to subnodes
+        # although set_verb_category() now also triggers propagation to subnodes,
+        # it's still useful to wait for has_verb_category(), since then you get a chance to perform template transformations:
+        # e.g., set_template(); transform(); set_verb_category()
+        return self.has_template() and self.has_verb_category()
     
     # hey, notice that you don't really have to order the symbols until generation time anyway, even if specified by templates
     def _create_symbol_subnodes(self):
@@ -358,6 +432,7 @@ class Clause(TemplatedNode):
     
     def __bequeath_to_subnodes(self):
         # propagate category down to head verb
+        assert(self._subnodes())
         V = self._get_symbol_subnode('V')
         if self.__verb_category and V:
             V.set_category(self.__verb_category)
@@ -437,20 +512,6 @@ class NounPhrase(TemplatedNode):
         # NR
         # VP-NP - who knows!
         
-        
-        
-class ModifierNode(TemplatedNode):
-    def __init__(self, bank, **kwargs):
-        TemplatedNode.__init__(self, bank, **kwargs)
-        self.__targets = [] 
-        
-    def add_target(self, target_node):
-        assert(issubclass(type(target_node), LexicalNode))
-        assert(target_node not in self.__targets)
-        self.__targets.append(target_node)
-        
-    def targets(self):
-        return tuple(self.__targets) # makes the LIST read-only, but individual nodes still aren't...
         
         
 class AdjectivePhrase(ModifierNode):

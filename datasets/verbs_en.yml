@@ -52,3 +52,10 @@ possess:
   VBN: possessed
   VBP: possess
   VBZ: possesses
+
+want:
+  VBD: wanted
+  VBG: wanting
+  VBN: wanted
+  VBP: want
+  VBZ: wants
