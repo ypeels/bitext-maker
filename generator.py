@@ -185,10 +185,7 @@ class EnGenerator(Generator):
         
         targets = node.targets()
         assert(len(targets) is 1) # TODO: multiple targets - which would go by NEAREST? "this cat and dogs"? hmm
-        
-        #import pdb; pdb.set_trace()
         det = forms.get(targets[0].number(), det_base)
-        
         
         # singular or plural form of determiner?
         self._generate_node_text(node, det)

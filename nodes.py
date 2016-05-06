@@ -175,7 +175,11 @@ class TemplatedNode(Node):
         assert(len(self._get_headnodes()) <= 1) # TODO: handle applying modifier to multiple head nodes (red cats and dogs)
         assert(len(self._get_headnodes()) > 0) # TODO: ignore add_modifier() on headless node? or raise Exception?
         for head in self._get_headnodes():  
-            modifier_node.add_target(head) # TODO: merge with existing "dependency" framework?
+            if modifier_node.type() in head.compatible_modifier_types():
+                modifier_node.add_target(head) # TODO: merge with existing "dependency" framework?
+            else:
+                raise Exception('Syntactic incompatibility: cannot modify {} with {}'.format(head.type(), modifier_node.type()))
+                
     def has_modifiers(self):
         return bool(self.__modifier_subnodes)
     def modifiers(self):
@@ -513,7 +517,7 @@ class LexicalNode(Node):
         raise UNIMPLEMENTED_EXCEPTION
      
     # empty default to be overridden by derived classes as needed
-    def _compatible_modifier_types(self):
+    def compatible_modifier_types(self):
         '''Check whether modifier is SYNTACTICALLY compatible with this target'''
         return set()
         
@@ -649,6 +653,9 @@ class Name(GenericNoun):
     #    self.__namesets = datasets
     
 class Noun(GenericNoun):
+    def compatible_modifier_types(self):
+        return { 'ADJP' }
+        
     def person(self):
         return 3
         
@@ -659,9 +666,6 @@ class Noun(GenericNoun):
         
     def set_plural(self): # just not available in Name, although could call add_options directly, or on parent node...
         self.add_options({'number': ['plural']})
-        
-    def _compatible_modifier_types(self):
-        return { 'ADJP' }
         
     def _get_lexical_candidates(self):
         semantic_tags = [tag for tag in self._get_option('tags') if type(tag) is str] 
