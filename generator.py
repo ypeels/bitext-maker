@@ -300,7 +300,6 @@ class EnGenerator(Generator):
             result += self.__conjunction(part_strings)
         
         if len(modifiers) > 0:            
-            import pdb; pdb.set_trace()
             raise Exception('TODO: handle other modifiers')
 
 

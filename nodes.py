@@ -358,52 +358,33 @@ class TransformableNode(ModifierNode):
     
     def transformations(self):
         return self.__transformations    
-    def set_transformation(self, transformation):    
-        # TODO: read from data and perform transformation accordingly
-        #print('transformablenode.set_transformation()')
+    def set_transformation(self, transformation_str):    
         assert(self._template())
         assert(not self._template_readonly)
-        assert(type(transformation) is str)
+        assert(type(transformation_str) is str)
         
         # keep a running list that can be queried
-        self.__transformations.append(transformation)
+        self.__transformations.append(transformation_str)
         
-        # transform template
+        # transformation will directly modify the template data structure
         template = self._template()
         
-        ### TODO: INPUT FROM FILE ###
-        
-        new_type = 'ADJP'
-        targets = ['S'] 
-        remove_trailing_punctuation = True
+        transform = data.TRANSFORMATION_BANK.get_transformation_by_id(transformation_str)
+        if transform.input_type() != self.type():
+            raise Exception('Tried to transform {} - expected {}'.format(self.type(), transform.input_type()))
 
+        self._set_type(transform.output_type())
         
-        #import yaml; print('before\n', yaml.dump(template._Template__data))
-        
-        self._set_type(new_type)
-        
-        for symbol in targets:
+        for symbol in transform.targets():
             template.add_target(template.pop_symbol(symbol)) # pop_symbol() also remove its traces from templates as a side effect
             
-        if remove_trailing_punctuation:
+        if transform.remove_trailing_punctuation():
             template.remove_trailing_punctuation()
-            
-        
-        #import yaml; print('after\n', yaml.dump(self._template()._Template__data))
-        
-        #import pdb; pdb.set_trace()
-
-    
-    # TODO: avoid memory leak (instantiating extra node that is getting converted to a target anyway)
-        # I think my first attempt is going to have transformations being applied after the template has been set
-        # (doesn't it have to, since otherwise, you don't have any subnodes or template to work with?)
-
         
     def _create_symbol_subnodes(self):   
         TemplatedNode._create_symbol_subnodes(self)
         
         # create phantom node that just stores attributes for matching purposes?
-        # self._create_target_ghostnode()? # other nodes MIGHT be transformed to "optional", but not (modifier) target...
         template = self._template()
         
         for k in template.target_keys():

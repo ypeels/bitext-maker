@@ -5,7 +5,7 @@ if sys.version_info < (3, 0):
 # "global" read-only variables
 DATA_DIR = 'datasets/'
 LANGUAGES = ['en', 'zh']
-USE_RANDOM = False
+USE_RANDOM = True
 
 # TODO: call this once at startup
 # BUT there might still be nondeterminism in terms of dict key ordering...

@@ -105,6 +105,10 @@ class TemplateBank(Bank):
     def get_template_by_id(self, id, readonly=True):
         return Template(self._data()[id], readonly)
         
+class TransformationBank(Bank):
+    def get_transformation_by_id(self, id):
+        return Transformation(self._data()[id])
+        
 class DeterminerFormBank(Bank):
     def get(self, word):
         df = self._data().get(word)
@@ -345,6 +349,26 @@ class Template:
     # let's just go with symbols for now, for want of a better idea...
 
         
+class Transformation:
+    def __init__(self, data):
+        self.__data = data
+        
+    def input_type(self):
+        return self.__data['input']
+        
+    def output_type(self):
+        return self.__data['output']
+
+    def remove_trailing_punctuation(self):
+        return 'remove trailing punctuation' in self.__data['options']
+        
+    def targets(self):
+        target_data = self.__data['targets']
+        if type(target_data) is list:
+            return target_data
+        else:
+            return [target_data]
+
 
 
    
@@ -492,7 +516,7 @@ ADJP_TEMPLATE_BANK = TemplateBank(TEMPLATE_DIR + 'adjp_templates.yml')
 CLAUSE_TEMPLATE_BANK = TemplateBank(TEMPLATE_DIR + 'clause_templates.yml')
 CUSTOM_TEMPLATE_BANK = TemplateBank(TEMPLATE_DIR + 'custom_templates.yml')
 NP_TEMPLATE_BANK = TemplateBank(TEMPLATE_DIR + 'np_templates.yml')
-
+TRANSFORMATION_BANK = TransformationBank(TEMPLATE_DIR + 'transformations.yml')
 
 
 
