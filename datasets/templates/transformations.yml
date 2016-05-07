@@ -1,0 +1,39 @@
+participle:
+  input: Clause
+  output: ADJP
+  
+  example: 
+    input: The frog eats delicious bugs .
+    output: eating delicious bugs
+   
+  # these symbols get converted to target "ghost" nodes for semantic matching
+  targets: S    
+    
+  options: 
+  - remove trailing punctuation
+    
+  # keep: punctuation
+   
+  #S
+  #subject
+  #slot? hole? receptor? #target 
+  
+  
+#participle.passive # a.k.a. past # target: O
+# S becomes optional
+# R too...
+  # He hit the ball
+    # the ball hit by him
+    # the ball (that) he hit (this isn't a participle per se, but is a way to adjectivize...)
+
+# ugh, conflicting goals
+  # Goal 1: want to modify template before set_verb_category() because:
+    # was it to avoid memory leaking from unnecessary nodes? doubtful...
+    # probably because I wanted to avoid non-trivial node migration within original TemplatedNode class?
+    # yeah, i wanted to isolate Transformable stuff into a subclass, and not punch TOO many holes in original class
+      # i think i was worried about making TemplatedNode too brittle
+      # yeah, if the template itself has been modified, then you KNOW TemplatedNode should work correctly
+  # Goal 2: want to modify templatenode AFTER set_verb_category() because then you can still get semantic matching on phantom S
+  # side note: wouldn't it be nice to have the option to implement modification in the Transformation framework?
+    # i.e., should I really just build Transformation into TemplatedNode??
+  

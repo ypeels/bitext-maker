@@ -20,6 +20,10 @@ physical:
   material: # hmm, some words can be both, like "cloth"...
     
 abstract:
+  action:
+  communication:
+    verbal:
+    written:  
   duration:
   event:
   idea:

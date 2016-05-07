@@ -24,6 +24,10 @@ determiner:
     zh: { template: D }
     
     
+# TODO: noun ("clown car")
+# TODO: restrict target types? or is it noun only for now? expand to names?
+    
+    
 # hmm, these should be accompanied by significant code components...
 # although the first 10 or so should also probably be brute forced
 number:
@@ -43,3 +47,16 @@ ordinal:
     zh: { template: O }
     
   # TODO: get rid of literal modifier templates altogether? better off piecing together words in code?
+
+  
+# not used in code for now - just listed here for reference  
+__from_transformations__:
+- participle:
+  example: opening the door
+  
+  
+
+  
+  
+  
+  
