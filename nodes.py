@@ -24,7 +24,7 @@ class Node:
         self.__generated_text = None # { 'en': 'Alice' ... }
         
         # just store them for now and figure out what to do with them later... can always use dict.pop()
-        self.__type = options.pop('type') # n.b. this modifies the original data structure!! 
+        self.__type = options.pop('type') # n.b. this modifies the input original data structure!! (assumed disposable)
         self.__options = collections.defaultdict(list, options) # need to instantiate even if empty - that way can query if empty
         
     # currently only used for subject/verb agreement? (ADJP uses a bidirectional modifier/target system...)
@@ -135,6 +135,10 @@ class Node:
     # ugh, breaking encapsulation to give access to NounPhrase ... but it's only "vertical" encapsulation, right?
     def _options(self):
         return self.__options
+        
+    def _set_type(self, type):
+        '''Intended for use in TransformableNode'''
+        self.__type = type
         
         
         
@@ -340,37 +344,69 @@ class TransformableNode(ModifierNode):
     
     def __init__(self, bank, **kwargs):
         ModifierNode.__init__(self, bank, **kwargs)
-        # declare member variables here
+        
+        self.__ghostnodes = {}
+        self.__transformations = []
     
+    def transformations(self):
+        return self.__transformations    
     def set_transformation(self, transformation):    
         # TODO: read from data and perform transformation accordingly
-        
+        #print('transformablenode.set_transformation()')
+        assert(self._template())
         assert(not self._template_readonly)
+        assert(type(transformation) is str)
         
-        targets = ['S']
-        import pdb; pdb.set_trace()
+        # keep a running list that can be queried
+        self.__transformations.append(transformation)
+        
+        # transform template
+        template = self._template()
+        
+        ### TODO: INPUT FROM FILE ###
+        
+        new_type = 'ADJP'
+        targets = ['S'] 
+        remove_trailing_punctuation = True
+
+        
+        #import yaml; print('before\n', yaml.dump(template._Template__data))
+        
+        self._set_type(new_type)
+        
+        for symbol in targets:
+            template.add_target(template.pop_symbol(symbol)) # pop_symbol() also remove its traces from templates as a side effect
+            
+        if remove_trailing_punctuation:
+            template.remove_trailing_punctuation()
+            
+        
+        #import yaml; print('after\n', yaml.dump(self._template()._Template__data))
+        
+        #import pdb; pdb.set_trace()
 
     
     # TODO: avoid memory leak (instantiating extra node that is getting converted to a target anyway)
         # I think my first attempt is going to have transformations being applied after the template has been set
         # (doesn't it have to, since otherwise, you don't have any subnodes or template to work with?)
-    def _convert_symbol_to_target(self, symbol):
-        assert(symbol in self._symbols())
-        
-        
-        # ugh, wait, shouldn't you need to alter the TEMPLATE ITSELF instead, before calling create_subnodes()?
-            # okay, i guess for a first pass, transformations should be specified when templates are specified? (at least, if nodes are removed)
-            # - avoid spurious dependencies
-        self._pop_symbol_subnode(symbol)
-        
-        # because there's such a sizable code component now:
-        # let's try the reverse development process this time and see if I can implement the transformation in code
-        # THEN see if I can persist the transformation to data
-        
 
-
-    
-
+        
+    def _create_symbol_subnodes(self):   
+        TemplatedNode._create_symbol_subnodes(self)
+        
+        # create phantom node that just stores attributes for matching purposes?
+        # self._create_target_ghostnode()? # other nodes MIGHT be transformed to "optional", but not (modifier) target...
+        template = self._template()
+        
+        for k in template.target_keys():
+            assert(not self.__ghostnodes.get(k))
+            self.__ghostnodes[k] = Node(**dict(template.target_options_for_key(k))) # TODO: plug memory leak? (alternative is to trash template's data...)
+        
+    def _ghost_symbols(self):
+        return self.__ghostnodes.keys()
+        
+    def _get_symbol_ghostnode(self, symbol):
+        return self.__ghostnodes.get(symbol)
         
 
 # now subclassing TransformableNode, to allow participles
@@ -415,9 +451,10 @@ class Clause(TransformableNode):
     
     # hey, notice that you don't really have to order the symbols until generation time anyway, even if specified by templates
     def _create_symbol_subnodes(self):
-        TemplatedNode._create_symbol_subnodes(self)
+        TransformableNode._create_symbol_subnodes(self)
         
         # head node gets special treatment
+        # this is different from other TemplatedNodes because verbs have semantic sub-categories instead of just tags...
         # alternative: _create_nodes_subclass() call in base class and override here. 
         # TODO: use add_option instead somehow?
         self.__bequeath_to_subnodes()
@@ -438,12 +475,17 @@ class Clause(TransformableNode):
         if self.__verb_category and V:
             V.set_category(self.__verb_category)
             
-            # propagate any other tags down to other symbols
-            for s in self._symbols():
+            # propagate any other semantic tags from verb category down to other symbols
+            for s in self.__verb_category.tagged_symbols():
                 tags = self.__verb_category.tags_for_symbol(s)
-                subnode = self._get_symbol_subnode(s)
-                assert(subnode)
-                subnode.add_options({'tags': tags})
+                
+                if s in self._symbols():
+                    node = self._get_symbol_subnode(s)
+                elif s in self._ghost_symbols(): # also propagate down to any ghost nodes, for semantic matching with real nodes
+                    node = self._get_symbol_ghostnode(s)
+                    
+                assert(node)
+                node.add_options({'tags': tags})
                 
             
         

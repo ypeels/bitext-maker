@@ -169,6 +169,7 @@ class Template:
         self.__symbols = {}
         self.__syntax_tags_per_symbol = collections.defaultdict(dict)
         self.__deps_per_symbol = collections.defaultdict(dict)
+        self.__writable = bool(not readonly)
         
         #self.__symbol_metadata = collections.defaultdict(collections.defaultdict(dict))
         # e.g., symbol_metadata[symbol]['tags']
@@ -177,6 +178,7 @@ class Template:
             self.__data = data        
         else:
             self.__data = copy.deepcopy(data)
+            
         self.__parse()
         
     def __str__(self):
@@ -204,12 +206,24 @@ class Template:
         '''
         return self.__syntax_tags_per_symbol[symbol]
         
+    def target_keys(self):
+        targets = self.__data.get('targets')
+        if targets:
+            return targets.keys()
+        else:
+            return []
+        
+    def target_options_for_key(self, key):
+        return self.__data['targets'][key]
+        
     def template_text(self, lang):
         return self.__data['templates'][lang]['template']
         
     def type_for_symbol(self, symbol):
         return self.__data['symbols'][symbol]['type']
 
+    def _writable(self):
+        return self.__writable
         
     def __wrap_as_list(self, item):
         if type(item) is list:
@@ -217,11 +231,15 @@ class Template:
         else:
             return [item]
         
-        
     def __parse(self):
         # parse symbols
         assert(type(self.__data['symbols']) == dict)
         self.__symbols = self.__data['symbols']
+        
+        # clear old entries and re-parse 
+        if self._writable(): 
+            self.__syntax_tags_per_symbol.clear()
+            self.__deps_per_symbol.clear()
         
         # parse tags for each symbol - a bit of non-trivial inversion, so do it here at load time, once-only
         # imperative style is just a bit more DRY and flexible for something like this...
@@ -232,9 +250,99 @@ class Template:
                     
                 for symbol, deps in metadata.get('dependencies', {}).items():
                     deps_list = self.__wrap_as_list(deps)
-                    assert(all(d in self.symbols() for d in deps_list))
+                    #assert(all(d in self.symbols() for d in deps_list))
                     self.__deps_per_symbol[symbol][lang] = deps_list
-                    
+           
+           
+           
+    ### operations that modify the template ###
+    def add_target(self, target_data):
+        assert(self._writable())
+        assert(not self.__data.get('targets')) # assuming only single target for now, at least in a template... when would multiple occur?
+        self.__data['targets'] = target_data
+    
+    def pop_symbol(self, symbol):
+        '''
+        Removes all traces of a symbol, even from dependencies.
+        Return value: symbol signature (from "symbols" dict)
+        '''
+        assert(self._writable())
+        if symbol not in self.symbols():
+            raise Exception('Symbol {} not found in {}'.format(symbol, self.symbols()))
+        
+        # all be isolated in function calls, to facilitate modification if data structure changes (unlikely at this point)
+        self.__remove_symbol_from_template_text(symbol)
+        self.__remove_symbol_from_syntax_tags(symbol)
+        self.__remove_symbol_from_dependencies(symbol)
+        
+        popped = { symbol: self.__data['symbols'].pop(symbol) }
+        
+        self.__parse()
+        assert(not self.syntax_tags_for_symbol(symbol))
+        assert(not self.deps_for_symbol(symbol))
+        
+        return popped
+        
+    def remove_trailing_punctuation(self):
+        assert(self._writable())
+        
+        for lang in LANGUAGES:
+            template_text = self.template_text(lang)
+            tokens = template_text.split()
+            if tokens[-1] in ['.', '。', '?', '？', '!', '！']:
+                self.set_template_text(lang, ' '.join(tokens[:-1]))
+                self.__parse() # not currently necessary, but just in case
+        
+    def set_template_text(self, lang, text):
+        assert(self._writable())
+        self.__data['templates'][lang]['template'] = text # is there any way to DRY this out with template_text()?
+        self.__parse()
+        assert(self.template_text(lang) == text)
+        
+        
+    def __remove_symbol_from_template_text(self, symbol):
+        assert(self._writable())
+        assert(symbol in self.symbols())
+        for lang in LANGUAGES:#, template_data in self.__data['templates']:
+            template_text = self.template_text(lang)
+            tokens = template_text.split()
+            assert(tokens.count(symbol) is 1)
+            tokens.remove(symbol)
+            self.set_template_text(lang, ' '.join(tokens))
+        # don't have to __parse() just yet, since this function is only meant to be called internally    
+            
+    def __remove_symbol_from_syntax_tags(self, symbol):
+        assert(self._writable())
+        assert(symbol in self.symbols())
+        #assert(self.syntax_tags_for_symbol(symbol)) # also, can't just pop(), since the template itself needs to change
+        
+        # this looks disturbingly brittle...
+        for lang in LANGUAGES:            
+            lang_data = self.__data['templates'][lang]
+            tags = lang_data.get('tags')
+            if tags and tags.get(symbol):
+                tags.pop(symbol)
+        
+        #assert(not self.syntax_tags_for_symbol(symbol)) saving this for later, since __parse() is not quite necessary here
+        
+    def __remove_symbol_from_dependencies(self, symbol):
+        assert(self._writable())
+        assert(symbol in self.symbols())
+
+        for lang in LANGUAGES:
+            lang_data = self.__data['templates'][lang]
+            deps = lang_data.get('dependencies')
+            if deps:
+                for s, d in list(deps.items()):
+                    if d == symbol:
+                        deps.pop(s)
+                
+        
+    
+    # assert(self._writable())
+    
+    # i'm not totally sure descriptions are going to stay fixed
+    # let's just go with symbols for now, for want of a better idea...
 
         
 
@@ -255,6 +363,9 @@ class VerbCategory:
         
     def tags_for_symbol(self, symbol):
         return self.__data['tags'].get(symbol)
+        
+    def tagged_symbols(self):
+        return self.__data['tags'].keys()
         
     def template_id(self):
         return self.__data['template']

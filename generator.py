@@ -207,7 +207,17 @@ class EnGenerator(Generator):
         if not all(dep.has_generated_text(self.LANG) for dep in dependencies):
             #return # vestigial? was I overengineering some hypothetical case where you have to wait for dependency's generated surface form?
             pass
-            
+        
+        # TODO: unified logic instead of just hackishly short-circuiting participles like this
+        parent_node = node.parent()
+        if parent_node.type() == 'ADJP':
+            assert('participle' in parent_node.transformations())
+            verb_base = self._get_verb_base(node)
+            verb_forms = self._verb_form_bank.get(verb_base)
+            self._generate_node_text(node, verb_forms.get_form('VBG')) #verb)
+            return
+        
+
         assert(len(dependencies) <= 1) # just subject-verb for now
         subject_node = dependencies[0]
         
@@ -216,15 +226,23 @@ class EnGenerator(Generator):
         else:
             raise Exception('Unsupported tense ' + node.get_tense())
 
+    # TODO: move into Generator superclass?
+    # TODO: DRY this out between _generate_verb() and _generate_verb_present
+    # alternatively baking this into Verb would put language-dependent code in the tree (well, tree data is already lang-dep...)
+    #def _get_verb_from_form(self, verb_node, form):
+    #    verb_base = self._get_verb_base(verb_node)
+    #    verb_forms = self._verb_form_bank.get(verb_base)
+    #    return verb_forms.get_form(form)
+            
             
     def __generate_verb_present(self, verb_node, subject_node):
         verb_base = self._get_verb_base(verb_node)
-        verb_forms = self._verb_form_bank.get(verb_base)
+        verb_forms = self._verb_form_bank.get(verb_base) # needed by is_regular() below
         
         # person and number
         # need to choose between the forms of the verb's word
         if verb_forms.is_regular():
-            
+
             # if subject third person and regular, then use VBZ
             if subject_node.number() == 'singular' and subject_node.person() == 3:
                 verb = verb_forms.get_form('VBZ')

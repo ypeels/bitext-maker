@@ -26,17 +26,22 @@ assert(__name__ == '__main__') # for now
 def make_transitive_clause(number='singular', modifiers=[]):    
     clause = nodes.node_factory('Clause')
     clause.set_template('transitive', readonly=False)
+    assert(not clause._subnodes())
     
     clause.set_transformation('participle')
     
     # must be called after set_template() now, due to current transformation implementation...
+    # subnodes are generated after both template and verb category have been set.
+    # this gives transformations the chance to modify the template.
     clause.set_verb_category('emotion.desire') #'action.possession') 
+    assert(clause._subnodes())
 
     S, V, O = [clause._get_symbol_subnode(sym) for sym in 'SVO']
     #S.set_template('noun'); #S.add_options({'tags': ['object']})#, 'number': 'plural'})
-    S.set_template('name'); #O.add_options({'tags': ['man']})
+    if S: S.set_template('name'); #O.add_options({'tags': ['man']})
     #O.set_template('name')
     #S.set_template('noun'); #S.add_options({'tags': ['animal']})
+    
     O.set_template('noun'); O.add_options({'tags': ['object']})
     O.add_options({'number': [number]}) # TODO: how to pluralize more robustly?? set_plural() would not be scalable to other options...
 
