@@ -25,26 +25,23 @@ assert(__name__ == '__main__') # for now
     
 def make_transitive_clause(number='singular', modifiers=[]):    
     clause = nodes.node_factory('Clause')
-    clause.set_template('transitive', readonly=False)
+    clause.set_template('transitive')
     assert(not clause._subnodes())
-    
-    clause.set_transformation('participle')
     
     # must be called after set_template() now, due to current transformation implementation...
     # subnodes are generated after both template and verb category have been set.
     # this gives transformations the chance to modify the template.
-    clause.set_verb_category('emotion.desire') #'action.possession') 
+    clause.set_verb_category('action.possession')  #
     assert(clause._subnodes())
 
     S, V, O = [clause._get_symbol_subnode(sym) for sym in 'SVO']
-    #S.set_template('noun'); #S.add_options({'tags': ['object']})#, 'number': 'plural'})
-    if S: S.set_template('name'); #O.add_options({'tags': ['man']})
+    S.set_template('noun'); S.add_options({'tags': ['object']})#, 'number': 'plural'})
+    #S.set_template('name'); #O.add_options({'tags': ['man']})
     #O.set_template('name')
     #S.set_template('noun'); #S.add_options({'tags': ['animal']})
     
     O.set_template('noun'); O.add_options({'tags': ['object']})
     O.add_options({'number': [number]}) # TODO: how to pluralize more robustly?? set_plural() would not be scalable to other options...
-
         
     #A, B = [np._get_subnode('N') for np in [S, O]] # calling "protected" functions externally is a bad sign/smell]
     #A.add_options({'tags': ['woman']})
@@ -59,6 +56,16 @@ def make_transitive_clause(number='singular', modifiers=[]):
     
     # looks like you should be able to add a modifier to S or O, and it would get transferred down to the head child
     
+    if 'participle' in modifiers:
+        assert(modifiers.count('participle') is 1)
+        modifiers.remove('participle')
+        participle = nodes.node_factory('Clause')
+        participle.set_template('transitive', readonly=False)
+        participle.set_transformation('participle')    
+        participle.set_verb_category('emotion.desire')
+        PO = participle._get_symbol_subnode('O') # note that current test harness requires all NP's to have specified templates...
+        PO.set_template('noun'); PO.add_options({'tags': ['object']})
+        S.add_modifier(participle)
     
     # add a determiner. oooooo
     # TODO: does this logic really belong here?
@@ -69,6 +76,8 @@ def make_transitive_clause(number='singular', modifiers=[]):
         if mod == 'determiner':
             adjp.add_options({'tags': ['demonstrative']})
         O.add_modifier(adjp)
+        
+    # TODO: test semantic matching of participle and subject
     
     lexical_nodes = clause.get_all_lexical_nodes() # n.b. you would have to rerun this every time you modified the tree... 
     determiners = [n for n in lexical_nodes if n.type() == 'determiner']
@@ -124,6 +133,7 @@ clauses = [ None
     ##, make_transitive_clause(modifiers=['adjective', 'determiner', 'adjective']) # works, but has awkward repeated adjs right now
     ##, make_transitive_clause(modifiers=['adjective', 'determiner', 'adjective', 'adjective'])
     , make_transitive_clause(number='plural', modifiers=['adjective', 'determiner'])
+    , make_transitive_clause(number='plural', modifiers=['adjective', 'determiner', 'participle'])
     #, make_custom()
     #, make_custom(number='plural')
     #, make_custom(modifiers=['determiner'])

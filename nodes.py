@@ -348,6 +348,14 @@ class TransformableNode(ModifierNode):
         self.__ghostnodes = {}
         self.__transformations = []
     
+    def template_id(self):
+        '''Overrides base class'''
+        if self.__transformations:
+            assert(len(self.__transformations) is 1)
+            return self.__transformations[0]
+        else:
+            return TemplatedNode.template_id()
+    
     def transformations(self):
         return self.__transformations    
     def set_transformation(self, transformation):    

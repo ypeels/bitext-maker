@@ -169,7 +169,16 @@ class Generator:
         return result
         
               
-             
+    def _pop_modifiers(self, modifiers, id_to_pop):
+        '''Removes modifiers with matching template ID (changes list in place) and returns them'''
+        assert(type(modifiers) is list)
+        assert(all(issubclass(type(m), nodes.ModifierNode) for m in modifiers))
+        popped = [m for m in modifiers if m.template_id() == id_to_pop]
+        for p in popped:
+            modifiers.remove(p)
+            assert(modifiers.count(p) is 0)
+        return popped
+        
         
     
     
@@ -263,9 +272,7 @@ class EnGenerator(Generator):
         # TODO there are semantics-related ordering issues.. it looks like this could get VERY complicated...
         
         # determiner goes at the very front
-        dets = [m for m in modifiers if m.template_id() == 'determiner']
-        modifiers = [m for m in modifiers if m not in dets]
-        
+        dets = self._pop_modifiers(modifiers, 'determiner')        
         assert(len(node._get_headnodes()) is 1)
         if dets: 
             assert(len(dets) is 1) # forget about PDTs ("all the gold") for now
@@ -278,31 +285,50 @@ class EnGenerator(Generator):
                     raise Exception('TODO: unmodified singular noun that is not an #object')
                     
         # adjectives
-        adjs = [m for m in modifiers if m.template_id() == 'adjective']
-        modifiers = [m for m in modifiers if m not in adjs]
+        adjs = self._pop_modifiers(modifiers, 'adjective')
         if adjs:
-            # no serial comma, to facilitate generation
-            # TODO: add user option for serial comma?
             # TODO: adjective ordering
             adj_strings = [a.generated_text(self.LANG) for a in adjs]
-            for a in adj_strings[:-2]:
-                result += [a, ',']
-                
-            if len(adj_strings) >= 2:
-                result += [adj_strings[-2], 'and']
-                
-            result += [adj_strings[-1]]
+            result += self.__conjunction(adj_strings) 
                     
-        if len(modifiers) > 0:            
-            raise Exception('TODO: handle other modifiers')
-            
         result += template
+
+        # participles - postpend after the noun
+        participles = self._pop_modifiers(modifiers, 'participle')
+        if participles:
+            part_strings = [p.generated_text(self.LANG) for p in participles]
+            result += self.__conjunction(part_strings)
+        
+        if len(modifiers) > 0:            
+            import pdb; pdb.set_trace()
+            raise Exception('TODO: handle other modifiers')
+
 
         return result
             
 
                     
         
+    def __conjunction(self, strings):
+        '''
+        Input: list of strings
+        Output: [str1, ',', str2, ',' ... , 'and', strN]
+        '''
+        # no serial comma, to facilitate generation
+        # TODO: add user option for serial comma?
+        assert(type(strings) is list)
+        assert(all(type(s) is str for s in strings))
+        
+        result = []
+        for s in strings[:-2]:
+            result += [s, ',']
+            
+        if len(strings) >= 2:
+            result += [strings[-2], 'and']
+            
+        result += [strings[-1]]
+        
+        return result
         
         
     def __pluralize_noun(self, noun_base):
@@ -389,8 +415,7 @@ class ZhGenerator(Generator):
         
         
         # determiners
-        dets = [m for m in modifiers if m.template_id() == 'determiner']
-        modifiers = [m for m in modifiers if m not in dets]        
+        dets = self._pop_modifiers(modifiers, 'determiner')
         if dets:
             assert(len(dets) is 1) 
             result.append(dets[0].generated_text(self.LANG))            
@@ -400,18 +425,25 @@ class ZhGenerator(Generator):
                 assert(not node.has_modifiers()) # would need to check modifiers for "pluralizers" like CD
                 result.append('一些')
         
+        # participles - generally handle before adjectives, which could even be single-character...
+        participles = self._pop_modifiers(modifiers, 'participle')
+        if participles:
+            for part in participles:
+                text = part.generated_text(self.LANG)
+                result += [text, '的']
+        
         # adjectives
-        adjs = [m for m in modifiers if m.template_id() == 'adjective']
-        modifiers = [m for m in modifiers if m not in adjs]
+        adjs = self._pop_modifiers(modifiers, 'adjective')
         if adjs:
             # TODO: for more than 1 adj, might want to order them in a more semantically sensible order
-            assert(len(adjs) is 1) 
             for a in adjs:
-                a = adjs[0].generated_text(self.LANG)
-                result.append(a)            
-                if len(a) > 1:
+                text = a.generated_text(self.LANG)
+                result.append(text)            
+                if len(text) > 1:
                     result.append('的')
                 
+
+            
         
         if len(modifiers) > 0:
             raise Exception('TODO: handle other modifiers')
