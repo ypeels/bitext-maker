@@ -173,7 +173,7 @@ class TemplatedNode(Node):
         assert(len(self._get_headnodes()) > 0) # TODO: ignore add_modifier() on headless node? or raise Exception?
         for head in self._get_headnodes():  
             if modifier_node.type() in head.compatible_modifier_types():
-                modifier_node.add_target(head) # TODO: merge with existing "dependency" framework?
+                modifier_node.add_lexical_target(head) # TODO: merge with existing "dependency" framework?
             else:
                 raise Exception('Syntactic incompatibility: cannot modify {} with {}'.format(head.type(), modifier_node.type()))
                 
@@ -318,16 +318,17 @@ class TemplatedNode(Node):
 class ModifierNode(TemplatedNode):
     def __init__(self, bank, **kwargs):
         TemplatedNode.__init__(self, bank, **kwargs)
-        self.__targets = [] 
+        self.__lexical_targets = [] 
         
-    def add_target(self, target_node):
+    def add_lexical_target(self, target_node):
+        '''Used by Generator to pull word-level information'''
         assert(issubclass(type(target_node), LexicalNode))
-        assert(target_node not in self.__targets)
+        assert(target_node not in self.__lexical_targets)
         assert(self.type() in ['ADJP'])
-        self.__targets.append(target_node)
+        self.__lexical_targets.append(target_node)
         
-    def targets(self):
-        return tuple(self.__targets) # makes the LIST read-only, but individual nodes still aren't...
+    def lexical_targets(self):
+        return tuple(self.__lexical_targets) # pointless? makes the LIST read-only, but individual nodes still aren't...
         
         
         
@@ -545,6 +546,9 @@ class LexicalNode(Node):
         self.__selected_sample_index = 0
         
     # public
+    def lexical_targets(self):
+        return self.parent().lexical_targets()
+    
     def num_samples(self):
         if self.__datasets:
             assert(self.__num_samples == len(self.__datasets))
@@ -568,9 +572,6 @@ class LexicalNode(Node):
         else:
             raise Exception('out of range: {}/{}'.format(index, len(self.__datasets))) 
             # can't just let the system raise IndexError, because it might not for a WHILE before it actually uses index to access
-        
-    def targets(self):
-        return self.parent().targets()
             
     def total_num_datasets(self, lang): # TODO: rename this atrocity
         # each dataset object could contain more than one "dataset" (nameset, etc.), e.g., en: [Bob, Robert]

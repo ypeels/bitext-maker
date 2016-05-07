@@ -183,9 +183,9 @@ class EnGenerator(Generator):
         
         forms = self._det_form_bank.get(det_base) or {}
         
-        targets = node.targets()
-        assert(len(targets) is 1) # TODO: multiple targets - which would go by NEAREST? "this cat and dogs"? hmm
-        det = forms.get(targets[0].number(), det_base)
+        lexical_targets = node.lexical_targets()
+        assert(len(lexical_targets) is 1) # TODO: multiple targets - which would go by NEAREST? "this cat and dogs"? hmm
+        det = forms.get(lexical_targets[0].number(), det_base)
         
         # singular or plural form of determiner?
         self._generate_node_text(node, det)
@@ -325,13 +325,13 @@ class ZhGenerator(Generator):
     LANG = 'zh'    
     
     def _generate_determiner(self, node):
-        targets = node.targets()
-        assert(len(targets) is 1)
-        assert(targets[0].type() == 'noun')
+        lexical_targets = node.lexical_targets()
+        assert(len(lexical_targets) is 1)
+        assert(lexical_targets[0].type() == 'noun')
                 
         words = self._get_det_base(node) # string instead of list, to enable segmentation antics
                 
-        target = targets[0]
+        target = lexical_targets[0]
         assert('object' in target._get_option('tags')) # so that "DT 些" has a plural meaning (*这 些 水). so horribly brittle...        
         
         if target.number() == 'singular':
