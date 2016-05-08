@@ -296,6 +296,7 @@ class EnGenerator(Generator):
         # participles - postpend after the noun
         participles = self._pop_modifiers(modifiers, 'participle')
         if participles:
+            assert(all(p.num_symbols() > 1 for p in participles)) # objectless? needs different order: "the kicking man"
             part_strings = [p.generated_text(self.LANG) for p in participles]
             result += self.__conjunction(part_strings)
         
