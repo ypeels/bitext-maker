@@ -279,7 +279,7 @@ class EnGenerator(Generator):
             result.append(dets[0].generated_text(self.LANG))
         else:
             if node.number() == 'singular' and node.template_id() == 'noun':
-                if 'object' in node._get_option('tags'):
+                if any(data.TAXONOMY.isa(tag, 'object') for tag in node._get_option('tags') if type(tag) is str):
                     result.append('the')
                 else:
                     raise Exception('TODO: unmodified singular noun that is not an #object')
