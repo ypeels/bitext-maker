@@ -1,1 +1,11 @@
-# this file left intentionally empty - normal English adjectives are uninflected
+big:
+  JJR: bigger
+  JJS: biggest
+
+good:
+  JJR: better
+  JJS: best
+  
+small: 
+  JJR: smaller
+  JJS: smallest
