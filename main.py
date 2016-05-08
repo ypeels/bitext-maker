@@ -13,7 +13,11 @@ assert(__name__ == '__main__') # for now
 
 #seed_rng() # output still not deterministic? loops over dicts are still random
 
-
+#raise Exception('''
+#NEXT: 
+#loose end - semantic matching for ADJP in general
+#loose end - specifying verb forms literally in templates? (VBG for participle; currently in code)
+#''')
 
 ### 1. Specify sentences ###
 
@@ -35,7 +39,8 @@ def make_transitive_clause(number='singular', modifiers=[]):
     assert(clause._subnodes())
 
     S, V, O = [clause._get_symbol_subnode(sym) for sym in 'SVO']
-    S.set_template('noun'); S.add_options({'tags': ['object']})#, 'number': 'plural'})
+    S.set_template('noun'); S.add_options({'tags': ['person']})#, 'number': 'plural'})
+    #S.set_template('name'); #O.add_options({'tags': ['man']})
     #S.set_template('name'); #O.add_options({'tags': ['man']})
     #O.set_template('name')
     #S.set_template('noun'); #S.add_options({'tags': ['animal']})

@@ -60,6 +60,10 @@ class Node:
     def get_dependencies(self, **input_options): # input_options is here to mirror add_dependency() - deps can vary with language
         return [dep for (dep, options) in self.__dependencies if all(options[ik] == iv for ik, iv in input_options.items())]
 
+    def semantic_tags(self):
+        '''Returns all language-independent tags'''
+        return [t for t in self._get_option('tags') if type(t) is str]
+        
     def type(self):
         return self.__type
         
@@ -170,16 +174,19 @@ class TemplatedNode(Node):
     ### "public" API - for use outside this class ###
     def add_modifier(self, modifier_node):
         # TODO: check whether target is SEMANTICALLY compatible with modifier...
-        assert(modifier_node not in self.__modifier_subnodes)
-        self.__modifier_subnodes.append(modifier_node)
-        
         assert(len(self._get_headnodes()) <= 1) # TODO: handle applying modifier to multiple head nodes (red cats and dogs)
         assert(len(self._get_headnodes()) > 0) # TODO: ignore add_modifier() on headless node? or raise Exception?
-        for head in self._get_headnodes():  
-            if modifier_node.type() in head.compatible_modifier_types():
+        headnodes = self._get_headnodes()
+        if all(modifier_node.can_modify(head) for head in headnodes): 
+            assert(modifier_node not in self.__modifier_subnodes)
+            self.__modifier_subnodes.append(modifier_node)
+        
+            for head in headnodes:              
                 modifier_node.add_lexical_target(head) # TODO: merge with existing "dependency" framework?
-            else:
-                raise Exception('Syntactic incompatibility: cannot modify {} with {}'.format(head.type(), modifier_node.type()))
+        else:
+            # TODO: more graceful error handling - to let nodes cycle through modifiers autonomously
+            #raise Exception('Syntactic incompatibility: cannot modify {} with {}'.format(headnodes[0].type(), modifier_node.type()))
+            raise Exception('TemplatedNode.add_modifier() failed') # can_modify() now does some semantic checking too...
                 
     def has_modifiers(self):
         return bool(self.__modifier_subnodes)
@@ -329,10 +336,12 @@ class ModifierNode(TemplatedNode):
         assert(issubclass(type(target_node), LexicalNode))
         assert(target_node not in self.__lexical_targets)
         assert(self.type() in ['ADJP'])
-        self.__lexical_targets.append(target_node)
-        
+        self.__lexical_targets.append(target_node)        
     def lexical_targets(self):
         return tuple(self.__lexical_targets) # pointless? makes the LIST read-only, but individual nodes still aren't...
+        
+    def can_modify(self, target):
+        return self.type() in target.compatible_modifier_types()
         
         
         
@@ -345,8 +354,40 @@ class TransformableNode(ModifierNode):
     def __init__(self, bank, **kwargs):
         ModifierNode.__init__(self, bank, **kwargs)
         
-        self.__ghostnodes = {}
+        # possible ghost nodes
+        # - participle target (used to be a Clause subject)
+        # - uh....?
+        self.__ghostnodes = {} # basically just parallels subnodes
+        self.__ghosttargets = [] # admits the possibility that not all ghost nodes are targets
+        
         self.__transformations = []
+        
+    def can_modify(self, target_head):
+        assert(issubclass(type(target_head), LexicalNode)) # the alternative was to expose TemplatedNode.headnodes()... maybe that ain't so bad?
+        
+        # get base class out of the way
+        if not ModifierNode.can_modify(self, target_head):
+            return False
+        
+        # the tests below work for multiple targets, but do they make any sense??
+        assert(len(self.__ghosttargets) <= 1) 
+        
+        # syntactic compatibility
+        if not all(gt.type() == target_head.type()  or  gt.type() == target_head.parent().type()  for gt in self.__ghosttargets):
+            return False
+        
+        # check tags on ghosted target nodes
+        # TODO: can't FULLY check semantics here, since we haven't lexicalized yet...
+            # here, we assume that all tags have been set on the target, and then reject if match is not guaranteed...
+        target_tags = target_head.semantic_tags()
+        for ghost_target in self.__ghosttargets:
+            ghost_tags = ghost_target.semantic_tags()
+            for gtag in ghost_tags:            
+                # the following passes: ghost target needs ['animal'], real target supplies ['person']
+                if type(target_head) is Noun and not any(data.TAXONOMY.isa(ttag, gtag) for ttag in target_tags):
+                    return False # other types may not go through the taxonomy...
+                    
+        return True
     
     def template_id(self):
         '''Overrides base class'''
@@ -390,6 +431,8 @@ class TransformableNode(ModifierNode):
         for k in template.target_keys():
             assert(not self.__ghostnodes.get(k))
             self.__ghostnodes[k] = Node(**dict(template.target_options_for_key(k))) # TODO: plug memory leak? (alternative is to trash template's data...)
+            self.__ghosttargets.append(self.__ghostnodes[k])
+            
         
     def _ghost_symbols(self):
         return self.__ghostnodes.keys()
@@ -468,6 +511,7 @@ class Clause(TransformableNode):
             for s in self.__verb_category.tagged_symbols():
                 tags = self.__verb_category.tags_for_symbol(s)
                 
+                # TODO: doesn't this really belong in a superclass?
                 if s in self._symbols():
                     node = self._get_symbol_subnode(s)
                 elif s in self._ghost_symbols(): # also propagate down to any ghost nodes, for semantic matching with real nodes
