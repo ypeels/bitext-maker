@@ -9,7 +9,6 @@ import data # read data from databases - giant, read-only globals
 import generator
 import utility
 
-
 UNIMPLEMENTED_EXCEPTION = Exception('Needs to be implemented in derived class')
 
 

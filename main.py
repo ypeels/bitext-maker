@@ -13,11 +13,7 @@ assert(__name__ == '__main__') # for now
 
 #seed_rng() # output still not deterministic? loops over dicts are still random
 
-#raise Exception('''
-#NEXT: 
-#loose end - semantic matching for ADJP in general
-#loose end - specifying verb forms literally in templates? (VBG for participle; currently in code)
-#''')
+
 
 ### 1. Specify sentences ###
 
@@ -66,7 +62,11 @@ def make_transitive_clause(number='singular', modifiers=[]):
         modifiers.remove('participle')
         participle = nodes.node_factory('Clause')
         participle.set_template('transitive', readonly=False)
+        
+        # TODO: change to "add_transformation" or "transform"? or should i disallow multiple transformations? at least for my first pass...
         participle.set_transformation('participle')    
+        
+        # TODO: some verbs don't seem to work as participles ("the man having the car") - need to blacklist somehow...
         participle.set_verb_category('emotion.desire')
         PO = participle._get_symbol_subnode('O') # note that current test harness requires all NP's to have specified templates...
         PO.set_template('noun'); PO.add_options({'tags': ['object']})
