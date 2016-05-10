@@ -20,6 +20,12 @@ noun:
     en: { template: N }
     zh: { template: N }
     
+    
+# red cat - is this doable in data, or must it be done in code??
+  # code: noun(animal) + modifier(color). i suppose this could go in the meta templates...
+  # but it would be nice to be able to filter modifiers at creation time instead of failing at attachment time...
+  # yes, you just use AdjectiveBank.find_tagged(), right?
+    
 
 
 # TODO: pronoun - n.b. a nonlocal dependency may have to be wired up externally

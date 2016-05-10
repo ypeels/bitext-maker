@@ -18,3 +18,20 @@ test:
 
       
 # TODO: add types so you can have custom sub-nodes like "all the gold"
+
+test2:
+  symbols:
+    N:
+      type: NP
+    V: 
+      type: verb
+  templates:
+    en:
+      template: The N in Spain V mainly on the plains .
+      subject: The N in Spain
+      punctuation: '.' # the alternative is to strip off trailing punctuation in code, which I just might do for a first pass...
+    zh:
+      template: 在 西班牙 的 N 主要 V 在 平原 上 。
+      subject: 在 西班牙 的 N
+      punctuation: 。
+      # hmm, participles seem rather difficult to build from custom clause templates...
