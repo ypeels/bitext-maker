@@ -1,4 +1,4 @@
-participle:
+participle: # TODO: rename to participle.present or participle.active ?
   input: Clause
   output: ADJP
   

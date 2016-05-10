@@ -50,9 +50,11 @@ ordinal:
 
   
 # not used in code for now - just listed here for reference  
+# TODO: list transformation here too, and allow code to start here instead?
 __from_transformations__:
 - participle:
   example: opening the door
+  
   
   
 
