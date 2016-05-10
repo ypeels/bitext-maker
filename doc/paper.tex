@@ -1,12 +1,11 @@
 % Yes, this requires flipping flags to compile for different conferences...
 % But you can press Ctrl+T while editing in TeXworks without having to change windows!
 
-
-
 % conditional compilation
 \def\buildemnlp{0}
 \def\buildamta{1}
-\def\buildtarget{\buildamta} % required to be a single character for \if
+\def\buildhcomp{2}
+\def\buildtarget{\buildemnlp} % required to be a single character for \if
 
 % emnlp2016.sty, included by header-emnlp.tex, does NOT tolerate ANY surrounding \else statements...
 % an if/else if/... or ifcase statement would have been preferred...
@@ -17,11 +16,22 @@
     \input{header-emnlp.tex}
     \newcommand\mycitep[1]{\cite{#1}}     % conference-specific ``glue code''
     \newcommand\mynewcite[1]{\newcite{#1}}
+    \newcommand\amtaonly[1]{}
+    \newcommand\hcomponly[1]{}
 \fi
 \if \buildtarget \buildamta    
     \input{header-amta.tex}
     \newcommand\mycitep[1]{\citep{#1}} 
     \newcommand\mynewcite[1]{\cite{#1}}  
+    \newcommand\amtaonly[1]{#1}
+    \newcommand\hcomponly[1]{}
+\fi
+\if \buildtarget \buildhcomp    
+    \input{header-aaai.tex}
+    \newcommand\mycitep[1]{\cite{#1}} 
+    \newcommand\mynewcite[1]{\citeauthor{#1}~\shortcite{#1}}  
+    \newcommand\amtaonly[1]{}
+    \newcommand\hcomponly[1]{#1}
 \fi
     
 % Add support for snippets of \zh{中文}
@@ -29,6 +39,8 @@
 \usepackage[utf8]{inputenc}
 \newcommand\zh[1]{\begin{CJK}{UTF8}{gbsn}#1\end{CJK}}
 
+% this would allow clickable urls for my convenience - but many conferences forbid them?
+% \usepackage{hyperref}
 
 
 \begin{document}
@@ -43,15 +55,198 @@ Hello, World!
 Here is some normal spacing.
 
 \zh{你好，世界！}
+
+Scalable parallel corpus generation
 \end{abstract}
 
 
 
-\section{Test}
 
-The quick brown fox jumps over the lazy dog.
+Curiosity: how many AMTA pages are the EMNLP instructions? i.e., how long would my 4-page EMNLP paper be?
+
+
+\section{Introduction}
+
+RNN encoder-decoders are not the first corpus-based MT methodology (EBMT then SMT then this), and it is unlikely in this era of Big Data that they will be the last.
+Focusing on corpus generation allows linguists to focus on capturing the most statistically prevalent linguistic phenomena, while insulating them from the strengths and weaknesses of various implementations.
+For instance, EBMT suffers from relatively poor generalization and SMT has problems with nonlocality.
+(RNN built on relatively shaky ground, since word vectors don't QUITE make sense for function words?)
+ 
+Such synthetic parallel corpora can also be viewed as benchmark tasks (need to cite Facebook bAbI).
+
+One might conjecture that the fundamental problem in natural language processing is one of data representation
+
+
+\section{Related Work}
+\label{sec:related}
+
+Nice tip: ONE LINE PER SENTENCE.
+
+Unlike more AI-oriented or natural language understanding approaches, we are solely concerned here with the generation of surface forms
 
 At some point, I will almost definitely be citing Moses \mycitep{moses}
+
+the latest version of the Stanford Segmenter \mycitep{segmenter:2005,segmenter:2008}
+
+stanford POS tagger (incomplete bibtex entry?) \mycitep{postagger:2003}
+
+This aspect of our work is perhaps closest in spirit to the equivalence classes used by \mynewcite{brown:99} to reduce the data requirements of an EBMT system \mycitep{ebmtbook}.
+
+In the Moses toolchain, the {\small \tt mkcls} component \mycitep{och:98} performs this process in reverse, binning words into automatically-generated equivalence classes to alleviate data sparsity issues.
+% USUALLY alignment only, CAN be applied to translation... http://www.statmt.org/moses/?n=Advanced.Models#ntoc6
+With some effort, you can use these bins during steps other than alignment, although this is not done by default.
+...
+Moreover, as they are upstream of GIZA++, these bins are constructed at the lexical level, not the phrase level, whereas the templates described below can make substitutions at the level of larger constituents and phrases.
+
+
+some neural network MT paper?
+
+aha, yoshua bengio's "curse of dimensionality" - becomes a blessing?  
+Unlike many machine learning tasks (image recognition, finance), NLP data are purely artificial/manmade.  New paradigm?  Not enough attention has been paid IMO to semi-automated corpus generation.  Well, typical approaches are paid, like Mechanical Turk... but there is a vast untapped source of data in the form of student problem sets, in the spirit of reCAPTCHA (citation!?)
+
+Translation is perhaps the only NLP task for which millions of people already undergo years of training
+
+other approaches to synthetic corpora, which are essentially bootstrapped from other MT systems
+
+Hardly a new idea ... but the emphasis here is on the resulting corpus
+
+
+
+
+maybe the latest Hutchins overview or nutshell?
+
+fire a linguist and accuracy goes up
+
+collobert and weston: learn words from letters. interesting from an AI perspective, seems unlikely to improve performance in the near future
+
+chomsky: transformations, colorless green ideas
+
+
+size doesn't always matter - those massive OpenSubtitles corpora don't help
+- uh, is the problem quality? should i run some Moses runs with a small portion of MultiUN to see how quality improves?
+
+lots of things are resolved naturally when considering generation instead of discrimination
+- ambiguity (you know what you want to say)
+- segmentation (you know what ``phrases'' you wanted to output)
+
+
+Can think of this as something intermediate between fully automatic (RBMT, or semi-supervised SMT) and fully hand-crafted (human translation, which is the norm).
+Compositional trees are more automatic-like, but generate more sentence pairs/tuples.
+Complex templates are more hand-crafted, but generate fewer pairs/tuples, and are (presumably) harder to combine compositionally (but are they really!?).
+
+The tree structure we adopt is something intermediate between constituency trees and dependency trees, and it was chosen for ease of implementation.
+
+
+\section{Model}
+
+\subsection{Simplistic Linguistics}
+We adopt the exceedingly simplistic view of language as nouns, verbs, and descriptions (modifications) thereof.
+
+two sources of complexity
+- lexical (semantic?)
+- syntactic 
+
+The fact that verbs can serve as nouns (gerundives) and modifiers (participles and modals) is a significant source of added complexity. (footnote?)
+
+
+I guess I should use placeholder graphics for now, since deadlines for camera-ready are quite a bit later.
+EMNLP: 6/3 submission, 7/29 notification, 9/23 camera-ready
+AMTA: 6/27 submission, 8/8 notification, 9/12 camera-ready
+
+Testing section reference: \ref{sec:related} - this requires changing secnumdepth=2 in AAAI
+
+\section{Experimental Methods}
+
+citations needed
+IWSLT - point out that this corpus is freely available
+OPUS zh\_zh
+MultiUN
+Moses
+
+parameters used
+
+IWSLT: TED talks are a series of lectures, which makes them something intermediate between the conversational language of movie subtitles and the formal written language of UN resolutions.
+Should I mention that you can kind of discern this from their POS distributions? I would probably have to mention something concrete then... But yeah, I guess it's worth mentioning if I have space, which I almost certainly do for AMTA
+
+heuristically purged zh\_zh, which is a very noisy corpus
+
+\section{Results}
+
+2016-02-20 learning curves adding only 130,000 in-domain lines improves scores by like 2.0 BLEU points
+
+2016-03-03-225556 1M zh\_zh lines made scores slightly WORSE?
+
+2016-04-29-093202 1M MultiUN lines only improved scores SLIGHTLY (by like 0.4 BLEU points)
+
+Quantity and maybe even quality (you'd expect MultiUN translations to be better?) matters much less than having data in-domain
+
+Of course, I need to redo (ALL?) these jobs with final segmenter choice
+
+Evaluated using the IWSLT 2015 progress data set (tst2014) to allow comparison with both 2015 and 2014 systems.
+
+
+\section{Future Work}
+
+I.e., shit I REALLY doubt I have time for...
+
+For simplicity, the current implementation is lexically one-to-one; for scalability in the number of languages, you ideally want many-to-many.
+
+For this paper, the lexical database was drawn from the IWSLT training set to maximize bottom-line performance.
+[i.e., i don't have TIME to do a general-purpose database]
+This is indeed one potential use of this system, for training set amplification.
+The envisioned ultimate target domain is (cleaned) everyday speech (maybe movie or TV subtitles?) , for which syntactic and lexical diversity is expected to be relatively low, and unknown words would be particularly suitable for crowdsourcing.
+
+Localization of semantic taxonomy - this would have to be one-to-one, and you'd think it would clutter up the raw text UI...
+
+
+Instead of the next paragraph, should probably just point out how rudimentary the current ``grammar'' is. 
+Future development may be facilitated by adapting existing work from RBMT or NLG. 
+Okay, I guess just point out this grammar doesn't even handle something as basic as:
+
+Shit tons of linguistic phenomena that aren't even that uncommon, including but not limited to:
+More thorough treatment of articles.
+(More) treatment of prepositional phrases.
+Conjunctions.
+Interrogatives and imperatives.
+Pronouns - implemented as names here...? wait, but what about I/me? ugh
+
+
+
+\amtaonly{
+\section{AMTA}
+This text only gets added for AMTA. I think it'd be nice to have this for ``filler'' text
+
+If I really am submitting to this conference too, then I can afford (and probably want to?) draw out the length, 
+} % end \amtaonly
+
+
+
+\hcomponly{ % hmm, maybe I should use this stuff to pad AMTA too? well, let's not pad just for padding's sake... spare the reviewers
+\section{HCOMP}
+
+An open challenge to the community - making a crowdsourcing platform
+Should I do a quick back-of-the-envelope calculation on how many child-hours are spent on language-related problem sets?
+
+We believe that for crowdsourcing to be most fruitful, there should a matching incentive to the crowd... 
+At the risk of sounding like a sales pitch, what if the crowd wanted to pay you to give you data, like Tom Sawyer?
+The 2015 paper only tagged like 200 words... well, they were trying something WordNet style... but it just goes to show how slow it is...
+WordNet has shit tons of senses, but only a handful of them are common... we want the most common senses here, not completeness.
+For rare senses, we can make custom templates.
+The semantics we desire are more lightweight (?) - just enough to generate surface forms; don't need to do complex logical reasoning on it.
+
+Rare nouns are the biggest source of lexical diversity.
+VERY expensive to do with a small team.
+Very ripe for crowdsourcing, but not necessarily by MOOCs, as proposed by LearnWork - problem sets seem more appropriate here.
+With a sufficiently compelling problem set app, schools could possibly be willing to pay subscription fees to use this app... (hmm, I see a problem - schools don't have that much money... well, that's where scale comes into play?) well, at the very least, if you make it free, you still get their data
+The question seems not so much ``should we'' as much as ``why aren't we doing this yet?'' - at least in the context of NLP.
+Unlike some traditional machine learning tasks, which use either sensory or observed data as input, human writers ARE the primary and most natural source of linguistic data.
+You wouldn't want to crowdsource bitmaps of cats.
+And even if you were crowdsourcing photos of cats, or even photo labeling, that's not really something students do beyond preschool.
+But to master one's native tongue takes like 10 years, and there's a BUNCH of unharnessed labor there.
+
+} % end \hcomponly
+
+
 
 
 
@@ -63,10 +258,13 @@ At some point, I will almost definitely be citing Moses \mycitep{moses}
     %Note that emnlp2016.bst chokes if there are 0 citations in your paper.    
     %\mynewcite{moses}    
     \bibliographystyle{emnlp2016}
+    
+\else \if \buildtarget \buildhcomp    
+    \bibliographystyle{aaai}
 \else
     % some extra error checking, which could not be used with emnlp2016.sty
     \GenericError{}{Invalid buildtarget - \buildtarget}
-\fi \fi
+\fi \fi \fi
 
 \bibliography{references}
 
