@@ -1,0 +1,17 @@
+# - tags:
+#   advset:
+#     en: 
+#     zh:
+#   targets: [ADJP, Clause] # TODO: ADVP
+
+- tags: # degree?
+  advset:
+    en: very
+    zh: 很
+  targets: [ADJP]
+    
+- tags:
+  advset:
+    en: also
+    zh: 也
+  targets: [Clause]

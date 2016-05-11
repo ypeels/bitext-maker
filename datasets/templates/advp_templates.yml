@@ -1,0 +1,24 @@
+
+# should i specify target here, or per-verb?
+# well, if I wrote "targets" here, would it be confusing with transformations.yml?
+  # if the ultimate test is "amount of typing", I would think "adverb.Clause" and "adverb.ADJP" is more typing!
+
+adverb:
+  example: very|RB
+  symbols:
+    B: 
+      type: adverb
+      description: head
+  templates:
+    en: { template: B }
+    zh: { template: B }
+
+
+
+  
+  
+
+  
+  
+  
+  

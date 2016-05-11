@@ -25,15 +25,21 @@ class Bank:
         return self.__data
         
         
-
-class AdjectiveSetBank(Bank):
+class WordSetBank(Bank):
+    '''Root data structure is a list'''
     def __init__(self, filename):
+        '''Removes empty/dummy data entries'''
         Bank.__init__(self, filename)
         __data = self._data()
+        
+        # discard dummy entries
+        # TODO: save them elsewhere, if I ever wanted to make them available programmatically - otherwise, they're just glorified comments...
         for i in range(len(__data)-1, -1, -1):
-            if all(adj == None for adj in __data[i]['adjset'].values()):
-                __data.pop(i)  
-                
+            if self._is_dummy(__data[i]): #all(adj == None for adj in __data[i]['adjset'].values()):
+                __data.pop(i) 
+
+
+class AdjectiveSetBank(WordSetBank):
     def all_adjsets(self):
         result = [AdjectiveSet(item['adjset']) for item in self._data()]
         assert(len(result) > 0)
@@ -42,17 +48,14 @@ class AdjectiveSetBank(Bank):
     def find_tagged(self, target_tag):
         raise Exception('TODO: unimplemented stub')
         
-class DeterminerSetBank(Bank):
-    def __init__(self, filename):
-        Bank.__init__(self, filename)
+    def _is_dummy(self, datum):
+        return all(adj == None for adj in datum['adjset'].values())
         
-        __data = self._data()
+class AdverbSetBank(WordSetBank):
+    def _is_dummy(self, datum):
+        return all(adj == None for adj in datum['advset'].values())        
         
-        # discard dummy entries - basically same as NameSetBank
-        for i in range(len(__data)-1, -1, -1):
-            if all(det == None for det in __data[i]['detset'].values()):
-                __data.pop(i)     
-
+class DeterminerSetBank(WordSetBank):
     def all_detsets(self):
         result = [DeterminerSet(item['detset']) for item in self._data()]
         assert(len(result) > 0)
@@ -61,17 +64,14 @@ class DeterminerSetBank(Bank):
     def find_tagged(self, target_tag):
         return [DeterminerSet(item['detset']) for item in self._data() if target_tag in item['tags']]
         
-class NameSetBank(Bank):    
+    def _is_dummy(self, datum):
+        return all(adj == None for adj in datum['detset'].values())  
+        
+class NameSetBank(WordSetBank):    
     def __init__(self, filename):
-        Bank.__init__(self, filename)
+        WordSetBank.__init__(self, filename)
         
         __data = self._data()
-        
-        # discard dummy entries
-        # TODO: save them elsewhere, if I ever wanted to make them available programmatically - otherwise, they're just glorified comments...
-        for i in range(len(__data)-1, -1, -1):
-            if all(name == None for name in __data[i]['nameset'].values()):
-                __data.pop(i)            
         
         # normalize single-item entries to be lists
         for item in __data:
@@ -90,7 +90,10 @@ class NameSetBank(Bank):
         return [NameSet(item['nameset']) for item in self._data() 
             for tag in item['tags'] if TAXONOMY.isa(tag, target_tag)]
             
-class NounSetBank(Bank):
+    def _is_dummy(self, datum):
+        return all(adj == None for adj in datum['nameset'].values()) 
+            
+class NounSetBank(WordSetBank):
     def all_nounsets(self):
         result = [NounSet(item['nounset']) for item in self._data()]
         assert(len(result) > 0)
@@ -99,6 +102,9 @@ class NounSetBank(Bank):
     def find_tagged(self, target_tag):
         return [NounSet(item['nounset']) for item in self._data()
             for tag in item['tags'] if TAXONOMY.isa(tag, target_tag)]
+            
+    def _is_dummy(self, datum):
+        return all(adj == None for adj in datum['nounset'].values())  
 
             
 class TemplateBank(Bank):
@@ -108,6 +114,14 @@ class TemplateBank(Bank):
 class TransformationBank(Bank):
     def get_transformation_by_id(self, id):
         return Transformation(self._data()[id])
+        
+        
+# TODO: need these to implement comparatives/superlatives for en
+class AdjectiveFormBank(Bank):
+    pass     
+class AdverbFormBank(Bank):
+    pass
+    
         
 class DeterminerFormBank(Bank):
     def get(self, word):
@@ -453,6 +467,10 @@ class AdjectiveSet(WordSet):
     def adjective(self, lang, index):
         return WordSet.word(self, lang, index)
         
+class AdverbSet(WordSet):
+    def adverb(self, lang, index):
+        return WordSet.word(self, lang, index)
+        
 class DeterminerSet(WordSet):
     def determiner(self, lang, index):
         return WordSet.word(self, lang, index)
@@ -493,8 +511,12 @@ class VerbSet(WordSet):
 # TODO: move classes to a separate file, if they ever want to be used externally without having to load all these files
     # but that seems unlikely, since these are FILE INTERFACE classes
 
+# adjectives and adverbs are not inflected in en, but there are still comparative/superlative forms (JJR, JJS)
 ADJSET_BANK = AdjectiveSetBank(DATA_DIR + 'adjsets.yml')
-# adjectives are not inflected in either zh or en
+ADJ_FORMS = { lang: AdjectiveFormBank(DATA_DIR + 'adjs_{}.yml'.format(lang)) for lang in LANGUAGES }
+
+ADVSET_BANK = AdverbSetBank(DATA_DIR + 'advsets.yml')
+ADV_FORMS = { lang: AdverbFormBank(DATA_DIR + 'advs_{}.yml'.format(lang)) for lang in LANGUAGES }
     
 DETSET_BANK = DeterminerSetBank(DATA_DIR + 'detsets.yml')
 DET_FORMS = { lang: DeterminerFormBank(DATA_DIR + 'dets_{}.yml'.format(lang)) for lang in LANGUAGES }
@@ -513,6 +535,7 @@ VERB_FORMS = { lang: VerbFormBank(DATA_DIR + 'verbs_{}.yml'.format(lang)) for la
 
 TEMPLATE_DIR = DATA_DIR + 'templates/'
 ADJP_TEMPLATE_BANK = TemplateBank(TEMPLATE_DIR + 'adjp_templates.yml')
+ADVP_TEMPLATE_BANK = TemplateBank(TEMPLATE_DIR + 'advp_templates.yml')
 CLAUSE_TEMPLATE_BANK = TemplateBank(TEMPLATE_DIR + 'clause_templates.yml')
 CUSTOM_TEMPLATE_BANK = TemplateBank(TEMPLATE_DIR + 'custom_templates.yml')
 NP_TEMPLATE_BANK = TemplateBank(TEMPLATE_DIR + 'np_templates.yml')
