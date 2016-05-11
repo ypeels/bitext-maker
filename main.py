@@ -84,10 +84,10 @@ def make_transitive_clause(number='singular', modifiers=[]):
             O.add_modifier(adjp)
 
     # add adverb - to both verb and adjective (if present)
-    #if 'adverb' in modifiers:
-    #    advp = nodes.node_factory('ADVP')
-    #    advp.set_template('adverb')
-    #    clause.add_modifier(advp)
+    if 'adverb' in modifiers:
+        advp = nodes.node_factory('ADVP')
+        advp.set_template('adverb')
+        clause.add_modifier(advp)
         
         
     # add adverb to adjective (if present)
@@ -159,7 +159,7 @@ clauses = [ None
     #, make_transitive_clause(modifiers=['adjective', 'determiner'])
     ##, make_transitive_clause(modifiers=['adjective', 'determiner', 'adjective']) # works, but has awkward repeated adjs right now
     ##, make_transitive_clause(modifiers=['adjective', 'determiner', 'adjective', 'adjective'])
-    #, make_transitive_clause(number='plural', modifiers=['adjective', 'determiner'])
+    , make_transitive_clause(number='plural', modifiers=['adjective', 'determiner'])
     , make_transitive_clause(number='plural', modifiers=['adjective', 'determiner', 'participle'])
     , make_transitive_clause(modifiers=['adjective', 'adverb'])
     #, make_custom()

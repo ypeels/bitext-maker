@@ -164,12 +164,12 @@ class Generator:
         #    result = self._get_unmodified_template(node)
         
         if node.type() == 'ADJP':
-            result = self._modify_adjp(node) #['Generator._modify_template_ADJP'] + self._get_unmodified_template(node)
-        #elif node.type() == 'Clause':
-        #    result = ['Generator._modify_template: Clause'] + self._get_unmodified_template(node)
+            result = self._modify_adjp(node) 
+        elif node.type() == 'Clause':
+            result = self._modify_clause(node) #['Generator._modify_template_Clause'] + self._get_unmodified_template(node)
         elif node.type() == 'NP':
             result = self._modify_np(node)
-        elif node.type() in {'ADVP', 'Clause', 'CustomTemplate'}:
+        elif node.type() in {'ADVP', 'CustomTemplate'}:
             assert(not node.has_modifiers())
             result = self._get_unmodified_template(node)
         else:
@@ -178,7 +178,8 @@ class Generator:
         assert(type(result) is list and all(type(item) is str for item in result))
         return result
         
-    # zh and en can get away with sharing this for now...
+        
+    # zh and en can get away with sharing these for now...
     def _modify_adjp(self, node):
         result = self._get_unmodified_template(node)
         modifiers = list(node.modifiers())
@@ -190,6 +191,32 @@ class Generator:
             assert(len(adverb_strings) is 1) # multiple adverbs doesn't work in zh? also, "very and quickly big" doesn't quite work
             result = adverb_strings + result #self.__conjunction(adverb_strings) + result
             
+        if modifiers:
+            raise Exception('TODO: unhandled modifiers - {}'.format(modifiers))
+            
+        return result
+        
+    def _modify_clause(self, node):
+        result = self._get_unmodified_template(node)
+        modifiers = list(node.modifiers())
+        
+        adverbs = self._pop_modifiers(modifiers, 'adverb')
+        if adverbs:
+            # insert adverb before every head verb in the clause
+            head_symbols = node.head_symbols()
+            assert(all(node._type_for_symbol(head) == 'verb') for head in head_symbols)
+            
+            adv_strings = [a.generated_text(self.LANG) for a in adverbs]
+            assert(len(adv_strings) is 1) # multiple adverbs doesn't work here for zh...although it might for en? semantic-dep? 
+            
+            for head in head_symbols:
+                head_index = result.index(head)
+                
+                result = result[:head_index] + adv_strings + result[head_index:] #self.__conjunction(adv_strings) + result[head_index:]
+            
+        if modifiers:
+            raise Exception('TODO: unhandled modifiers - {}'.format(modifiers))
+        
         return result
               
     def _pop_modifiers(self, modifiers, id_to_pop):
@@ -286,6 +313,8 @@ class EnGenerator(Generator):
         else:
             raise Exception('Unimplemented: irregular en verbs')
 
+
+            
     def _modify_np(self, node):
         template = self._get_unmodified_template(node)
         
@@ -324,7 +353,7 @@ class EnGenerator(Generator):
             result += self.__conjunction(part_strings)
         
         if len(modifiers) > 0:            
-            raise Exception('TODO: handle other modifiers')
+            raise Exception('TODO: unhandled modifiers - {}'.format(modifiers))
 
 
         return result
@@ -427,7 +456,7 @@ class ZhGenerator(Generator):
     def _generate_verb(self, node):
         verb = self._get_verb_base(node)
         self._generate_node_text(node, verb)
-        
+
         
     def _modify_np(self, node):
         template = self._get_unmodified_template(node)
@@ -469,7 +498,7 @@ class ZhGenerator(Generator):
             
         
         if len(modifiers) > 0:
-            raise Exception('TODO: handle other modifiers')
+            raise Exception('TODO: unhandled modifiers - {}'.format(modifiers))
         
         result += template
 

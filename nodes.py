@@ -206,6 +206,9 @@ class TemplatedNode(Node):
     def get_template_text(self, lang):
         return self.__template.template_text(lang)
             
+    def head_symbols(self):
+        return [symbol for symbol, subnode in self.__symbol_subnodes.items() if subnode in self._get_headnodes()]
+            
     def num_symbols(self):
         return len(self._symbols()) # TODO: cache this on calling set_template()?
     
@@ -339,8 +342,8 @@ class ModifierNode(TemplatedNode):
     def lexical_targets(self):
         return tuple(self.__lexical_targets) # pointless? makes the LIST read-only, but individual nodes still aren't...
         
-    def can_modify(self, target):
-        return self.type() in target.compatible_modifier_types()
+    def can_modify(self, lexical_target):
+        return self.type() in lexical_target.compatible_modifier_types()
         
         
         

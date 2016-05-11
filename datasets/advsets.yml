@@ -17,6 +17,7 @@
   targets: [adjective]
   
 # TODO: uhhhh some stative verbs CAN be modified by "very much"...
+  # looks like there's some semantic matching to be done with adverbs too...
     
 - tags:
   advset:
