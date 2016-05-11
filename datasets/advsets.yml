@@ -2,16 +2,24 @@
 #   advset:
 #     en: 
 #     zh:
-#   targets: [ADJP, Clause] # TODO: ADVP
+#   targets: [adj, verb] # TODO: adv
 
+- tags:
+  advset:
+    en: 
+    zh:
+  targets:
+  
 - tags: # degree?
   advset:
     en: very
     zh: 很
-  targets: [ADJP]
+  targets: [adjective]
+  
+# TODO: uhhhh some stative verbs CAN be modified by "very much"...
     
 - tags:
   advset:
     en: also
     zh: 也
-  targets: [Clause]
+  targets: [verb]

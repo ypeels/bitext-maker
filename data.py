@@ -35,7 +35,7 @@ class WordSetBank(Bank):
         # discard dummy entries
         # TODO: save them elsewhere, if I ever wanted to make them available programmatically - otherwise, they're just glorified comments...
         for i in range(len(__data)-1, -1, -1):
-            if self._is_dummy(__data[i]): #all(adj == None for adj in __data[i]['adjset'].values()):
+            if self._is_dummy(__data[i]):
                 __data.pop(i) 
 
 
@@ -52,6 +52,11 @@ class AdjectiveSetBank(WordSetBank):
         return all(adj == None for adj in datum['adjset'].values())
         
 class AdverbSetBank(WordSetBank):
+    def all_advsets(self):
+        result = [AdverbSet(item) for item in self._data()] # breaks symmetry with other WordSetBanks! 
+        assert(len(result) > 0)
+        return result
+
     def _is_dummy(self, datum):
         return all(adj == None for adj in datum['advset'].values())        
         
@@ -450,7 +455,7 @@ class WordSet:
             return len(words)
             
     def word(self, lang, index):
-        word = self._data()[lang]
+        word = self._words(lang)
         assert(type(word) is str)
         assert(index is 0) # not handling multiple candidates yet (num_words > 1)
         return word
@@ -467,9 +472,19 @@ class AdjectiveSet(WordSet):
     def adjective(self, lang, index):
         return WordSet.word(self, lang, index)
         
+        
+
 class AdverbSet(WordSet):
     def adverb(self, lang, index):
         return WordSet.word(self, lang, index)
+        
+    def compatible_lexical_targets(self):
+        return self._data()['targets']
+        
+    # TODO: refactor other WordSets to allow additional fields like this? actually, just rewriting this low-level primitive seemed to work?
+    def _words(self, lang):
+        return self._data()['advset'][lang]
+
         
 class DeterminerSet(WordSet):
     def determiner(self, lang, index):
@@ -480,31 +495,16 @@ class DeterminerSet(WordSet):
 class NameSet(WordSet):
     def name(self, lang, index):
         return WordSet.word(self, lang, index)
-        #name = self._data()[lang]
-        #assert(type(name) is str)
-        #assert(index is 0) 
-        #return name
-        
-    #def _words(self, lang):
-    #    result = self._data()[lang] # wait, why is this polymorphic? in CASE data formats differ between Name/Noun/etc.?
-    #    return result
         
 class NounSet(WordSet):
     def noun(self, lang, index):
         return WordSet.word(self, lang, index)
-    
-    #def _words(self, lang):
-    #    return self._data()[lang]
         
 class VerbSet(WordSet):
     def verb(self, lang):
         verb = self._data()[lang]
         assert(type(verb) is str)
         return verb
-        
-    #def _words(self, lang):
-    #    return self._data()[lang]
-
             
             
 ### module-level variables (intended to be read-only after initialization) ###

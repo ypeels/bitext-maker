@@ -57,9 +57,10 @@ def make_transitive_clause(number='singular', modifiers=[]):
     
     # looks like you should be able to add a modifier to S or O, and it would get transferred down to the head child
     
+    # add a participle...
     if 'participle' in modifiers:
         assert(modifiers.count('participle') is 1)
-        modifiers.remove('participle')
+        #modifiers.remove('participle')
         participle = nodes.node_factory('Clause')
         participle.set_template('transitive', readonly=False)
         
@@ -75,14 +76,35 @@ def make_transitive_clause(number='singular', modifiers=[]):
     # add a determiner. oooooo
     # TODO: does this logic really belong here?
     for mod in modifiers:
-        assert(mod in ['determiner', 'adjective'])
-        adjp = nodes.node_factory('ADJP') 
-        adjp.set_template(mod)
-        if mod == 'determiner':
-            adjp.add_options({'tags': ['demonstrative']})
-        O.add_modifier(adjp)
+        if mod in ['determiner', 'adjective']:
+            adjp = nodes.node_factory('ADJP') 
+            adjp.set_template(mod)
+            if mod == 'determiner':
+                adjp.add_options({'tags': ['demonstrative']})
+            O.add_modifier(adjp)
+
+    # add adverb - to both verb and adjective (if present)
+    #if 'adverb' in modifiers:
+    #    advp = nodes.node_factory('ADVP')
+    #    advp.set_template('adverb')
+    #    clause.add_modifier(advp)
         
-    # TODO: test semantic matching of participle and subject
+        
+    # add adverb to adjective (if present)
+    if 'adverb' in modifiers and 'adjective' in modifiers:
+        # TODO: should i just expose "get_all_nodes()"?
+        adjective_phrases = {a.parent() for a in clause.get_all_lexical_nodes() if a.type() == 'adjective'}
+        assert(all(ap.type() == 'ADJP' for ap in adjective_phrases))
+        
+        for adjp in adjective_phrases:
+            advp = nodes.node_factory('ADVP')
+            advp.set_template('adverb')
+            adjp.add_modifier(advp)
+        
+        
+        
+            
+            
     
     lexical_nodes = clause.get_all_lexical_nodes() # n.b. you would have to rerun this every time you modified the tree... 
     determiners = [n for n in lexical_nodes if n.type() == 'determiner']
@@ -137,8 +159,9 @@ clauses = [ None
     #, make_transitive_clause(modifiers=['adjective', 'determiner'])
     ##, make_transitive_clause(modifiers=['adjective', 'determiner', 'adjective']) # works, but has awkward repeated adjs right now
     ##, make_transitive_clause(modifiers=['adjective', 'determiner', 'adjective', 'adjective'])
-    , make_transitive_clause(number='plural', modifiers=['adjective', 'determiner'])
+    #, make_transitive_clause(number='plural', modifiers=['adjective', 'determiner'])
     , make_transitive_clause(number='plural', modifiers=['adjective', 'determiner', 'participle'])
+    , make_transitive_clause(modifiers=['adjective', 'adverb'])
     #, make_custom()
     #, make_custom(number='plural')
     #, make_custom(modifiers=['determiner'])

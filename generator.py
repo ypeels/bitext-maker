@@ -89,6 +89,8 @@ class Generator:
         if node_type == 'adjective':
             assert(self.LANG in ['en', 'zh'])
             self._generate_node_text(node, node.adjective(self.LANG))
+        elif node_type == 'adverb':
+            self._generate_node_text(node, node.adverb(self.LANG))
         elif node_type == 'determiner':
             self._generate_determiner(node)
         elif node_type == 'name':        
@@ -156,18 +158,39 @@ class Generator:
         Example return value: [S quickly V O]
         '''
         assert(issubclass(type(node), nodes.TemplatedNode))
-                
-        if node.type() == 'NP':
+        
+        # can't do this, because there might be language-dependent finishing touches for unmodified nodes
+        #if not node.has_modifiers():
+        #    result = self._get_unmodified_template(node)
+        
+        if node.type() == 'ADJP':
+            result = self._modify_adjp(node) #['Generator._modify_template_ADJP'] + self._get_unmodified_template(node)
+        #elif node.type() == 'Clause':
+        #    result = ['Generator._modify_template: Clause'] + self._get_unmodified_template(node)
+        elif node.type() == 'NP':
             result = self._modify_np(node)
-        elif node.type() in ['ADJP', 'Clause', 'CustomTemplate']:
+        elif node.type() in {'ADVP', 'Clause', 'CustomTemplate'}:
             assert(not node.has_modifiers())
             result = self._get_unmodified_template(node)
         else:
-            raise Exception('Unimplemented template modification: {}'.format(node.type()))
+            raise Exception('Unimplemented template modification: tried to modify {}'.format(node.type()))
             
         assert(type(result) is list and all(type(item) is str for item in result))
         return result
         
+    # zh and en can get away with sharing this for now...
+    def _modify_adjp(self, node):
+        result = self._get_unmodified_template(node)
+        modifiers = list(node.modifiers())
+        
+        # no, need to check the LEXICAL target for compatibility...
+        adverbs = self._pop_modifiers(modifiers, 'adverb')
+        if adverbs:
+            adverb_strings = [a.generated_text(self.LANG) for a in adverbs]
+            assert(len(adverb_strings) is 1) # multiple adverbs doesn't work in zh? also, "very and quickly big" doesn't quite work
+            result = adverb_strings + result #self.__conjunction(adverb_strings) + result
+            
+        return result
               
     def _pop_modifiers(self, modifiers, id_to_pop):
         '''Removes modifiers with matching template ID (changes list in place) and returns them'''

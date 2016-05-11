@@ -334,7 +334,7 @@ class ModifierNode(TemplatedNode):
         '''Used by Generator to pull word-level information'''
         assert(issubclass(type(target_node), LexicalNode))
         assert(target_node not in self.__lexical_targets)
-        assert(self.type() in ['ADJP'])
+        assert(self.type() in ['ADJP', 'ADVP'])
         self.__lexical_targets.append(target_node)        
     def lexical_targets(self):
         return tuple(self.__lexical_targets) # pointless? makes the LIST read-only, but individual nodes still aren't...
@@ -598,6 +598,15 @@ class AdjectivePhrase(ModifierNode):
         
         
         
+class AdverbPhrase(ModifierNode):
+    def __init__(self, **kwargs): 
+        ModifierNode.__init__(self, data.ADVP_TEMPLATE_BANK, **kwargs)
+        
+    def _can_create_symbol_subnodes(self):
+        return self.has_template()
+        
+        
+        
         
         
 class LexicalNode(Node):
@@ -693,6 +702,31 @@ class LexicalNode(Node):
     def __get_dataset_by_index(self, index):
         return self.__datasets[index]
 
+     
+
+
+class Adverb(LexicalNode):
+    def adverb(self, lang):
+        advset = self._sample_dataset()
+        assert(advset.num_words(lang) is 1)
+        return advset.adverb(lang, 0)
+        
+    def _get_lexical_candidates(self):
+        tags = [t for t in (self._get_option('tags') or []) if type(t) is str]
+        assert(len(tags) <= 1)
+        if tags:            
+            candidates = data.ADVSET_BANK.find_tagged(tags[0])
+        else:
+            candidates = data.ADVSET_BANK.all_advsets()
+            
+        # also need to filter by target type (not all adverbs can target all parts of speech)
+        # should I really be reaching through the parent ADJP? no, i think the parent should set metadata when setting target
+        advp = self.parent()
+        lexical_target_types = [t.type() for t in advp.lexical_targets()]
+        
+        candidates = [c  for c in candidates   for lex_type in lexical_target_types   if lex_type in c.compatible_lexical_targets()]
+            
+        return candidates
         
         
         
@@ -703,6 +737,9 @@ class Adjective(LexicalNode):
         adjset = self._sample_dataset()
         assert(adjset.num_words(lang) is 1)
         return adjset.adjective(lang, 0)
+        
+    def compatible_modifier_types(self):
+        return { 'ADVP' }
         
     def _get_lexical_candidates(self):
         tags = [t for t in (self._get_option('tags') or []) if type(t) is str]
@@ -784,12 +821,7 @@ class Name(GenericNoun):
         
             
             
-    # expose to BASE class ("pure virtual")
-    #def _datasets(self):
-    #    return self.__namesets
-    #    
-    #def _set_datasets(self, datasets):
-    #    self.__namesets = datasets
+
     
 class Noun(GenericNoun):
     def compatible_modifier_types(self):
@@ -833,6 +865,9 @@ class Verb(LexicalNode):
         
     def set_category(self, category):
         self.__category = category
+
+    def compatible_modifier_types(self):
+        return { 'ADVP' }
         
     def get_tense(self):
         return self.__tense
@@ -840,21 +875,19 @@ class Verb(LexicalNode):
     def verb(self, lang):    
         verbset = self._sample_dataset()
         return verbset.verb(lang)
-        
-    # DELETE ME: debugging interfaces
-    def _category(self):
-        return self.__category
+
         
     def _get_lexical_candidates(self):
         # TODO: filter further by, say, semantic tags 
         return self.__category.all_verbsets()
         
-    ## expose to base class
-    #def _datasets(self):
-    #    return self.__verbsets
-    #    
-    #def _set_datasets(self, datasets):
-    #    self.__verbsets = datasets
+    # DELETE ME: debugging interfaces
+    #def _category(self):
+    #    return self.__category
+        
+
+        
+
 
 
 
@@ -862,12 +895,14 @@ class Verb(LexicalNode):
 FACTORY_MAP = {
     # Templated nodes
     'ADJP': AdjectivePhrase,
+    'ADVP': AdverbPhrase,
     'Clause': Clause,
     'CustomTemplate': CustomTemplate,
     'NP': NounPhrase,
     
-    # lexical nodes (not necessarily leaf nodes - may have modifiers)
+    # lexical nodes
     'adjective': Adjective,
+    'adverb': Adverb,
     'determiner': Determiner,
     'name': Name, 
     'noun': Noun,
