@@ -237,11 +237,14 @@ def generate_all(clause, outputs):
             assert(all(clause.has_generated_text(lang) for lang in LANGUAGES))
             break
             
-            
-        print(clause.generated_text('en'))
+        # TODO: do this somewhere else instead of tacking it on at the end??
+        print(sentence_case(clause.generated_text('en')))
         
         for lang in LANGUAGES:
-            outputs[lang].write(clause.generated_text(lang) + '\n')
+            outputs[lang].write(sentence_case(clause.generated_text(lang)) + '\n')
+    
+def sentence_case(sentence):
+    return sentence[:1].upper() + sentence[1:]
     
     
 # hmm, should I really be using singletons for this?
