@@ -252,6 +252,14 @@ class TemplatedNode(Node):
                 
                 if issubclass(type(subnode), LexicalNode):
                     subnode.set_parent(self) # for modifiers to query parent node for target
+                   
+                # literal lexical forms hard-coded into template - propagate to lexical node
+                # rebuilt using data API, instead of assuming particular form of raw data. probably no slower than deepcopy...?
+                literal_forms = { lang: self._template().literal_form_for_symbol(symbol, lang)
+                    for lang in utility.LANGUAGES
+                    if self._template().literal_form_for_symbol(symbol, lang) }                
+                if literal_forms:
+                    subnode.add_options({'forms': literal_forms})                
            
             # hook up dependencies between NODES and their data - all nodes must have been instantiated first
             # add_dependency() should allow pronouns to work all the way across the tree...right?
@@ -263,6 +271,7 @@ class TemplatedNode(Node):
             self.__headnodes = [self._get_symbol_subnode(s) for s in self.__template.head_symbols()]
             assert(len(self.__headnodes) <= 1)            
             # TODO: alter head upon transformation
+
 
             
                         
@@ -420,6 +429,8 @@ class TransformableNode(ModifierNode):
         
         for symbol in transform.targets():
             template.add_target(template.pop_symbol(symbol)) # pop_symbol() also remove its traces from templates as a side effect
+            
+        template.add_data(transform.additions())
             
         if transform.remove_trailing_punctuation():
             template.remove_trailing_punctuation()
@@ -631,7 +642,18 @@ class LexicalNode(Node):
         self.__num_samples = 1 #options.pop('num_samples', 1) # not quite - would have to propagate down from parent
         self.__selected_sample_index = 0
         
-    # public
+    # public interface
+    def fixed_form(self, lang):
+        forms_option = self._get_option('forms')
+        if forms_option:
+            assert(type(forms_option) is list)
+            forms = [item.get(lang, '') for item in forms_option]
+            assert(len(forms) is 1)
+            return forms[0]
+            
+        else:
+            return ''
+    
     def lexical_targets(self):
         return self.parent().lexical_targets()
     

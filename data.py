@@ -190,8 +190,10 @@ class Template:
         # "declarations"
         self.__data = {}
         self.__symbols = {}
-        self.__syntax_tags_per_symbol = collections.defaultdict(dict)
+        
         self.__deps_per_symbol = collections.defaultdict(dict)
+        self.__forms_per_symbol = collections.defaultdict(dict) # { V: { en: VBG } }
+        self.__syntax_tags_per_symbol = collections.defaultdict(dict)        
         self.__writable = bool(not readonly)
         
         #self.__symbol_metadata = collections.defaultdict(collections.defaultdict(dict))
@@ -215,6 +217,10 @@ class Template:
         
     def head_symbols(self):
         return [s for s in self.symbols() if 'head' in self.description_for_symbol(s)]
+        
+    def literal_form_for_symbol(self, symbol, lang):
+        forms_per_lang = self.__forms_per_symbol.get(symbol, {}) 
+        return forms_per_lang.get(lang) 
         
     def options_for_symbol(self, symbol):
         return self.__data['symbols'][symbol]['options']
@@ -273,16 +279,27 @@ class Template:
                     
                 for symbol, deps in metadata.get('dependencies', {}).items():
                     deps_list = self.__wrap_as_list(deps)
-                    #assert(all(d in self.symbols() for d in deps_list))
+                    assert(all(d in self.symbols() for d in deps_list)) # ok again? ghost nodes get stripped from dependencies
                     self.__deps_per_symbol[symbol][lang] = deps_list
+                    
+                for symbol, form in metadata.get('forms', {}).items():
+                    assert(type(form) is str)
+                    self.__forms_per_symbol[symbol][lang] = form
            
            
            
     ### operations that modify the template ###
+    def add_data(self, new_data):
+        assert(self._writable())
+        assert(type(new_data) is dict)
+        self.__merge_dict(self.__data, new_data)
+        self.__parse()
+    
     def add_target(self, target_data):
         assert(self._writable())
         assert(not self.__data.get('targets')) # assuming only single target for now, at least in a template... when would multiple occur?
         self.__data['targets'] = target_data
+        self.__parse() 
     
     def pop_symbol(self, symbol):
         '''
@@ -360,6 +377,18 @@ class Template:
                     if d == symbol:
                         deps.pop(s)
                 
+                
+    def __merge_dict(self, destination, input):
+        assert(self._writable())
+        assert(type(destination) is dict and type(input) is dict)
+        for key, value in input.items():
+            if key in destination.keys() and type(value) is dict:
+                assert(type(destination.get(key)) is dict)
+                self.__merge_dict(destination.get(key), value)                
+            else: # safe to copy in - either there's nothing to clobber, or you're clobbering a scalar
+                destination[key] = value
+                
+            
         
     
     # assert(self._writable())
@@ -372,6 +401,9 @@ class Transformation:
     def __init__(self, data):
         self.__data = data
         
+    def additions(self):
+        return self.__data.get('additions') # don't need deepcopy, because you need to do a "deep merge" anyway to avoid destroying old Template
+        
     def input_type(self):
         return self.__data['input']
         
@@ -382,11 +414,12 @@ class Transformation:
         return 'remove trailing punctuation' in self.__data['options']
         
     def targets(self):
-        target_data = self.__data['targets']
-        if type(target_data) is list:
-            return target_data
-        else:
-            return [target_data]
+        conversions = self.__data['conversions']
+        return [symbol for symbol, new_type in conversions.items() if new_type == 'target']
+    
+    
+    
+
 
 
 
