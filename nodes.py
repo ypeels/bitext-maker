@@ -432,8 +432,8 @@ class TransformableNode(ModifierNode):
             
         template.add_data(transform.additions())
             
-        if transform.remove_trailing_punctuation():
-            template.remove_trailing_punctuation()
+        #if transform.remove_trailing_punctuation():
+        #    template.remove_trailing_punctuation()
         
     def _create_symbol_subnodes(self):   
         TemplatedNode._create_symbol_subnodes(self)

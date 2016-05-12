@@ -13,11 +13,13 @@ participle: # TODO: rename to participle.present or participle.active ?
   additions:
     templates: 
       en:
+        punctuation: # deletes (overwrites) existing punctuation
         forms:
           V: VBG
-          
-  options: 
-  - remove trailing punctuation
+      zh:
+        punctuation:
+
+
     
 
   

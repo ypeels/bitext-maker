@@ -246,13 +246,26 @@ class Template:
         return self.__data['targets'][key]
         
     def template_text(self, lang):
-        return self.__data['templates'][lang]['template']
+        '''Public version always includes trailing punctuation'''
+        return self._template_text(lang, with_punc=True)
         
     def type_for_symbol(self, symbol):
         return self.__data['symbols'][symbol]['type']
 
+        
+    def _template_text(self, lang, with_punc=False):
+        '''Internal version typically doesn't include trailing punctuation'''
+        text = self.__data['templates'][lang]['template']        
+        if with_punc:
+            punctuation = self.__punctuation(lang)
+            if punctuation:
+                #import pdb; pdb.set_trace()
+                text += ' ' + punctuation
+        return text
+        
     def _writable(self):
         return self.__writable
+        
         
     def __wrap_as_list(self, item):
         if type(item) is list:
@@ -286,6 +299,10 @@ class Template:
                     assert(type(form) is str)
                     self.__forms_per_symbol[symbol][lang] = form
            
+    def __punctuation(self, lang):
+        return self.__data['templates'][lang].get('punctuation')
+    def __set_punctuation(self, lang, punctuation):
+        self.__data['templates'][lang]['punctuation'] = punctuation
            
            
     ### operations that modify the template ###
@@ -327,28 +344,28 @@ class Template:
         assert(self._writable())
         
         for lang in LANGUAGES:
-            template_text = self.template_text(lang)
-            tokens = template_text.split()
-            if tokens[-1] in ['.', '。', '?', '？', '!', '！']:
-                self.set_template_text(lang, ' '.join(tokens[:-1]))
-                self.__parse() # not currently necessary, but just in case
+            if self.__punctuation(lang):
+                self.__set_punctuation(lang, None)
+                
+        self.__parse()
+        assert(all(not self.__punctuation(lang) for lang in LANGUAGES))
         
-    def set_template_text(self, lang, text):
+    def _set_template_text(self, lang, text):
         assert(self._writable())
         self.__data['templates'][lang]['template'] = text # is there any way to DRY this out with template_text()?
         self.__parse()
-        assert(self.template_text(lang) == text)
+        assert(self._template_text(lang) == text) # this is no longer true, since trailing punctuation is treated separately
         
         
     def __remove_symbol_from_template_text(self, symbol):
         assert(self._writable())
         assert(symbol in self.symbols())
         for lang in LANGUAGES:#, template_data in self.__data['templates']:
-            template_text = self.template_text(lang)
+            template_text = self._template_text(lang)
             tokens = template_text.split()
             assert(tokens.count(symbol) is 1)
             tokens.remove(symbol)
-            self.set_template_text(lang, ' '.join(tokens))
+            self._set_template_text(lang, ' '.join(tokens))
         # don't have to __parse() just yet, since this function is only meant to be called internally    
             
     def __remove_symbol_from_syntax_tags(self, symbol):
@@ -410,8 +427,8 @@ class Transformation:
     def output_type(self):
         return self.__data['output']
 
-    def remove_trailing_punctuation(self):
-        return 'remove trailing punctuation' in self.__data['options']
+    #def remove_trailing_punctuation(self):
+    #    return 'remove trailing punctuation' in self.__data['options']
         
     def targets(self):
         conversions = self.__data['conversions']

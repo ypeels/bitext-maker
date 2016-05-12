@@ -12,9 +12,11 @@ test:
 
   templates:
     en: 
-      template: It can be a very complicated thing , X .
+      template: It can be a very complicated thing , X
+      punctuation: '.'
     zh: 
-      template: X 是 一 个 非常 复杂 的 事物 。
+      template: X 是 一 个 非常 复杂 的 事物
+      punctuation: 。
 
       
 # TODO: add types so you can have custom sub-nodes like "all the gold"

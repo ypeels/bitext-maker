@@ -58,14 +58,16 @@ transitive:
   # TODO: descriptions for language-specific tags
   templates:
     en: 
-      template: S V O .
+      template: S V O
+      punctuation: '.'
       tags:
         S: subjective # needed by pronouns
         O: objective 
       dependencies: # "deps" in code
         V: S
     zh: 
-      template: S V O 。
+      template: S V O
+      punctuation: 。
    
   
   # TODO: list eligible semantic verbsets here, which is where they "opt in"?
