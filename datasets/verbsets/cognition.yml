@@ -6,6 +6,8 @@ cognition.knowledge:
   tags:
     C:
     S: [animal]
+    
+  transformations: { C: infinitive } # just testing for now - can I add this on a per-language basis?
       
   verbsets:
   - en: know

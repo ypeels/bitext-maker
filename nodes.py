@@ -44,8 +44,9 @@ class Node:
             else:
                 new_values = [value]
                 
+            # duplicates are not added
             for nv in new_values:
-                if not nv in self.__options[key]:
+                if nv not in self.__options[key]:
                     self.__options[key] += [nv]
             
     def generated_text(self, lang):
@@ -247,6 +248,22 @@ class TemplatedNode(Node):
         raise UNIMPLEMENTED_EXCEPTION
         
     ### "protected" functions - default implementations, MAY be overridden in derived classes ###
+    def _bequeath_to_subnodes(self):
+        if self._subnodes():
+            for symbol, subnode in self.__symbol_subnodes.items():
+                # language-specific syntax tags 
+                subnode.add_options({'tags': self._tags_for_symbol(symbol)})
+                   
+                # literal lexical forms hard-coded into template - propagate to lexical node
+                # rebuild data structure using data API, instead of assuming particular form of raw data. probably no slower than deepcopy...?
+                literal_forms = { lang: self._template().literal_form_for_symbol(symbol, lang)
+                    for lang in utility.LANGUAGES
+                    if self._template().literal_form_for_symbol(symbol, lang) }                
+                if literal_forms:
+                    subnode.add_options({'forms': literal_forms}) 
+        else:
+            raise Exception('cannot bequeath to non-existent subnodes')
+    
     def _create_symbol_subnodes(self):
         '''Creates only the subnodes specified by the template - no modifiers'''
         if not self.__symbol_subnodes and self._can_create_symbol_subnodes():
@@ -257,23 +274,14 @@ class TemplatedNode(Node):
             self.__symbol_subnodes = { s: node_factory(self._type_for_symbol(s))
                 for s in self._symbols() }
                 
-            for symbol, subnode in self.__symbol_subnodes.items():
-                # language-specific syntax tags 
-                subnode.add_options({'tags': self._tags_for_symbol(symbol)})
-                
+            # the parent-child relationship is not currently expected to change, so it's not part of _bequeath()
+            for subnode in self.__symbol_subnodes.values():
                 if issubclass(type(subnode), LexicalNode):
-                    subnode.set_parent(self) # for modifiers to query parent node for target
-                   
-                # literal lexical forms hard-coded into template - propagate to lexical node
-                # rebuild data structure using data API, instead of assuming particular form of raw data. probably no slower than deepcopy...?
-                literal_forms = { lang: self._template().literal_form_for_symbol(symbol, lang)
-                    for lang in utility.LANGUAGES
-                    if self._template().literal_form_for_symbol(symbol, lang) }                
-                if literal_forms:
-                    subnode.add_options({'forms': literal_forms})                
-           
+                    subnode.set_parent(self) # for modifiers to query parent node for target           
+            
             # hook up dependencies between NODES and their data - all nodes must have been instantiated first
             # add_dependency() should allow pronouns to work all the way across the tree...right?
+            # TODO: move this to _bequeath()? should deps be allowed to change from transformations?
             for s in self._symbols():                
                 for lang, deps in self._deps_for_symbol(s).items():
                     for d in deps:
@@ -283,6 +291,7 @@ class TemplatedNode(Node):
             assert(len(self.__headnodes) <= 1)            
             # TODO: alter head upon transformation
 
+            self._bequeath_to_subnodes()
 
             
                         
@@ -445,7 +454,13 @@ class TransformableNode(ModifierNode):
         for symbol in transform.targets():
             template.add_target(template.pop_symbol(symbol)) # pop_symbol() also remove its traces from templates as a side effect
             
-        template.add_data(transform.additions())
+        additional_data = transform.additions()
+        if additional_data:
+            template.add_data(additional_data)
+        
+        # re-run any bequests that were done in _create_subnodes() - but only if subnodes have already been created
+        if self._subnodes():
+            self._bequeath_to_subnodes()
         
     def _create_symbol_subnodes(self):   
         TemplatedNode._create_symbol_subnodes(self)
@@ -492,7 +507,7 @@ class Clause(TransformableNode):
             assert(self._can_create_symbol_subnodes())
             self._create_symbol_subnodes()
            
-            self.__bequeath_to_subnodes()
+            #self._bequeath_to_subnodes() # now called by _create_symbol_subnodes
             
         else:
             raise Exception('incompatible template', id, self._template_id())
@@ -506,15 +521,10 @@ class Clause(TransformableNode):
         # e.g., set_template(); transform(); set_verb_category()
         return self.has_template() and self.has_verb_category()
     
-    # hey, notice that you don't really have to order the symbols until generation time anyway, even if specified by templates
-    def _create_symbol_subnodes(self):
-        TransformableNode._create_symbol_subnodes(self)
-        
-        # head node gets special treatment
-        # this is different from other TemplatedNodes because verbs have semantic sub-categories instead of just tags...
-        # alternative: _create_nodes_subclass() call in base class and override here. 
-        # TODO: use add_option instead somehow?
-        self.__bequeath_to_subnodes()
+    
+    ##def _create_symbol_subnodes(self):
+    #    #TransformableNode._create_symbol_subnodes(self)
+    #    #self._bequeath_to_subnodes() # now called by superclass
     
     def _tags_for_symbol(self, symbol): 
         if self.__verb_category:
@@ -525,7 +535,15 @@ class Clause(TransformableNode):
         else:
             return []
     
-    def __bequeath_to_subnodes(self):
+    # hey, notice that you don't really have to order the symbols until generation time anyway, even if specified by templates
+    def _bequeath_to_subnodes(self):
+        TransformableNode._bequeath_to_subnodes(self)
+        
+        # head node gets special treatment
+        # this is different from other TemplatedNodes because verbs have semantic sub-categories instead of just tags...
+        # alternative: _create_nodes_subclass() call in base class and override here. 
+        # TODO: use add_option instead somehow?
+    
         # propagate category down to head verb
         assert(self._subnodes())
         V = self._get_symbol_subnode('V')
@@ -533,17 +551,19 @@ class Clause(TransformableNode):
             V.set_category(self.__verb_category)
             
             # propagate any other semantic tags from verb category down to other symbols
-            for s in self.__verb_category.tagged_symbols():
-                tags = self.__verb_category.tags_for_symbol(s)
+            for sym in self.__verb_category.tagged_symbols():
+                tags = self.__verb_category.tags_for_symbol(sym)
                 
-                # TODO: doesn't this really belong in a superclass?
-                if s in self._symbols():
-                    node = self._get_symbol_subnode(s)
-                elif s in self._ghost_symbols(): # also propagate down to any ghost nodes, for semantic matching with real nodes
-                    node = self._get_symbol_ghostnode(s)
+                # TODO: doesn't this really belong in a superclass? or transformation code?
+                if sym in self._symbols():
+                    node = self._get_symbol_subnode(sym)
+                elif sym in self._ghost_symbols(): # also propagate down to any ghost nodes, for semantic matching with real nodes
+                    node = self._get_symbol_ghostnode(sym)
+                else:
+                    node = None
                     
-                assert(node)
-                node.add_options({'tags': tags})
+                if node: #assert(node) # might legitimately have been ghosted out, e.g., participle
+                    node.add_options({'tags': tags}) 
                 
             
         

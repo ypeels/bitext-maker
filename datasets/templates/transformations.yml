@@ -22,8 +22,8 @@ participle: # TODO: rename to participle.present or participle.active ?
 
 # annoying: have to add each language - but that probably doesn't happen very often
 remove punctuation:
-  input: # explicitly omit input/output values to allow "any input/output" type
-  output:
+  input: # explicitly omit input values to allow any input type
+  output: # explicitly omit output values to preserve original type
   additions:
     langs:
       en:
@@ -39,6 +39,17 @@ remove punctuation:
   # He hit the ball
     # the ball hit by him
     # the ball (that) he hit (this isn't a participle per se, but is a way to adjectivize...)
+    
+infinitive:
+  input: Clause
+  output: Clause
+  additions:
+    langs:
+      en:
+        forms: { V: VB }
+        prewords: { V: to }
+        tags: { S: objective }
+  
 
 
 

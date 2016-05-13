@@ -406,7 +406,7 @@ class Template:
                 assert(type(destination.get(key)) is dict)
                 self.__merge_dict(destination.get(key), value)                
             else: # safe to copy in - either there's nothing to clobber, or you're clobbering a scalar
-                destination[key] = value
+                destination[key] = value # TODO: deepcopy(value) to be safe?
                 
             
         

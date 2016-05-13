@@ -292,8 +292,11 @@ class EnGenerator(Generator):
     # alternatively baking this into Verb would put language-dependent code in the tree (well, tree data is already lang-dep...)
     def _get_verb_from_form(self, verb_node, form):
         verb_base = self._get_verb_base(verb_node)
-        verb_forms = self._verb_form_bank.get(verb_base)
-        return verb_forms.get_form(form)
+        if form == 'VB': # wasted an hour tracking down this "bug" (the design decision to just use VB as the base form and key)
+            return verb_base
+        else:
+            verb_forms = self._verb_form_bank.get(verb_base)
+            return verb_forms.get_form(form)
             
             
     def __generate_verb_present(self, verb_node, subject_node):
