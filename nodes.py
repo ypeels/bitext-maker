@@ -212,7 +212,7 @@ class TemplatedNode(Node):
             for symbol, subnode in self.__symbol_subnodes.items() if subnode.has_generated_text(lang) }
             
     def get_template_text(self, lang):
-        return self.__template.template_text(lang)
+        return self._template().template_text(lang)
             
     def head_symbols(self):
         return [symbol for symbol, subnode in self.__symbol_subnodes.items() if subnode in self._get_headnodes()]
@@ -221,13 +221,13 @@ class TemplatedNode(Node):
         return len(self._symbols()) # TODO: cache this on calling set_template()?
     
     def has_template(self):
-        return bool(self.__template_id) and bool(self.__template)    
+        return bool(self._template_id()) and bool(self._template())    
     def set_template(self, id, readonly=True):
-        assert(self._template_readonly is None)
+        assert(self._template_readonly is None) # set_template should only be called once, for initialization
         self._template_readonly = readonly
     
         self.__template = self.__template_bank.get_template_by_id(id, readonly)
-        assert(type(self.__template) == data.Template)
+        assert(type(self.__template) is data.Template)
         self.__template_id = id
         
         if self._can_create_symbol_subnodes():
@@ -236,6 +236,9 @@ class TemplatedNode(Node):
     def template_id(self):
         return self._template_id()
 
+    def template_prewords(self, lang):
+        return self._template().prewords(lang)
+        
         
         
     ### "pure virtual" functions - to be implemented in derived classes ###
@@ -262,7 +265,7 @@ class TemplatedNode(Node):
                     subnode.set_parent(self) # for modifiers to query parent node for target
                    
                 # literal lexical forms hard-coded into template - propagate to lexical node
-                # rebuilt using data API, instead of assuming particular form of raw data. probably no slower than deepcopy...?
+                # rebuild data structure using data API, instead of assuming particular form of raw data. probably no slower than deepcopy...?
                 literal_forms = { lang: self._template().literal_form_for_symbol(symbol, lang)
                     for lang in utility.LANGUAGES
                     if self._template().literal_form_for_symbol(symbol, lang) }                
@@ -414,11 +417,11 @@ class TransformableNode(ModifierNode):
             assert(len(self.__transformations) is 1)
             return self.__transformations[0]
         else:
-            return TemplatedNode.template_id()
+            return TemplatedNode.template_id(self)
     
     def transformations(self):
         return self.__transformations    
-    def set_transformation(self, transformation_str):    
+    def add_transformation(self, transformation_str):
         assert(self._template())
         assert(not self._template_readonly)
         assert(type(transformation_str) is str)

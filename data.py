@@ -224,7 +224,10 @@ class Template:
         
     def options_for_symbol(self, symbol):
         return self.__data['symbols'][symbol]['options']
-        
+    
+    def prewords(self, lang):
+        return self.__data['langs'][lang].get('prewords', {})
+    
     def symbols(self):
         return self.__symbols.keys()
         

@@ -69,7 +69,7 @@ def configure_transitive_clause(clause, number='singular', modifiers=[], templat
         participle.set_template('transitive', readonly=False)
         
         # TODO: change to "add_transformation" or "transform"? or should i disallow multiple transformations? at least for my first pass...
-        participle.set_transformation('participle')    
+        participle.add_transformation('participle')    
         
         # TODO: some verbs don't seem to work as participles ("the man having the car") - need to blacklist somehow...
         participle.set_verb_category('emotion.desire')
@@ -164,7 +164,9 @@ def make_meta(**kwargs):
     #S.set_template('noun');
     S.set_template('name'); #S.add_options({'tags': ['person']})#, 'number': 'plural'})
     configure_transitive_clause(C, template_readonly=False, **kwargs)
-    C.set_transformation('remove punctuation')
+    C.add_transformation('remove punctuation')
+    
+    #raise Exception('TODO: C-template change for things like "I forced HIM TO VB"')
     
     #meta.lexicalize_all() # - moved to generate_all and analyze_all() this is SO easy to forget, and it doesn't give you a descriptive error message...
     

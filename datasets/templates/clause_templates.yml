@@ -88,7 +88,7 @@ meta:
     en:
       template: S V C
       dependencies: { V: S }
-      #prewords: { C: that } # maybe, but doesn't it get propagated down by TemplatedNode.add_options()?
+      prewords: { C: that } # not passed down - for lang-specific, currently only tags and forms get auto-propagated down
       punctuation: '.'
       tags: { S: subjective }
       

@@ -175,6 +175,12 @@ class Generator:
         else:
             raise Exception('Unimplemented template modification: tried to modify {}'.format(node.type()))
             
+        # also handle any prewords and postwords here - since this IS "modify_template()" - although this is not QUITE linguistic modification...
+        prewords_per_symbol = node.template_prewords(self.LANG)
+        for symbol, preword in prewords_per_symbol.items():
+            symbol_index = result.index(symbol)
+            result.insert(symbol_index, preword)
+            
         assert(type(result) is list and all(type(item) is str for item in result))
         return result
         
