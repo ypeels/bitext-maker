@@ -15,3 +15,13 @@ emotion.desire:
     en: want
     zh: 要
     
+    
+emotion.desire.meta:
+  template: meta
+  transformations: { C: infinitive }
+  tags:
+    S: [animal]    
+  
+  verbsets:
+  - en: want
+    zh: 要

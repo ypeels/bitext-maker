@@ -164,7 +164,7 @@ def make_meta(**kwargs):
     meta = nodes.node_factory('Clause')
     meta.set_template('meta', readonly=False) # writable to allow verb-bin-specific additions from data
     assert(not meta._subnodes())
-    meta.set_verb_category('cognition.knowledge.infinitive')  
+    meta.set_verb_category('emotion.desire.meta') #'cognition.knowledge.infinitive')  
     assert(meta._subnodes())
  
     S, C = [meta._get_symbol_subnode(sym) for sym in 'SC']
@@ -191,7 +191,7 @@ clauses = [ None
     , make_transitive_clause(number='plural', modifiers=['adjective', 'determiner'])
     , make_transitive_clause(number='plural', modifiers=['adjective', 'determiner', 'participle'])
     , make_transitive_clause(modifiers=['adjective', 'adverb'])
-    , make_meta(modifiers=['adjective', 'adverb'])
+    , make_meta(modifiers=['adjective', 'determiner'])
     #, make_custom()
     #, make_custom(number='plural')
     #, make_custom(modifiers=['determiner'])

@@ -1,3 +1,14 @@
+# hmm, this is en-only right now...
+infinitive:
+  input: Clause
+  output: Clause
+  additions:
+    langs:
+      en:
+        forms: { V: VB }
+        prewords: { V: to }
+        tags: { S: objective }
+
 participle: # TODO: rename to participle.present or participle.active ?
   input: Clause
   output: ADJP
@@ -21,17 +32,6 @@ participle: # TODO: rename to participle.present or participle.active ?
         punctuation:
 
 
-# annoying: have to add each language - but that probably doesn't happen very often
-remove punctuation:
-  input: # explicitly omit input values to allow any input type
-  output: # explicitly omit output values to preserve original type
-  additions:
-    langs:
-      en:
-        punctuation:
-      zh:
-        punctuation:
-
   
   
 #participle.passive # a.k.a. past # target: O
@@ -41,19 +41,21 @@ remove punctuation:
     # the ball hit by him
     # the ball (that) he hit (this isn't a participle per se, but is a way to adjectivize...)
   
-# hmm, this is en-only right now...
-infinitive:
-  input: Clause
-  output: Clause
-  additions:
-    langs:
-      en:
-        forms: { V: VB }
-        prewords: { V: to }
-        tags: { S: objective }
+
   
 
-
+remove punctuation:
+  input: # explicitly omit input values to allow any input type
+  output: # explicitly omit output values to preserve original type
+  additions:
+    # annoying: have to add each language - but that probably doesn't happen very often
+    langs:
+      en:
+        punctuation:
+      zh:
+        punctuation:
+  
+  
 
 # topicalization (O, S V)
 # 把 (S took O and V PN(O)) - this may be my crowning achievement
