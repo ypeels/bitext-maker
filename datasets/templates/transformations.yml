@@ -20,7 +20,16 @@ participle: # TODO: rename to participle.present or participle.active ?
         punctuation:
 
 
-    
+# annoying: have to add each language - but that probably doesn't happen very often
+remove punctuation:
+  input: # explicitly omit input/output values to allow "any input/output" type
+  output:
+  additions:
+    templates:
+      en:
+        punctuation:
+      zh:
+        punctuation:
 
   
   
@@ -33,4 +42,5 @@ participle: # TODO: rename to participle.present or participle.active ?
 
 
 
-  
+# topicalization (O, S V)
+# 把 (S took O and V PN(O)) - this may be my crowning achievement

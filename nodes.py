@@ -21,6 +21,7 @@ class Node:
         self.__dependencies = []
         
         self.__generated_text = None # { 'en': 'Alice' ... }
+        self.__is_all_lexicalized = False
         
         # just store them for now and figure out what to do with them later... can always use dict.pop()
         self.__type = options.pop('type') # n.b. this modifies the input original data structure!! (assumed disposable)
@@ -80,11 +81,17 @@ class Node:
     #    operation(self, **kwargs)
     
     def analyze_all(self, analyzer):
+        if not self.__is_all_lexicalized:
+            self.lexicalize_all()
+            
         for sn in self._subnodes():
             sn.analyze_all(analyzer)
         analyzer.analyze(self)
     
     def generate_all(self, generators):
+        if not self.__is_all_lexicalized:
+            self.lexicalize_all()
+    
         for sn in self._subnodes():
             sn.generate_all(generators)        
         #for lang in generators.keys():
@@ -114,6 +121,7 @@ class Node:
         for sn in self._subnodes():
             sn.lexicalize_all()
         self._lexicalize()
+        self.__is_all_lexicalized = True
         
     def ungenerate_all(self): # tempting to call this "reset_all", but there are other operations like lexicalize()...
         for sn in self._subnodes():
@@ -415,25 +423,26 @@ class TransformableNode(ModifierNode):
         assert(not self._template_readonly)
         assert(type(transformation_str) is str)
         
+        transform = data.TRANSFORMATION_BANK.get_transformation_by_id(transformation_str)
+        assert(transform) # although you'd never get here, since get_transformation() would throw KeyError...
+        
         # keep a running list that can be queried
         self.__transformations.append(transformation_str)
         
         # transformation will directly modify the template data structure
         template = self._template()
         
-        transform = data.TRANSFORMATION_BANK.get_transformation_by_id(transformation_str)
-        if transform.input_type() != self.type():
+        
+        if transform.input_type() and transform.input_type() != self.type():
             raise Exception('Tried to transform {} - expected {}'.format(self.type(), transform.input_type()))
 
-        self._set_type(transform.output_type())
+        if transform.output_type():
+            self._set_type(transform.output_type())
         
         for symbol in transform.targets():
             template.add_target(template.pop_symbol(symbol)) # pop_symbol() also remove its traces from templates as a side effect
             
         template.add_data(transform.additions())
-            
-        #if transform.remove_trailing_punctuation():
-        #    template.remove_trailing_punctuation()
         
     def _create_symbol_subnodes(self):   
         TemplatedNode._create_symbol_subnodes(self)

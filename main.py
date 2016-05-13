@@ -23,9 +23,13 @@ assert(__name__ == '__main__') # for now
     # BUT, don't you have to create a public API with which you reach down into the tree?
 # I think that ideally there would be some kind of metadata format that can specify all this 
     
-def make_transitive_clause(number='singular', modifiers=[]):    
+def make_transitive_clause(**kwargs):   
     clause = nodes.node_factory('Clause')
-    clause.set_template('transitive')
+    return configure_transitive_clause(clause, **kwargs)
+    
+# broken off for reuse in make_meta()
+def configure_transitive_clause(clause, number='singular', modifiers=[], template_readonly=True):
+    clause.set_template('transitive', template_readonly)
     assert(not clause._subnodes())
     
     # must be called after set_template() now, due to current transformation implementation...
@@ -121,7 +125,7 @@ def make_transitive_clause(number='singular', modifiers=[]):
     
     
 
-    clause.lexicalize_all() # uses tags/constraints from above to choose namesets, verbsets, etc. to be sampled
+    #clause.lexicalize_all() # uses tags/constraints from above to choose namesets, verbsets, etc. to be sampled
     
     return clause
  
@@ -145,10 +149,26 @@ def make_custom(number='singular', modifiers=[]):
             adjp.add_options({'tags': ['demonstrative']})
         X.add_modifier(adjp)
         
-    custom.lexicalize_all()
+    #custom.lexicalize_all()
     return custom
  
  
+def make_meta(**kwargs):
+    meta = nodes.node_factory('Clause')
+    meta.set_template('meta')
+    assert(not meta._subnodes())
+    meta.set_verb_category('cognition.knowledge')  #
+    assert(meta._subnodes())
+ 
+    S, C = [meta._get_symbol_subnode(sym) for sym in 'SC']
+    #S.set_template('noun');
+    S.set_template('name'); #S.add_options({'tags': ['person']})#, 'number': 'plural'})
+    configure_transitive_clause(C, template_readonly=False, **kwargs)
+    C.set_transformation('remove punctuation')
+    
+    #meta.lexicalize_all() # - moved to generate_all and analyze_all() this is SO easy to forget, and it doesn't give you a descriptive error message...
+    
+    return meta
  
 clauses = [ None
     , make_transitive_clause()
@@ -162,6 +182,7 @@ clauses = [ None
     , make_transitive_clause(number='plural', modifiers=['adjective', 'determiner'])
     , make_transitive_clause(number='plural', modifiers=['adjective', 'determiner', 'participle'])
     , make_transitive_clause(modifiers=['adjective', 'adverb'])
+    , make_meta(modifiers=['adjective', 'adverb'])
     #, make_custom()
     #, make_custom(number='plural')
     #, make_custom(modifiers=['determiner'])

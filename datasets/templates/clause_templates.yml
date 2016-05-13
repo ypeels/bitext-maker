@@ -70,9 +70,31 @@ transitive:
       punctuation: 。
    
   
-  # TODO: list eligible semantic verbsets here, which is where they "opt in"?
-    # likewise, they would have to individually "opt into" each new transformation? lots of work, but prevents false positives...
+meta:
+  example: We|S know|V (Alice kicks Bob)|C
   
+  symbols:
+    V:
+      type: verb
+      description: head verb
+    S: 
+      type: NP
+      description: subject
+    C:
+      type: Clause
+      description: complement
+      
+  templates:
+    en:
+      template: S V C
+      punctuation: '.'
+      tags: { S: subjective }
+      dependencies: { V: S }
+    zh: 
+      template: S V C
+      punctuation: 。
+        
+    
   
 # ugh, make this one form per language, and save alternate forms for transformations? (like O, V S for "add emphasis")
   # otherwise, you'd have to keep track right here about which template goes with which, across all languages

@@ -1,0 +1,13 @@
+# file title admittedly taken from WordNet (sounds better than "thinking")
+
+cognition.knowledge:
+  template: meta
+  
+  tags:
+    C:
+    S: #[animal] 
+      
+  verbsets:
+  - en: know
+    zh: 知道
+    

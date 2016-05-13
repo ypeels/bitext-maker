@@ -431,7 +431,7 @@ class Transformation:
     #    return 'remove trailing punctuation' in self.__data['options']
         
     def targets(self):
-        conversions = self.__data['conversions']
+        conversions = self.__data.get('conversions', {})
         return [symbol for symbol, new_type in conversions.items() if new_type == 'target']
     
     
