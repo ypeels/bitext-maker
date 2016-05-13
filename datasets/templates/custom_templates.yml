@@ -10,7 +10,7 @@ test:
         number: singular
       
 
-  templates:
+  langs:
     en: 
       template: It can be a very complicated thing , X
       punctuation: '.'
@@ -27,7 +27,7 @@ test2:
       type: NP
     V: 
       type: verb
-  templates:
+  langs:
     en:
       template: The N in Spain V mainly on the plains .
       subject: The N in Spain

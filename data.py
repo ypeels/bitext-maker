@@ -255,7 +255,7 @@ class Template:
         
     def _template_text(self, lang, with_punc=False):
         '''Internal version typically doesn't include trailing punctuation'''
-        text = self.__data['templates'][lang]['template']        
+        text = self.__data['langs'][lang]['template']        
         if with_punc:
             punctuation = self.__punctuation(lang)
             if punctuation:
@@ -285,7 +285,7 @@ class Template:
         
         # parse tags for each symbol - a bit of non-trivial inversion, so do it here at load time, once-only
         # imperative style is just a bit more DRY and flexible for something like this...
-        for lang, metadata in self.__data['templates'].items():
+        for lang, metadata in self.__data['langs'].items():
             if lang in LANGUAGES:                
                 for symbol, tags in metadata.get('tags', {}).items():
                     self.__syntax_tags_per_symbol[symbol][lang] = self.__wrap_as_list(tags)
@@ -300,9 +300,9 @@ class Template:
                     self.__forms_per_symbol[symbol][lang] = form
            
     def __punctuation(self, lang):
-        return self.__data['templates'][lang].get('punctuation')
+        return self.__data['langs'][lang].get('punctuation')
     def __set_punctuation(self, lang, punctuation):
-        self.__data['templates'][lang]['punctuation'] = punctuation
+        self.__data['langs'][lang]['punctuation'] = punctuation
            
            
     ### operations that modify the template ###
@@ -352,7 +352,7 @@ class Template:
         
     def _set_template_text(self, lang, text):
         assert(self._writable())
-        self.__data['templates'][lang]['template'] = text # is there any way to DRY this out with template_text()?
+        self.__data['langs'][lang]['template'] = text # is there any way to DRY this out with template_text()?
         self.__parse()
         assert(self._template_text(lang) == text) # this is no longer true, since trailing punctuation is treated separately
         
@@ -360,7 +360,7 @@ class Template:
     def __remove_symbol_from_template_text(self, symbol):
         assert(self._writable())
         assert(symbol in self.symbols())
-        for lang in LANGUAGES:#, template_data in self.__data['templates']:
+        for lang in LANGUAGES:#, template_data in self.__data['langs']:
             template_text = self._template_text(lang)
             tokens = template_text.split()
             assert(tokens.count(symbol) is 1)
@@ -375,7 +375,7 @@ class Template:
         
         # this looks disturbingly brittle...
         for lang in LANGUAGES:            
-            lang_data = self.__data['templates'][lang]
+            lang_data = self.__data['langs'][lang]
             tags = lang_data.get('tags')
             if tags and tags.get(symbol):
                 tags.pop(symbol)
@@ -387,7 +387,7 @@ class Template:
         assert(symbol in self.symbols())
 
         for lang in LANGUAGES:
-            lang_data = self.__data['templates'][lang]
+            lang_data = self.__data['langs'][lang]
             deps = lang_data.get('dependencies')
             if deps:
                 for s, d in list(deps.items()):

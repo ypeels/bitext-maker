@@ -6,7 +6,7 @@ name:
     N:
       type: name
       description: head name
-  templates:
+  langs:
     en: { template: N }
     zh: { template: N }
 
@@ -16,7 +16,7 @@ noun:
     N:
       type: noun
       description: head noun
-  templates:
+  langs:
     en: { template: N }
     zh: { template: N }
     

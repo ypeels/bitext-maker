@@ -9,7 +9,7 @@ adverb:
     B: 
       type: adverb
       description: head
-  templates:
+  langs:
     en: { template: B }
     zh: { template: B }
 

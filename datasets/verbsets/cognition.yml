@@ -5,9 +5,12 @@ cognition.knowledge:
   
   tags:
     C:
-    S: #[animal] 
+    S: [animal]
       
   verbsets:
   - en: know
     zh: 知道
     
+    
+    # note that these are already kind of transformation-like, since they are not part of the original template
+    # TODO: add overrides to verbsets to blacklist certain options

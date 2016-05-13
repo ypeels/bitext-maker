@@ -56,7 +56,7 @@ transitive:
 
   # purely syntactic - semantics are in "verbsets"
   # TODO: descriptions for language-specific tags
-  templates:
+  langs:
     en: 
       template: S V O
       punctuation: '.'
@@ -84,12 +84,15 @@ meta:
       type: Clause
       description: complement
       
-  templates:
+  langs:
     en:
       template: S V C
+      dependencies: { V: S }
+      #prewords: { C: that } # maybe, but doesn't it get propagated down by TemplatedNode.add_options()?
       punctuation: '.'
       tags: { S: subjective }
-      dependencies: { V: S }
+      
+      
     zh: 
       template: S V C
       punctuation: 。

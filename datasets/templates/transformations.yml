@@ -11,7 +11,7 @@ participle: # TODO: rename to participle.present or participle.active ?
   
   # literal changes that get inserted into Template, overwriting any existing entries
   additions:
-    templates: 
+    langs: 
       en:
         punctuation: # deletes (overwrites) existing punctuation
         forms:
@@ -25,7 +25,7 @@ remove punctuation:
   input: # explicitly omit input/output values to allow "any input/output" type
   output:
   additions:
-    templates:
+    langs:
       en:
         punctuation:
       zh:

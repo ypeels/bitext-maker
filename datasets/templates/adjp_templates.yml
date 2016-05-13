@@ -7,7 +7,7 @@ adjective:
     J: 
       type: adjective
       description: head
-  templates:
+  langs:
     en: { template: J }
     zh: { template: J }
 
@@ -19,7 +19,7 @@ determiner:
       type: determiner
       description: head # needed to propagate down target
     
-  templates:
+  langs:
     en: { template: D }
     zh: { template: D }
     
@@ -34,7 +34,7 @@ number:
   example: one|CD
   symbols:
     N: { type: number }
-  templates:
+  langs:
     en: { template: N }
     zh: { template: N }
     
@@ -42,7 +42,7 @@ ordinal:
   example: first|OD
   symbols:
     N: { type: number }
-  templates:
+  langs:
     en: { template: O }
     zh: { template: O }
     
