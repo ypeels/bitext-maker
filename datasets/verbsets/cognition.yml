@@ -21,7 +21,14 @@ cognition.knowledge: &knowledge
 
 cognition.knowledge.infinitive:
   <<: *knowledge
+  
+  # TODO: move this into additions?
   transformations: { C: infinitive }
+  
+  additions:
+    langs:
+      en:
+        prewords: { C: }
   
   # this is just for testing - "I know Alice to have the world" is semi-awkward
   verbsets:

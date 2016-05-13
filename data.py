@@ -406,7 +406,7 @@ class Template:
                 assert(type(destination.get(key)) is dict)
                 self.__merge_dict(destination.get(key), value)                
             else: # safe to copy in - either there's nothing to clobber, or you're clobbering a scalar
-                destination[key] = value # TODO: deepcopy(value) to be safe?
+                destination[key] = copy.deepcopy(value) # deepcopy JUST in case...
     # assert(self._writable())
     
     # i'm not totally sure descriptions are going to stay fixed
@@ -448,6 +448,9 @@ class VerbCategory:
     
     def __str__(self):
         return str(self.__data)
+        
+    def additions(self):
+        return self.__data.get('additions')
         
     def all_verbsets(self):
         return [VerbSet(item) for item in self.__data['verbsets']]

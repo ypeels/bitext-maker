@@ -29,7 +29,7 @@ def make_transitive_clause(**kwargs):
     
 # broken off for reuse in make_meta()
 def configure_transitive_clause(clause, number='singular', modifiers=[], template_readonly=True):
-    clause.set_template('transitive', template_readonly)
+    clause.set_template('transitive', readonly=template_readonly)
     assert(not clause._subnodes())
     
     # must be called after set_template() now, due to current transformation implementation...
@@ -65,17 +65,24 @@ def configure_transitive_clause(clause, number='singular', modifiers=[], templat
     if 'participle' in modifiers:
         assert(modifiers.count('participle') is 1)
         #modifiers.remove('participle')
-        participle = nodes.node_factory('Clause')
+        participle = nodes.node_factory('Clause', manually_create_subnodes=True)
         participle.set_template('transitive', readonly=False)
-        
-        # TODO: change to "add_transformation" or "transform"? or should i disallow multiple transformations? at least for my first pass...
-        participle.add_transformation('participle')    
         
         # TODO: some verbs don't seem to work as participles ("the man having the car") - need to blacklist somehow...
         participle.set_verb_category('emotion.desire')
+        
+        # must be run before set_verb_category(), which will create subnodes as a side effect
+        # BUT must also be run AFTER set_verb_category(), or else it breaks template matching with verb_category...
+        # maybe i should return to fine-grained control? better: add a user option
+        participle.add_transformation('participle') 
+        participle.create_symbol_subnodes_manually()
+        
+
+        
         PO = participle._get_symbol_subnode('O') # note that current test harness requires all NP's to have specified templates...
         PO.set_template('noun'); PO.add_options({'tags': ['object']})
         S.add_modifier(participle)
+    
     
     # add a determiner. oooooo
     # TODO: does this logic really belong here?
@@ -155,9 +162,9 @@ def make_custom(number='singular', modifiers=[]):
  
 def make_meta(**kwargs):
     meta = nodes.node_factory('Clause')
-    meta.set_template('meta')
+    meta.set_template('meta', readonly=False) # writable to allow verb-bin-specific additions from data
     assert(not meta._subnodes())
-    meta.set_verb_category('cognition.knowledge')  #
+    meta.set_verb_category('cognition.knowledge.infinitive')  
     assert(meta._subnodes())
  
     S, C = [meta._get_symbol_subnode(sym) for sym in 'SC']

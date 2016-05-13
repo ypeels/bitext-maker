@@ -487,6 +487,14 @@ class TransformableNode(ModifierNode):
             self.__ghostnodes[k] = Node(**dict(template.target_options_for_key(k))) # TODO: plug memory leak? (alternative is to trash template's data...)
             self.__ghosttargets.append(self.__ghostnodes[k])
             
+        # this allows transformations for subnodes to be specified in data.
+        # not moved to bequeath(), since this should only be called once...
+        for symbol in self._symbols():
+            transformation = self._transformations_for_subnode(symbol)#self.__verb_category.transformation_for_symbol(symbol)
+            if transformation:
+                self._get_symbol_subnode(symbol).add_transformation(transformation)
+
+            
         
     def _ghost_symbols(self):
         return self.__ghostnodes.keys()
@@ -495,9 +503,15 @@ class TransformableNode(ModifierNode):
         return self.__ghostnodes.get(symbol)
         
         
+    # override as needed - for Clause, this reads from a VerbCategory
+    def _transformations_for_subnode(self, symbol):
+        return None
+        
+        
     def __apply_single_transformation(self, transformation_str):
         transform = data.TRANSFORMATION_BANK.get_transformation_by_id(transformation_str)
         assert(transform) # although you'd never get here, since get_transformation() would throw KeyError...
+        assert(type(transform) is data.Transformation)
         
         # transformation will directly modify the template data structure
         __template = self._template()        
@@ -531,7 +545,7 @@ class Clause(TransformableNode):
         TransformableNode.__init__(self, data.CLAUSE_TEMPLATE_BANK, **kwargs)
         
         self.__verb_category_id = ''
-        self.__verb_category = {}
+        self.__verb_category = None # VerbCategory
         
         
     # clauses really need to have semantics figured out before populating the next level down (except blank symbols in participles, etc.)
@@ -566,16 +580,16 @@ class Clause(TransformableNode):
     
     
     def _create_symbol_subnodes(self):
+        # quick first attempt - additional bin-specific template overrides from data
+        # note that for this to work, the clause has to be writable...
+        additional_data = self.__verb_category.additions()
+        if additional_data:
+            self._template().add_data(additional_data)        
+    
         TransformableNode._create_symbol_subnodes(self)
         #self._bequeath_to_subnodes() # now called by superclass
         
-        # not moved to bequeath(), since this should only be called once...
-        for symbol in self._symbols():
-            transformation = self.__verb_category.transformation_for_symbol(symbol)
-            if transformation:
-                self._get_symbol_subnode(symbol).add_transformation(transformation)
-                    # ugh, can't currently add a transformation to a node without a template...
-                    # i suppose i could fix that pretty quickly
+
         
         
         
@@ -588,6 +602,9 @@ class Clause(TransformableNode):
             return TemplatedNode._tags_for_symbol(self, symbol) + semantic_tags
         else:
             return []
+    
+    def _transformations_for_subnode(self, symbol):
+        return self.__verb_category.transformation_for_symbol(symbol)
     
     # hey, notice that you don't really have to order the symbols until generation time anyway, even if specified by templates
     def _bequeath_to_subnodes(self):
