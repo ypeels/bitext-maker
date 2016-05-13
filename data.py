@@ -407,14 +407,11 @@ class Template:
                 self.__merge_dict(destination.get(key), value)                
             else: # safe to copy in - either there's nothing to clobber, or you're clobbering a scalar
                 destination[key] = value # TODO: deepcopy(value) to be safe?
-                
-            
-        
-    
     # assert(self._writable())
     
     # i'm not totally sure descriptions are going to stay fixed
     # let's just go with symbols for now, for want of a better idea...
+
 
         
 class Transformation:
@@ -426,6 +423,9 @@ class Transformation:
         
     def input_type(self):
         return self.__data['input']
+
+    def output_template_id(self):
+        return self.__data.get('output template')
         
     def output_type(self):
         return self.__data['output']
@@ -438,12 +438,7 @@ class Transformation:
         return [symbol for symbol, new_type in conversions.items() if new_type == 'target']
     
     
-    
-
-
-
-
-   
+     
    
 # polylingual lexical "Sets" - e.g., { 'en': 'Alice', 'zh': ... }
 class VerbCategory:
@@ -465,6 +460,11 @@ class VerbCategory:
         
     def template_id(self):
         return self.__data['template']
+        
+    def transformation_for_symbol(self, symbol):
+        transforms = self.__data.get('transformations', {})
+        return transforms.get(symbol)
+
         
 class WordForms:
     def __init__(self, data):

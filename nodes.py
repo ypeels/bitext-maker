@@ -162,7 +162,7 @@ class TemplatedNode(Node):
     '''
     def __init__(self, bank, **kwargs):
         Node.__init__(self, **kwargs)
-        
+
         self.__headnodes = [] # Node
         self.__symbol_subnodes = {}
         self.__modifier_subnodes = []
@@ -234,7 +234,7 @@ class TemplatedNode(Node):
         if self._can_create_symbol_subnodes():
             self._create_symbol_subnodes()
         
-    def template_id(self):
+    def template_id(self):     # ugh, exposed for external use
         return self._template_id()
 
     def template_prewords(self, lang):
@@ -347,6 +347,9 @@ class TemplatedNode(Node):
 
     def _template_id(self):
         return self.__template_id
+        
+    def _set_template_id(self, id):
+        self.__template_id = id
 
     def _type_for_symbol(self, symbol):
         return self.__template.type_for_symbol(symbol)
@@ -382,7 +385,7 @@ class TransformableNode(ModifierNode):
         # - also, most subclasses don't need this functionality for now
     # not kept in ModifierNode, since that covers other classes like ADJP that might never need transforming
     
-    def __init__(self, bank, **kwargs):
+    def __init__(self, bank, manually_create_subnodes=False, **kwargs):
         ModifierNode.__init__(self, bank, **kwargs)
         
         # possible ghost nodes
@@ -391,7 +394,10 @@ class TransformableNode(ModifierNode):
         self.__ghostnodes = {} # basically just parallels subnodes
         self.__ghosttargets = [] # admits the possibility that not all ghost nodes are targets
         
-        self.__transformations = []
+        self.__pending_transformations = []
+        self.__finished_transformations = []
+        
+        self.__waiting_for_manual_subnodes = manually_create_subnodes 
         
     def can_modify(self, target_head):
         assert(issubclass(type(target_head), LexicalNode)) # the alternative was to expose TemplatedNode.headnodes()... maybe that ain't so bad?
@@ -420,48 +426,56 @@ class TransformableNode(ModifierNode):
                     
         return True
     
-    def template_id(self):
-        '''Overrides base class'''
-        if self.__transformations:
-            assert(len(self.__transformations) is 1)
-            return self.__transformations[0]
-        else:
-            return TemplatedNode.template_id(self)
+    def set_template(self, id, readonly=True):
+        TemplatedNode.set_template(self, id, readonly)
+        if self.__has_pending_transformations():
+            self.apply_transformations()
     
-    def transformations(self):
-        return self.__transformations    
-    def add_transformation(self, transformation_str):
-        assert(self._template())
+    # this was a BAD and confusing idea. as a hack, though, it worked in a pinch
+    #def template_id(self):
+    #    '''Overrides base class'''
+    #    if self.__transformations:
+    #        assert(len(self.__transformations) is 1)
+    #        return self.__transformations[0]
+    #    else:
+    #        return TemplatedNode.template_id(self)
+    
+    #def transformations(self):
+    #    return self.__transformations    
+    def add_transformation(self, transformation_str):        
         assert(not self._template_readonly)
         assert(type(transformation_str) is str)
-        
-        transform = data.TRANSFORMATION_BANK.get_transformation_by_id(transformation_str)
-        assert(transform) # although you'd never get here, since get_transformation() would throw KeyError...
-        
-        # keep a running list that can be queried
-        self.__transformations.append(transformation_str)
-        
-        # transformation will directly modify the template data structure
-        template = self._template()
-        
-        
-        if transform.input_type() and transform.input_type() != self.type():
-            raise Exception('Tried to transform {} - expected {}'.format(self.type(), transform.input_type()))
 
-        if transform.output_type():
-            self._set_type(transform.output_type())
+        # keep a running list that can be queried
+        self.__pending_transformations.append(transformation_str)
         
-        for symbol in transform.targets():
-            template.add_target(template.pop_symbol(symbol)) # pop_symbol() also remove its traces from templates as a side effect
+        if self._template():
+            self.apply_transformations()
             
-        additional_data = transform.additions()
-        if additional_data:
-            template.add_data(additional_data)
+    # split off from add_transformation() to allow "queuing" transformations before templates are ready
+    def apply_transformations(self):
+        assert(self._template())
+        assert(not self._template_readonly)
+        
+        for transformation_str in self.__pending_transformations:
+            self.__apply_single_transformation(transformation_str)
+        self.__finished_transformations += self.__pending_transformations
+        self.__pending_transformations.clear()
         
         # re-run any bequests that were done in _create_subnodes() - but only if subnodes have already been created
+        # this is getting a BIT overly complicated...
         if self._subnodes():
             self._bequeath_to_subnodes()
-        
+
+    def create_symbol_subnodes_manually(self):
+        '''Delayed manual subnode creation when instantiated with manually_create_subnodes=True'''
+        assert(self.__waiting_for_manual_subnodes is True)
+        self.__waiting_for_manual_subnodes = False # ready to proceed
+        self._create_symbol_subnodes()
+            
+    def _can_create_symbol_subnodes(self):
+        return not self.__waiting_for_manual_subnodes
+            
     def _create_symbol_subnodes(self):   
         TemplatedNode._create_symbol_subnodes(self)
         
@@ -479,6 +493,35 @@ class TransformableNode(ModifierNode):
         
     def _get_symbol_ghostnode(self, symbol):
         return self.__ghostnodes.get(symbol)
+        
+        
+    def __apply_single_transformation(self, transformation_str):
+        transform = data.TRANSFORMATION_BANK.get_transformation_by_id(transformation_str)
+        assert(transform) # although you'd never get here, since get_transformation() would throw KeyError...
+        
+        # transformation will directly modify the template data structure
+        __template = self._template()        
+        
+        if transform.input_type() and transform.input_type() != self.type():
+            raise Exception('Tried to transform {} - expected {}'.format(self.type(), transform.input_type()))
+
+        if transform.output_type():
+            self._set_type(transform.output_type())
+            
+        if transform.output_template_id():
+            self._set_template_id(transform.output_template_id())
+        
+        for symbol in transform.targets():
+            __template.add_target(__template.pop_symbol(symbol)) # pop_symbol() also remove its traces from templates as a side effect
+            
+        additional_data = transform.additions()
+        if additional_data:
+            __template.add_data(additional_data)
+            
+    def __has_pending_transformations(self):
+        return bool(self.__pending_transformations)
+        
+
         
 
 # now subclassing TransformableNode, to allow participles
@@ -504,11 +547,11 @@ class Clause(TransformableNode):
             self.__verb_category_id = id
             self.__verb_category = category
 
-            assert(self._can_create_symbol_subnodes())
-            self._create_symbol_subnodes()
-           
-            #self._bequeath_to_subnodes() # now called by _create_symbol_subnodes
-            
+            #assert(self._can_create_symbol_subnodes())
+            if self._can_create_symbol_subnodes():
+                self._create_symbol_subnodes()
+                #self._bequeath_to_subnodes() # now called by _create_symbol_subnodes
+
         else:
             raise Exception('incompatible template', id, self._template_id())
             
@@ -519,12 +562,23 @@ class Clause(TransformableNode):
         # although set_verb_category() now also triggers propagation to subnodes,
         # it's still useful to wait for has_verb_category(), since then you get a chance to perform template transformations:
         # e.g., set_template(); transform(); set_verb_category()
-        return self.has_template() and self.has_verb_category()
+        return TransformableNode._can_create_symbol_subnodes(self) and self.has_template() and self.has_verb_category()
     
     
-    ##def _create_symbol_subnodes(self):
-    #    #TransformableNode._create_symbol_subnodes(self)
-    #    #self._bequeath_to_subnodes() # now called by superclass
+    def _create_symbol_subnodes(self):
+        TransformableNode._create_symbol_subnodes(self)
+        #self._bequeath_to_subnodes() # now called by superclass
+        
+        # not moved to bequeath(), since this should only be called once...
+        for symbol in self._symbols():
+            transformation = self.__verb_category.transformation_for_symbol(symbol)
+            if transformation:
+                self._get_symbol_subnode(symbol).add_transformation(transformation)
+                    # ugh, can't currently add a transformation to a node without a template...
+                    # i suppose i could fix that pretty quickly
+        
+        
+        
     
     def _tags_for_symbol(self, symbol): 
         if self.__verb_category:

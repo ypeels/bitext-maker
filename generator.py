@@ -224,6 +224,17 @@ class Generator:
             raise Exception('TODO: unhandled modifiers - {}'.format(modifiers))
         
         return result
+
+    def _modifiers_are_done(self, modifiers):
+        '''This function should only be called during asserts...'''
+        if len(modifiers) is 0:
+            return True
+        else: 
+            error_message = 'TODO: unhandled modifiers - {}'.format([m.template_id() for m in modifiers])
+            print(error_message)
+            raise Exception(error_message) # or should I let it return?
+            return False
+
               
     def _pop_modifiers(self, modifiers, id_to_pop):
         '''Removes modifiers with matching template ID (changes list in place) and returns them'''
@@ -359,9 +370,7 @@ class EnGenerator(Generator):
             part_strings = [p.generated_text(self.LANG) for p in participles]
             result += self.__conjunction(part_strings)
         
-        if len(modifiers) > 0:            
-            raise Exception('TODO: unhandled modifiers - {}'.format(modifiers))
-
+        assert(self._modifiers_are_done(modifiers))
 
         return result
             
@@ -502,10 +511,7 @@ class ZhGenerator(Generator):
                     result.append('的')
                 
 
-            
-        
-        if len(modifiers) > 0:
-            raise Exception('TODO: unhandled modifiers - {}'.format(modifiers))
+        assert(self._modifiers_are_done(modifiers))
         
         result += template
 

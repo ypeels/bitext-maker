@@ -1,6 +1,7 @@
 participle: # TODO: rename to participle.present or participle.active ?
   input: Clause
   output: ADJP
+  output template: participle
   
   example: 
     input: The frog eats delicious bugs .
@@ -39,7 +40,8 @@ remove punctuation:
   # He hit the ball
     # the ball hit by him
     # the ball (that) he hit (this isn't a participle per se, but is a way to adjectivize...)
-    
+  
+# hmm, this is en-only right now...
 infinitive:
   input: Clause
   output: Clause
