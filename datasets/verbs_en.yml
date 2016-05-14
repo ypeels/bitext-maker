@@ -1,4 +1,5 @@
 # morphological information - which Chinese doesn't need...
+# - for ALL verbs in all semantic categories
 # n.b. pyyaml cannot write comments back to file (duh - parser discards them)
 
 #VB:     # infinitive

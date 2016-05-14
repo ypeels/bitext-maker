@@ -181,18 +181,18 @@ def make_meta(**kwargs):
  
 clauses = [ None
     , make_transitive_clause()
-    #, make_transitive_clause(number='plural')
-    #, make_transitive_clause(modifiers=['determiner'])
-    #, make_transitive_clause(number='plural', modifiers=['determiner'])
-    #, make_transitive_clause(modifiers=['adjective'])
-    #, make_transitive_clause(modifiers=['adjective', 'determiner'])
-    ##, make_transitive_clause(modifiers=['adjective', 'determiner', 'adjective']) # works, but has awkward repeated adjs right now
-    ##, make_transitive_clause(modifiers=['adjective', 'determiner', 'adjective', 'adjective'])
+    ##, make_transitive_clause(number='plural')
+    ##, make_transitive_clause(modifiers=['determiner'])
+    ##, make_transitive_clause(number='plural', modifiers=['determiner'])
+    ##, make_transitive_clause(modifiers=['adjective'])
+    , make_transitive_clause(modifiers=['adjective', 'determiner'])
+    ###, make_transitive_clause(modifiers=['adjective', 'determiner', 'adjective']) # works, but has awkward repeated adjs right now
+    ###, make_transitive_clause(modifiers=['adjective', 'determiner', 'adjective', 'adjective'])
     , make_transitive_clause(number='plural', modifiers=['adjective', 'determiner'])
     , make_transitive_clause(number='plural', modifiers=['adjective', 'determiner', 'participle'])
     , make_transitive_clause(modifiers=['adjective', 'adverb'])
     , make_meta(modifiers=['adjective', 'determiner'])
-    #, make_custom()
+    , make_custom()
     #, make_custom(number='plural')
     #, make_custom(modifiers=['determiner'])
     #, make_custom(number='plural', modifiers=['determiner'])

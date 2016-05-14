@@ -18,7 +18,7 @@ participle: # TODO: rename to participle.present or participle.active ?
     input: The frog eats delicious bugs .
     output: eating delicious bugs
    
-  conversions:
+  conversions: # TODO: change to description, for easier migration? 
     S: target
   
   # literal changes that get inserted into Template, overwriting any existing entries

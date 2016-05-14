@@ -19,6 +19,8 @@ cognition.knowledge: #&knowledge
     
     # note that these are already kind of transformation-like, since they are not part of the original template
 
+# TODO: NOT SCALABLE WITH # LANGUAGES! would need to combine multiple entries into one for scalability
+  # still, this is not QUITE as problematic, since the set of "polymorphic" meta verbs is relatively small...right?
 # add overrides to verbsets to blacklist/whitelist additional options
   # transformations take place at the template level, but verbsets enter at the lexical level
   # right now, lexical level only varies after the template has been FIXED

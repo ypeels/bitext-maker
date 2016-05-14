@@ -450,8 +450,11 @@ class ZhGenerator(Generator):
         if target.number() == 'singular':
             noun = self._get_noun_base(target)
             noun_form = self._noun_form_bank.get(noun)
-            measure_word = noun_form.get('M')
-            assert(type(measure_word) is str) # TODO: allow multiple measure words, like using 个 instead of 件 from time to time
+            
+            # TODO: allow multiple measure words, like using 个 instead of 件 from time to time
+            # TODO: allow measure word omission (e.g. 这 世界 - only allowed for some words?)
+            measure_word = noun_form.get('M', '个')
+            assert(type(measure_word) is str) 
             words += ' ' + measure_word
             
         else:
