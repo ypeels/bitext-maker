@@ -4,8 +4,8 @@ infinitive:
   output: # no change
   additions:
     langs:
-      en:
-        forms: { V: VB }
+      en: # hmm, literal prewords is kind of dangerous? they don't live in the multilingual tree at all...
+        forms: { V: VB }        
         prewords: { V: to }
         tags: { S: objective }
 
@@ -59,14 +59,16 @@ tense.past:
   input: Clause
   output: # no change
   additions:
+    symbols:
+      # TODO: language-independent syntax tags in Template, instead of slapping them into EVERY language
+      V: { tags: [tense.past] }
     langs:
       en:
         forms: { V: VBD }
-      zh: 
+      #zh: 
       
-        # TODO: forbid stative (non-action?) verbs from this transformation in data?
-          # current implementation just throws an Exception in Generator, based on verb category? or maybe even edits it to 当时
-        postwords: { V: 了 }
+        # TODO: choose between 了 and a default adverbial in data somehow...
+        #postwords: { V: 了 }
   
   
 

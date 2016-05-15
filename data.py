@@ -193,7 +193,7 @@ class Template:
         
         self.__deps_per_symbol = collections.defaultdict(dict)
         self.__forms_per_symbol = collections.defaultdict(dict) # { V: { en: VBG } }
-        self.__syntax_tags_per_symbol = collections.defaultdict(dict)        
+        self.__syntax_tags_per_symbol = collections.defaultdict(dict)  # { en: { S: subjective } }      
         self.__writable = bool(not readonly)
         
         #self.__symbol_metadata = collections.defaultdict(collections.defaultdict(dict))
@@ -290,6 +290,8 @@ class Template:
         
         # parse tags for each symbol - a bit of non-trivial inversion, so do it here at load time, once-only
         # imperative style is just a bit more DRY and flexible for something like this...
+        
+        # language-specific tags
         for lang, metadata in self.__data['langs'].items():
             if lang in LANGUAGES:                
                 for symbol, tags in metadata.get('tags', {}).items():
@@ -303,6 +305,15 @@ class Template:
                 for symbol, form in metadata.get('forms', {}).items():
                     assert(type(form) is str)
                     self.__forms_per_symbol[symbol][lang] = form
+                    
+        # also append language-independent tags
+        for symbol in self.symbols():
+            tags = self.__data['symbols'][symbol].get('tags')
+            if tags:
+                for lang in LANGUAGES:
+                    old_tags = self.__syntax_tags_per_symbol[symbol].get(lang, [])
+                    self.__syntax_tags_per_symbol[symbol][lang] = old_tags + self.__wrap_as_list(tags)
+                
            
     def __punctuation(self, lang):
         return self.__data['langs'][lang].get('punctuation')
@@ -401,13 +412,26 @@ class Template:
                 
                 
     def __merge_dict(self, destination, input):
+        '''precondition: destination and input are both nested dicts, except for leaf nodes'''
         assert(self._writable())
         assert(type(destination) is dict and type(input) is dict)
         for key, value in input.items():
-            if key in destination.keys() and type(value) is dict:
-                assert(type(destination.get(key)) is dict)
-                self.__merge_dict(destination.get(key), value)                
-            else: # safe to copy in - either there's nothing to clobber, or you're clobbering a scalar
+            # YAML: dicts, lists, and scalars.
+            if key in destination.keys():
+                if type(value) is dict:
+                    assert(type(destination.get(key)) is dict)
+                    self.__merge_dict(destination.get(key), value)   
+                elif type(value) is list:
+                    # append to existing list. make it a list if it's originally a scalar (allows for sloppy yaml coding)
+                    if type(destination[key]) is list:
+                        destination[key] += value
+                    else:
+                        destination[key] = [destination[key]] + value                    
+                else: # must be a scalar - no need to deepcopy
+                    assert(type(destination.get(key)) not in [list, dict])
+                    destination[key] = value
+                
+            else: # safe to copy in - there's nothing to clobber
                 destination[key] = copy.deepcopy(value) # deepcopy JUST in case...
     # assert(self._writable())
     

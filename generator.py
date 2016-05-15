@@ -176,6 +176,7 @@ class Generator:
             raise Exception('Unimplemented template modification: tried to modify {}'.format(node.type()))
             
         # also handle any prewords and postwords here - since this IS "modify_template()" - although this is not QUITE linguistic modification...
+        # TODO: move this to overridable subroutine, to allow for language-specific semantic checks
         prewords_per_symbol = node.template_prewords(self.LANG)
         for symbol, preword in prewords_per_symbol.items():
             if preword:
@@ -209,28 +210,22 @@ class Generator:
             raise Exception('TODO: unhandled modifiers - {}'.format(modifiers))
             
         return result
+
+    # shared by language-specific subclasses
+    def _modify_clause_with_adverbs(self, node, adverb_nodes, result):
+        assert(type(result) is list and all(type(t) is str for t in result))
+
+        # insert adverb before every head verb in the clause
+        head_symbols = node.head_symbols()
+        assert(all(node._type_for_symbol(head) == 'verb') for head in head_symbols)
         
-    def _modify_clause(self, node):
-        result = self._get_unmodified_template(node)
-        modifiers = list(node.modifiers())
+        adv_strings = [a.generated_text(self.LANG) for a in adverb_nodes]
+        assert(len(adv_strings) is 1) # multiple adverbs doesn't work here for zh...although it might for en? semantic-dep? 
         
-        adverbs = self._pop_modifiers(modifiers, 'adverb')
-        if adverbs:
-            # insert adverb before every head verb in the clause
-            head_symbols = node.head_symbols()
-            assert(all(node._type_for_symbol(head) == 'verb') for head in head_symbols)
+        for head in head_symbols:
+            head_index = result.index(head)
             
-            adv_strings = [a.generated_text(self.LANG) for a in adverbs]
-            assert(len(adv_strings) is 1) # multiple adverbs doesn't work here for zh...although it might for en? semantic-dep? 
-            
-            for head in head_symbols:
-                head_index = result.index(head)
-                
-                result = result[:head_index] + adv_strings + result[head_index:] #self.__conjunction(adv_strings) + result[head_index:]
-            
-        if modifiers:
-            raise Exception('TODO: unhandled modifiers - {}'.format(modifiers))
-        
+            result = result[:head_index] + adv_strings + result[head_index:] #self.__conjunction(adv_strings) + result[head_index:]
         return result
 
     def _modifiers_are_done(self, modifiers):
@@ -338,7 +333,19 @@ class EnGenerator(Generator):
             
             
     
-
+    def _modify_clause(self, node):
+        # TODO: DRY this out into a 2-line base class function?
+        result = self._get_unmodified_template(node)
+        modifiers = list(node.modifiers())
+        
+        adverbs = self._pop_modifiers(modifiers, 'adverb')
+        if adverbs:
+            result = self._modify_clause_with_adverbs(node, adverbs, result) # shared from base class
+            
+        if modifiers:
+            raise Exception('TODO: unhandled modifiers - {}'.format(modifiers))
+        
+        return result
 
             
     def _modify_np(self, node):
@@ -484,6 +491,34 @@ class ZhGenerator(Generator):
         verb = self._get_verb_base(node)
         self._generate_node_text(node, verb)
 
+    def _modify_clause(self, node):
+        # TODO: DRY this out into a 2-line base class function?
+        result = self._get_unmodified_template(node)
+        modifiers = list(node.modifiers())
+        
+        adverbs = self._pop_modifiers(modifiers, 'adverb')
+        if adverbs:
+            result = self._modify_clause_with_adverbs(node, adverbs, result) # shared from base class
+
+        head_symbols = node.head_symbols()
+        assert(len(head_symbols) is 1) # TODO: with multiple heads, verb category may vary between heads
+        head = head_symbols[0]
+        if 'tense.past' in node.syntax_tags_for_symbol(head, self.LANG):
+        
+            # the same crude way that default determiners are handled...
+            if node.verb_category_id() in ['action']:
+                result.insert(result.index(head), '了')
+            elif not adverbs:
+                # horrible hack: a topicalized time point phrase - use if desired...
+                raise Exception('TODO: something better than topicalized time point for zh non-action past tense?')
+                result = ['当时'] + result
+            else:
+                raise Exception('TODO: check adverbs for time phrases')
+          
+        if modifiers:
+            raise Exception('TODO: unhandled modifiers - {}'.format(modifiers))
+        
+        return result
         
     def _modify_np(self, node):
         template = self._get_unmodified_template(node)

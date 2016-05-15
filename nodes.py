@@ -234,6 +234,16 @@ class TemplatedNode(Node):
         if self._can_create_symbol_subnodes():
             self._create_symbol_subnodes()
         
+    def syntax_tags_for_symbol(self, symbol, lang): 
+        # TODO: delegate to Template? kind of assuming knowledge of this data structure here...
+        syntax_tags = [t for t in self._tags_for_symbol(symbol) if type(t) is dict]
+        if syntax_tags:
+            assert(len(syntax_tags) is 1)
+            return syntax_tags[0].get(lang, [])
+        else:
+            return []   
+        
+        
     def template_id(self):     # ugh, exposed for external use
         return self._template_id()
 
@@ -441,8 +451,6 @@ class TransformableNode(ModifierNode):
     #    else:
     #        return TemplatedNode.template_id(self)
     
-    #def transformations(self):
-    #    return self.__transformations    
     def add_transformation(self, transformation_str):        
         assert(not self._template_readonly)
         assert(type(transformation_str) is str)
@@ -570,6 +578,8 @@ class Clause(TransformableNode):
         else:
             raise Exception('incompatible template', id, self._template_id())
             
+    def verb_category_id(self):
+        return self.__verb_category_id
             
     
     # overrides
