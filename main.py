@@ -35,7 +35,7 @@ def configure_transitive_clause(clause, number='singular', modifiers=[], transfo
     # must be called after set_template() now, due to current transformation implementation...
     # subnodes are generated after both template and verb category have been set.
     # this gives transformations the chance to modify the template.
-    clause.set_verb_category('action')  #
+    clause.set_verb_category('action')  #'action.possession')#
     assert(clause._subnodes())
     
     if transformations and not template_readonly:
@@ -164,10 +164,14 @@ def make_custom(number='singular', modifiers=[]):
     return custom
  
  
-def make_meta(**kwargs):
+def make_meta(bottom_up=False, **kwargs):
     meta = nodes.node_factory('Clause')
     meta.set_template('meta', readonly=False) # writable to allow verb-bin-specific additions from data
+    
     assert(not meta._subnodes())
+    if bottom_up:
+        C = make_transitive_clause(template_readonly=False, **kwargs)
+        meta.add_symbol_subnode('C', C)    
     meta.set_verb_category('emotion.desire.meta') #'cognition.knowledge')  
     assert(meta._subnodes())
  
@@ -175,7 +179,8 @@ def make_meta(**kwargs):
     #S.set_template('noun');
     S.set_template('name'); #S.add_options({'tags': ['person']})#, 'number': 'plural'})
     
-    configure_transitive_clause(C, template_readonly=False, **kwargs)
+    if not bottom_up:
+        configure_transitive_clause(C, template_readonly=False, **kwargs)
     #C.add_transformation('infinitive') # hey, this works! even though subnodes have already been created
     C.add_transformation('remove punctuation')
     
@@ -200,6 +205,7 @@ clauses = [ None
     , make_transitive_clause(number='plural', modifiers=['adjective', 'determiner', 'participle'])
     , make_transitive_clause(modifiers=['adjective', 'adverb'])
     , make_meta(modifiers=['adjective', 'determiner'])
+    , make_meta(modifiers=['adjective', 'determiner'], bottom_up=True)
     , make_custom()
     #, make_custom(number='plural')
     #, make_custom(modifiers=['determiner'])

@@ -207,6 +207,22 @@ class TemplatedNode(Node):
         for subnode in self._get_headnodes(): #subnode in self._subnodes(): # no, that's WAY too powerful
             subnode.add_options(self._options())
     
+    # still keeping _symbols() "protected" (non-external) as a precaution - should only be called by external tree-builder, which SHOULD know symbols
+    def add_symbol_subnode(self, symbol, subnode):
+        '''Allows trees to be built 'bottom-up' by creating subnodes externally, then tacking them on'''
+        assert(self.has_template())
+        assert(not self.__symbol_subnodes.get(symbol)) # incoming symbol should be new
+        
+        old_symbols = self.__symbol_subnodes.keys()
+        assert(symbol not in old_symbols)
+        
+        # alternative: if this is the final symbol subnode, call the "post-processing" portion of _create_symbol_subnode
+        if len(old_symbols) >= len(self._symbols())-1:
+            raise Exception('Cannot add ALL symbols manually - not yet, anyway')
+            
+        self.__symbol_subnodes[symbol] = subnode
+        
+    
     # used by Generator
     def generated_symbols(self, lang):    
         return { symbol: subnode.generated_text(lang) 
@@ -277,13 +293,17 @@ class TemplatedNode(Node):
     
     def _create_symbol_subnodes(self):
         '''Creates only the subnodes specified by the template - no modifiers'''
-        if not self.__symbol_subnodes and self._can_create_symbol_subnodes():
+        # currently assumes not ALL subnodes are created from bottom up - also asserted in add_subnode()
+        if self._can_create_symbol_subnodes() and not all(s in self.__symbol_subnodes.keys() for s in self._symbols()): #not self.__symbol_subnodes:
             # new implementation ignores multiple calls to this function - to simplify enclosing logic
             #assert(not self.__subnodes) # this function should only be called once, for initialization 
         
             # requires symbols to be unique... but they SHOULD be, since they're in a dict
-            self.__symbol_subnodes = { s: node_factory(self._type_for_symbol(s))
-                for s in self._symbols() }
+            #self.__symbol_subnodes = { s: node_factory(self._type_for_symbol(s))
+            #    for s in self._symbols() }
+            for sym in self._symbols():
+                if sym not in self.__symbol_subnodes.keys():
+                    self.__symbol_subnodes[sym] = node_factory(self._type_for_symbol(sym))
                 
             # the parent-child relationship is not currently expected to change, so it's not part of _bequeath()
             for subnode in self.__symbol_subnodes.values():
