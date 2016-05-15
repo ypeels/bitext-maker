@@ -129,12 +129,20 @@ lots of things are resolved naturally when considering generation instead of dis
 - ambiguity (you know what you want to say)
 - segmentation (you know what ``phrases'' you wanted to output)
 
+WELL... issues of ambiguity are alleviated, but only somewhat (e.g., for a sentence about a bank, the generator should know whether it's a building). 
+BUT ambiguous attachments can still be generated (e.g., the [animal] with the [animal] with the overbite), and it would still take additional logic for the system to recognize this, much less generate all possible translations...
+Maybe just emphasize the fact that lexical ambiguity is virtually eliminated, although structural or semantic ambiguity is still possible in some cases...
+But it still seems like it'll be fewer cases... The [person] saw the dog with(by means of) the [vision implement]
+
 
 Can think of this as something intermediate between fully automatic (RBMT, or semi-supervised SMT) and fully hand-crafted (human translation, which is the norm).
 Compositional trees are more automatic-like, but generate more sentence pairs/tuples.
 Complex templates are more hand-crafted, but generate fewer pairs/tuples, and are (presumably) harder to combine compositionally (but are they really!?).
 
 The tree structure we adopt is something intermediate between constituency trees and dependency trees, and it was chosen for ease of implementation.
+
+We adopt the pragmatic, ``defeatist'' attitude of modeling only straightforward linguistic phenomena compositionally; if the theory and data structures required to model a phenomenon are sufficiently complicated, everything is probably better off just going directly to a translation via template, instead of trying to concoct a sophisticated theory that has to be consistent with all previously theorized phenomena.
+
 
 
 \section{Model}
