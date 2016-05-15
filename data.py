@@ -227,6 +227,8 @@ class Template:
     
     def prewords(self, lang):
         return self.__data['langs'][lang].get('prewords', {})
+    def postwords(self, lang):
+        return self.__data['langs'][lang].get('postwords', {})
     
     def symbols(self):
         return self.__symbols.keys()
@@ -456,10 +458,12 @@ class VerbCategory:
         return [VerbSet(item) for item in self.__data['verbsets']]
         
     def tags_for_symbol(self, symbol):
-        return self.__data['tags'].get(symbol)
+        tags = self.__data.get('tags', {})
+        return tags.get(symbol)
         
     def tagged_symbols(self):
-        return self.__data['tags'].keys()
+        tags = self.__data.get('tags', {})
+        return tags.keys()
         
     def template_id(self):
         return self.__data['template']

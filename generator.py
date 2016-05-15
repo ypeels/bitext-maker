@@ -181,6 +181,13 @@ class Generator:
             if preword:
                 symbol_index = result.index(symbol)
                 result.insert(symbol_index, preword)
+                
+        # TODO: DRY this out with prewords...
+        prewords_per_symbol = node.template_postwords(self.LANG)
+        for symbol, postword in prewords_per_symbol.items():
+            if postword:
+                symbol_index = result.index(symbol)
+                result.insert(symbol_index + 1, postword)
             
         assert(type(result) is list and all(type(item) is str for item in result))
         return result

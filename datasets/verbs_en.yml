@@ -27,6 +27,7 @@ __regular__:
 # - this way, can use references between words if needed (on its own line, to get the whole list item)
 
 
+# TODO: omit regular forms like VBZ = VBP+s?
 be: 
   VBD: were
   VBG: being
@@ -60,6 +61,13 @@ possess:
   VBN: possessed
   VBP: possess
   VBZ: possesses
+  
+use:
+  VBD: used
+  VBG: using
+  VBN: used
+  VBP: use
+  VBZ: uses
 
 want:
   VBD: wanted

@@ -1,6 +1,6 @@
 # pinyin: romanization, for alphabetization purposes
 # NN: the noun (Chinese treebank tag)
-# M: measure word (default 个)
+# M: measure word (default 个) - TODO: move default M from code to data
   # Q: is there any word that CAN'T use 个? well, you could just flag it if it ever comes up...
   # A: words that are not countable (but then couldn't they use 种?)
 

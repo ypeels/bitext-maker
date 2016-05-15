@@ -239,7 +239,8 @@ class TemplatedNode(Node):
 
     def template_prewords(self, lang):
         return self._template().prewords(lang)
-        
+    def template_postwords(self, lang):
+        return self._template().postwords(lang)        
         
         
     ### "pure virtual" functions - to be implemented in derived classes ###

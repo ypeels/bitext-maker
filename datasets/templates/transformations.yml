@@ -1,7 +1,7 @@
 # hmm, this is en-only right now...
 infinitive:
   input: Clause
-  output: Clause
+  output: # no change
   additions:
     langs:
       en:
@@ -54,8 +54,23 @@ remove punctuation:
         punctuation:
       zh:
         punctuation:
+
+tense.past:
+  input: Clause
+  output: # no change
+  additions:
+    langs:
+      en:
+        forms: { V: VBD }
+      zh: 
+      
+        # TODO: forbid stative (non-action?) verbs from this transformation in data?
+          # current implementation just throws an Exception in Generator, based on verb category? or maybe even edits it to 当时
+        postwords: { V: 了 }
   
   
 
 # topicalization (O, S V)
 # 把 (S took O and V PN(O)) - this may be my crowning achievement
+# negation? would vary with zh verb bin...
+

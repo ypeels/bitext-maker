@@ -38,6 +38,7 @@ transitive:
   
 # TODO: syntax-checker - pending format changes...
   # but can pyyaml specify line numbers?
+  # how about writing a blank data entry in each file, and have code check structures against that?
 
 
   example: Alice|S kicks|V Bob|O .

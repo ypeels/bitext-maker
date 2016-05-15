@@ -28,15 +28,19 @@ def make_transitive_clause(**kwargs):
     return configure_transitive_clause(clause, **kwargs)
     
 # broken off for reuse in make_meta()
-def configure_transitive_clause(clause, number='singular', modifiers=[], template_readonly=True):
+def configure_transitive_clause(clause, number='singular', modifiers=[], transformations=[], template_readonly=True):
     clause.set_template('transitive', readonly=template_readonly)
     assert(not clause._subnodes())
     
     # must be called after set_template() now, due to current transformation implementation...
     # subnodes are generated after both template and verb category have been set.
     # this gives transformations the chance to modify the template.
-    clause.set_verb_category('action.possession')  #
+    clause.set_verb_category('action')  #
     assert(clause._subnodes())
+    
+    if transformations and not template_readonly:
+        for trans in transformations:
+            clause.add_transformation(trans)
 
     S, V, O = [clause._get_symbol_subnode(sym) for sym in 'SVO']
     S.set_template('noun'); S.add_options({'tags': ['person']})#, 'number': 'plural'})
@@ -164,13 +168,15 @@ def make_meta(**kwargs):
     meta = nodes.node_factory('Clause')
     meta.set_template('meta', readonly=False) # writable to allow verb-bin-specific additions from data
     assert(not meta._subnodes())
-    meta.set_verb_category('emotion.desire.meta') #'cognition.knowledge.infinitive')  
+    meta.set_verb_category('emotion.desire.meta') #'cognition.knowledge')  
     assert(meta._subnodes())
  
     S, C = [meta._get_symbol_subnode(sym) for sym in 'SC']
     #S.set_template('noun');
     S.set_template('name'); #S.add_options({'tags': ['person']})#, 'number': 'plural'})
+    
     configure_transitive_clause(C, template_readonly=False, **kwargs)
+    #C.add_transformation('infinitive') # hey, this works! even though subnodes have already been created
     C.add_transformation('remove punctuation')
     
     #raise Exception('TODO: C-template change for things like "I forced HIM TO VB"')
@@ -181,6 +187,8 @@ def make_meta(**kwargs):
  
 clauses = [ None
     , make_transitive_clause()
+    , make_transitive_clause(template_readonly=False, transformations=['tense.past'])
+    #, make_transitive_clause(template_readonly=False).add_transformation('tense.past') # doesn't work since add_transformation() returns None
     ##, make_transitive_clause(number='plural')
     ##, make_transitive_clause(modifiers=['determiner'])
     ##, make_transitive_clause(number='plural', modifiers=['determiner'])

@@ -18,6 +18,15 @@
 # n.b. if all top-level keys are preceded by file name, there should be no inter-file collisions
  
 # proposal (hypothesis): all verbs in each semantic category can be modified with the same PP set.
+
+action:
+  template: transitive
+  verbsets:
+  - en: use
+    zh: 使用 # more common than 用 in IWSLT
+
+
+# TODO: this should really be stative.possession (does not take 了 suffix for completion)
 action.possession:
   # TODO: PP-style modifications, before all verbs in the set - probably with an example
   
