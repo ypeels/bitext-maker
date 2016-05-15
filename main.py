@@ -43,7 +43,7 @@ def configure_transitive_clause(clause, number='singular', modifiers=[], transfo
             clause.add_transformation(trans)
 
     S, V, O = [clause._get_symbol_subnode(sym) for sym in 'SVO']
-    S.set_template('noun'); S.add_options({'tags': ['person']})#, 'number': 'plural'})
+    if S: S.set_template('noun'); S.add_options({'tags': ['person']})#, 'number': 'plural'})
     #S.set_template('name'); #O.add_options({'tags': ['man']})
     #S.set_template('name'); #O.add_options({'tags': ['man']})
     #O.set_template('name')
@@ -75,9 +75,7 @@ def configure_transitive_clause(clause, number='singular', modifiers=[], transfo
         # TODO: some verbs don't seem to work as participles ("the man having the car") - need to blacklist somehow...
         participle.set_verb_category('emotion.desire')
         
-        # must be run before set_verb_category(), which will create subnodes as a side effect
-        # BUT must also be run AFTER set_verb_category(), or else it breaks template matching with verb_category...
-        # maybe i should return to fine-grained control? better: add a user option
+        # currently must be run AFTER set_verb_category(), or else it breaks template matching with verb_category...
         participle.add_transformation('participle') 
         participle.create_symbol_subnodes_manually()
         
@@ -85,7 +83,7 @@ def configure_transitive_clause(clause, number='singular', modifiers=[], transfo
         
         PO = participle._get_symbol_subnode('O') # note that current test harness requires all NP's to have specified templates...
         PO.set_template('noun'); PO.add_options({'tags': ['object']})
-        S.add_modifier(participle)
+        if S: S.add_modifier(participle)
     
     
     # add a determiner. oooooo
@@ -164,7 +162,7 @@ def make_custom(number='singular', modifiers=[]):
     return custom
  
  
-def make_meta(bottom_up=False, **kwargs):
+def make_meta(bottom_up=False, **kwargs): # n.b. these are kwargs for INTERNAL use, not to be passed to node_factory
     meta = nodes.node_factory('Clause')
     meta.set_template('meta', readonly=False) # writable to allow verb-bin-specific additions from data
     
@@ -181,15 +179,55 @@ def make_meta(bottom_up=False, **kwargs):
     
     if not bottom_up:
         configure_transitive_clause(C, template_readonly=False, **kwargs)
-    #C.add_transformation('infinitive') # hey, this works! even though subnodes have already been created
-    C.add_transformation('remove punctuation')
+    #C.add_transformation('infinitive.clause') # hey, this works! even though subnodes have already been created
+    #C.add_transformation('remove punctuation')
     
     #raise Exception('TODO: C-template change for things like "I forced HIM TO VB"')
     
     #meta.lexicalize_all() # - moved to generate_all and analyze_all() this is SO easy to forget, and it doesn't give you a descriptive error message...
     
     return meta
- 
+
+
+    
+def make_modal(**kwargs):
+
+    # OKAY, I see - there are actually TWO versions of this
+        # top-down: initialize S directly - no need to migrate it from C. MAYBE set a link to outer S from C
+        # bottom-up: S is initialized from C, then it's ghosted out and then added to outer modal before its (other) subnodes are created
+
+    # top-down version
+    modal = nodes.node_factory('Clause')
+    modal.set_template('modal')
+    modal.set_verb_category('emotion.desire.modal')
+    assert(modal._subnodes())
+    
+    S, C = [modal._get_symbol_subnode(sym) for sym in 'SC']
+    S.set_template('noun')
+        
+        
+    
+    configure_transitive_clause(C, template_readonly=False, **kwargs)
+    
+    # TODO: semantic matching between outer S and the ghost S from the VP
+    
+    return modal
+        
+    ## bottom-up version
+    #vp = nodes.node_factory('Clause')#manually_create_subnodes=True)
+    #vp.set_template('modal', readonly=False)
+    #vp.add_transformation('infinitive.vp')
+    #vp.set_verb_category('emotion.desire')
+    ##vp.create_symbol_subnodes_manually()
+    #
+    #S, O = [vp._get_symbol_subnode(sym) for sym in 'SO']
+    #S.set_template('name')
+    #O.set_template('name')
+    
+    
+    
+    
+    
 clauses = [ None
     , make_transitive_clause()
     , make_transitive_clause(template_readonly=False, transformations=['tense.past'])
@@ -206,10 +244,11 @@ clauses = [ None
     , make_transitive_clause(modifiers=['adjective', 'adverb'])
     , make_meta(modifiers=['adjective', 'determiner'])
     , make_meta(modifiers=['adjective', 'determiner'], bottom_up=True)
-    , make_custom()
+    , make_modal()
+    #, make_custom()
     #, make_custom(number='plural')
     #, make_custom(modifiers=['determiner'])
-    #, make_custom(number='plural', modifiers=['determiner'])
+    #, make_custom(number='plural', modifiers=['determiner'])    
     ]
     
 

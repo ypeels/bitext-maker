@@ -99,6 +99,35 @@ meta:
       punctuation: 。
         
     
+modal:
+  example: Alice|S wants|V (to kick Bob)|C
+  
+  symbols:
+    V:
+      type: verb
+      description: head verb
+    S: 
+      type: NP
+      description: subject
+    C: # but also forcibly specify a transformation? how to guarantee C doesn't have a subject?
+      type: Clause 
+      description: complement
+      
+    # modal is LIKE a meta, except after adding the complement, it has to "rip" its S off and claim as its own
+    
+  langs:
+    en:
+      template: S V C
+      dependencies: { V: S }
+      #prewords: { C: that } # not passed down - for lang-specific, currently only tags and forms get auto-propagated down
+      punctuation: '.'
+      tags: { S: subjective }
+      
+      
+    zh: 
+      template: S V C
+      punctuation: 。
+    
   
 # ugh, make this one form per language, and save alternate forms for transformations? (like O, V S for "add emphasis")
   # otherwise, you'd have to keep track right here about which template goes with which, across all languages

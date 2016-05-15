@@ -17,14 +17,15 @@ UNIMPLEMENTED_EXCEPTION = Exception('Needs to be implemented in derived class')
 
 # duh, just have Templated inherit from Node
 class Node: 
-    def __init__(self, **options): # contains data, so probably don't want to use as a mixin (would have to call constructor in derived classes)
+    def __init__(self, **input_options): # contains data, so probably don't want to use as a mixin (would have to call constructor in derived classes)
         self.__dependencies = []
         
         self.__generated_text = None # { 'en': 'Alice' ... }
         self.__is_all_lexicalized = False
         
         # just store them for now and figure out what to do with them later... can always use dict.pop()
-        self.__type = options.pop('type') # n.b. this modifies the input original data structure!! (assumed disposable)
+        options = dict(input_options) # make copy for trashing - would it be clearer to call self.__options.pop()?
+        self.__type = options.pop('type') 
         self.__options = collections.defaultdict(list, options) # need to instantiate even if empty - that way can query if empty
         
     # currently only used for subject/verb agreement? (ADJP uses a bidirectional modifier/target system...)
@@ -534,8 +535,7 @@ class TransformableNode(ModifierNode):
         
     # override as needed - for Clause, this reads from a VerbCategory
     def _transformations_for_subnode(self, symbol):
-        return None
-        
+        pass # returns None
         
     def __apply_single_transformation(self, transformation_str):
         transform = data.TRANSFORMATION_BANK.get_transformation_by_id(transformation_str)
@@ -596,7 +596,7 @@ class Clause(TransformableNode):
                 #self._bequeath_to_subnodes() # now called by _create_symbol_subnodes
 
         else:
-            raise Exception('incompatible template', id, self._template_id())
+            raise Exception('incompatible template', id, self._template_id(), category.template_id())
             
     def verb_category_id(self):
         return self.__verb_category_id

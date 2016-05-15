@@ -18,9 +18,19 @@ emotion.desire:
     
 emotion.desire.meta:
   template: meta
-  transformations: { C: infinitive }
+  transformations: { C: infinitive.clause }
   tags:
     S: [animal]    
+  
+  verbsets:
+  - en: want
+    zh: 要
+    
+emotion.desire.modal:
+  template: modal
+  transformations: { C: infinitive.vp }
+  tags:
+    S: [object]    #[animal]
   
   verbsets:
   - en: want

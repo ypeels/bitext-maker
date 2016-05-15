@@ -1,5 +1,5 @@
 # hmm, this is en-only right now...
-infinitive:
+infinitive.clause:
   input: Clause
   output: # no change
   additions:
@@ -7,7 +7,33 @@ infinitive:
       en: # hmm, literal prewords is kind of dangerous? they don't live in the multilingual tree at all...
         forms: { V: VB }        
         prewords: { V: to }
-        tags: { S: objective }
+        punctuation:
+        tags: { S: objective } # hmm, does this clobber other S tags?
+      zh:
+        punctuation:
+        
+
+
+infinitive.vp:
+  input: Clause
+  output: 
+  
+  # will need to tag this at some point for Generator, right? WELL, there's always the list of transformations...
+  #output template: VP # VP.infinitive?
+  
+  conversions: { S: target } # hijack participle's target-matching system for semantic checks
+  
+  additions:
+    langs:
+      en:
+        forms: { V: VB }
+        prewords: { V: to }
+        punctuation:
+        #tags: { S: objective } no, need to delete S outright
+      zh:
+        punctuation:
+      
+  
 
 participle: # TODO: rename to participle.present or participle.active ?
   input: Clause
