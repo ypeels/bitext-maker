@@ -220,13 +220,18 @@ class Template:
         
     def ghosts(self):    
         result = {}
-        for key in self.__linked_keys():
+        for key in self.ghost_keys():
             assert(not result.get(key))
-            result[key] = 'linked'
-        for key in self.__target_keys():
-            assert(not result.get(key))
-            result[key] = 'target'        
+            if key in self.__linked_keys():
+                result[key] = 'linked'
+            elif key in self.__target_keys():
+                result[key] = 'target'
+            else:
+                raise Exception('Unknown ghost key ' + key)
         return result.items()
+        
+    def ghost_keys(self):
+        return self.__linked_keys() + self.__target_keys()
         
     def head_symbols(self):
         return [s for s in self.symbols() if 'head' in self.description_for_symbol(s)]

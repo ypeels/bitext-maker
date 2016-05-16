@@ -425,11 +425,31 @@ class TransformableNode(ModifierNode):
         # - uh....?
         self.__ghostnodes = {} # basically just parallels subnodes
         self.__ghosttargets = [] # admits the possibility that not all ghost nodes are targets
+        #self.__ghostlinks = []
         
         self.__pending_transformations = []
         self.__finished_transformations = []
         
         self.__waiting_for_manual_subnodes = manually_create_subnodes 
+        
+    def add_ghostnode(self, key, new_ghost, kind=None):
+        __template = self._template()
+        assert(__template)        
+        assert(key not in __template.symbols())
+        assert(key in __template.ghost_keys())
+        assert(kind in ['target', 'linked'])
+        
+        if key not in self.__ghostnodes:        
+            self.__ghostnodes[key] = new_ghost                  
+            if kind == 'target':
+                self.__ghosttargets.append(new_ghost)
+            #elif kind == 'linked':
+            #    self.__ghostlinks.append(new_ghost) # wait, why do I need to keep track of that?
+            #else:
+            #    raise Exception('Unsupported kind of ghost node', kind)
+        else:
+            raise Exception('Ghost node already exists', key)
+            
         
     def can_modify(self, target_head):
         assert(issubclass(type(target_head), LexicalNode)) # the alternative was to expose TemplatedNode.headnodes()... maybe that ain't so bad?
@@ -448,6 +468,7 @@ class TransformableNode(ModifierNode):
         # check tags on ghosted target nodes
         # TODO: can't FULLY check semantics here, since we haven't lexicalized yet...
             # here, we assume that all tags have been set on the target, and then reject if match is not guaranteed...
+        # TODO: merge tags somehow before lexicalizing?
         target_tags = target_head.semantic_tags()
         for ghost_target in self.__ghosttargets:
             ghost_tags = ghost_target.semantic_tags()
@@ -515,16 +536,20 @@ class TransformableNode(ModifierNode):
         template = self._template()
         
         for key, kind in template.ghosts():# target_keys():
-            assert(not self.__ghostnodes.get(key)) # new ghost node
-            assert(not self._get_symbol_subnode(key)) # TODO: move existing node, maybe adding target_options_for_key?
-            
-            # TODO: plug memory leak? (alternative is to trash template's data...)
-            new_ghost = Node(**dict(template.target_options_for_key(key)))
-            self.__ghostnodes[key] =  new_ghost
-            
-            assert(kind in ['target', 'linked'])
+            assert(not self._get_symbol_subnode(key)) 
+
             if kind == 'target':
-                self.__ghosttargets.append(new_ghost)
+                options = dict(template.target_options_for_key(key)) # TODO: plug memory leak? (alternative is to trash template's data...)
+            else:
+                options = {}            
+            
+            if self.__ghostnodes.get(key):
+                # existing ghost node - add target options
+                self.__ghostnodes[key].add_options(options)            
+            else:
+                # create new (dummy) ghost node
+                self.add_ghostnode(key, Node(**options), kind=kind)
+
             
         # this allows transformations for subnodes to be specified in data.
         # not moved to bequeath(), since this should only be called once...

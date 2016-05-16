@@ -23,7 +23,7 @@ infinitive.vp:
   
   conversions: 
     #{ S: target } # hijack participle's target-matching system for semantic checks? doesn't quite work...
-    { S: ghost }
+    { S: linked }
   
   additions:
     langs:

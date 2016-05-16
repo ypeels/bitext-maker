@@ -196,18 +196,30 @@ def make_modal(**kwargs):
         # top-down: initialize S directly - no need to migrate it from C. MAYBE set a link to outer S from C
         # bottom-up: S is initialized from C, then it's ghosted out and then added to outer modal before its (other) subnodes are created
 
-    # top-down version
+    # top-down
     modal = nodes.node_factory('Clause')
     modal.set_template('modal')
     modal.set_verb_category('emotion.desire.modal')
     assert(modal._subnodes())
     
     S, C = [modal._get_symbol_subnode(sym) for sym in 'SC']
-    S.set_template('noun')
-        
-        
+    S.set_template('noun'); S.add_options({'tags': ['person']})
     
-    configure_transitive_clause(C, template_readonly=False, **kwargs)
+    # top-down - lazy version
+    ## hijack modification system for semantic checking (ghost subject of C matches S)?
+    ## no, this won't work directly, since can_modify() also does some syntactic type checking.
+    #for head in S._get_headnodes():
+    #    print(head, C.can_modify(head))
+    #assert(all(C.can_modify(head) for head in S._get_headnodes())) 
+    #configure_transitive_clause(C, template_readonly=False, **kwargs)
+    
+    C.set_template('transitive', readonly=False)
+    C.add_ghostnode('S', S, kind='linked')
+    C.set_verb_category('action')
+    
+    O = C._get_symbol_subnode('O')
+    O.set_template('noun'); O.add_options({'tags': ['object']})
+    
     
     # TODO: semantic matching between outer S and the ghost S from the VP
     
