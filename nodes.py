@@ -507,15 +507,24 @@ class TransformableNode(ModifierNode):
         return not self.__waiting_for_manual_subnodes
             
     def _create_symbol_subnodes(self):   
+        assert(not self.__pending_transformations) # pending transformations get cleared upon set_template()        
+
         TemplatedNode._create_symbol_subnodes(self)
         
         # create phantom node that just stores attributes for matching purposes?
         template = self._template()
         
-        for k in template.target_keys():
-            assert(not self.__ghostnodes.get(k))
-            self.__ghostnodes[k] = Node(**dict(template.target_options_for_key(k))) # TODO: plug memory leak? (alternative is to trash template's data...)
-            self.__ghosttargets.append(self.__ghostnodes[k])
+        for key, kind in template.ghosts():# target_keys():
+            assert(not self.__ghostnodes.get(key)) # new ghost node
+            assert(not self._get_symbol_subnode(key)) # TODO: move existing node, maybe adding target_options_for_key?
+            
+            # TODO: plug memory leak? (alternative is to trash template's data...)
+            new_ghost = Node(**dict(template.target_options_for_key(key)))
+            self.__ghostnodes[key] =  new_ghost
+            
+            assert(kind in ['target', 'linked'])
+            if kind == 'target':
+                self.__ghosttargets.append(new_ghost)
             
         # this allows transformations for subnodes to be specified in data.
         # not moved to bequeath(), since this should only be called once...
@@ -538,9 +547,11 @@ class TransformableNode(ModifierNode):
         pass # returns None
         
     def __apply_single_transformation(self, transformation_str):
+        '''Applies transformation to Template'''
         transform = data.TRANSFORMATION_BANK.get_transformation_by_id(transformation_str)
         assert(transform) # although you'd never get here, since get_transformation() would throw KeyError...
         assert(type(transform) is data.Transformation)
+        assert(transformation_str not in self.__finished_transformations)
         
         # transformation will directly modify the template data structure
         __template = self._template()        
@@ -554,12 +565,21 @@ class TransformableNode(ModifierNode):
         if transform.output_template_id():
             self._set_template_id(transform.output_template_id())
         
-        for symbol in transform.targets():
-            __template.add_target(__template.pop_symbol(symbol)) # pop_symbol() also remove its traces from templates as a side effect
+        # convert symbol in template to ghosted target slot (Clause S V O -> Participle V O)
+        #for symbol in transform.targets():
+        #    __template.add_target(__template.pop_symbol(symbol)) # pop_symbol() also remove its traces from templates as a side effect
+        if transform.conversions():
+            __template.perform_conversions(transform.conversions()) # duh, delegate to template itself
+            
+         
+        
             
         additional_data = transform.additions()
         if additional_data:
             __template.add_data(additional_data)
+            
+            
+        # TODO: apply transformation operations to any existing nodes for bottom-up tree construction
             
     def __has_pending_transformations(self):
         return bool(self.__pending_transformations)

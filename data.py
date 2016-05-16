@@ -218,6 +218,16 @@ class Template:
     def deps_for_symbol(self, symbol):
         return self.__deps_per_symbol[symbol]
         
+    def ghosts(self):    
+        result = {}
+        for key in self.__linked_keys():
+            assert(not result.get(key))
+            result[key] = 'linked'
+        for key in self.__target_keys():
+            assert(not result.get(key))
+            result[key] = 'target'        
+        return result.items()
+        
     def head_symbols(self):
         return [s for s in self.symbols() if 'head' in self.description_for_symbol(s)]
         
@@ -242,13 +252,6 @@ class Template:
         This is a reconstituted data structure (the innermost lists might be shallow copies)
         '''
         return self.__syntax_tags_per_symbol[symbol]
-        
-    def target_keys(self):
-        targets = self.__data.get('targets')
-        if targets:
-            return targets.keys()
-        else:
-            return []
         
     def target_options_for_key(self, key):
         return self.__data['targets'][key]
@@ -316,12 +319,27 @@ class Template:
                 for lang in LANGUAGES:
                     old_tags = self.__syntax_tags_per_symbol[symbol].get(lang, [])
                     self.__syntax_tags_per_symbol[symbol][lang] = old_tags + self.__wrap_as_list(tags)
-                
+
+
+    def __linked_keys(self):
+        linked = self.__data.get('linked')
+        if linked:
+            return list(linked.keys())
+        else:
+            return []                    
            
     def __punctuation(self, lang):
         return self.__data['langs'][lang].get('punctuation')
     def __set_punctuation(self, lang, punctuation):
         self.__data['langs'][lang]['punctuation'] = punctuation
+    
+    def __target_keys(self):
+        targets = self.__data.get('targets')
+        if targets:
+            return list(targets.keys())
+        else:
+            return []
+           
            
            
     ### operations that modify the template ###
@@ -331,13 +349,51 @@ class Template:
         self.__merge_dict(self.__data, new_data)
         self.__parse()
     
-    def add_target(self, target_data):
-        assert(self._writable())
-        assert(not self.__data.get('targets')) # assuming only single target for now, at least in a template... when would multiple occur?
-        self.__data['targets'] = target_data
-        self.__parse() 
+    #def add_target(self, target_data):
+    #    assert(self._writable())
+    #    assert(not self.__data.get('targets')) # assuming only single target for now, at least in a template... when would multiple occur?
+    #    self.__data['targets'] = target_data # hey this would clobber older targets!
+    #    self.__parse() 
     
-    def pop_symbol(self, symbol):
+    def perform_conversions(self, conversions):
+        assert(self._writable())
+        assert(type(conversions) is dict)
+        
+        for symbol, new_type in conversions.items():
+            assert(type(symbol) is str)
+            assert(type(new_type) is str)
+            assert(symbol in self.symbols())
+            
+            popped_data = self.__pop_symbol(symbol)
+            assert(len(popped_data) is 1 and list(popped_data.keys())[0] == symbol)
+            
+            if not self.__data.get(new_type):
+                self.__data[new_type] = popped_data
+            else:
+                assert(not self.__data.get(new_type).get(symbol))
+                self.__data[new_type].update(popped_data)
+        
+        self.__parse()
+            
+        
+    def remove_trailing_punctuation(self):
+        assert(self._writable())
+        
+        for lang in LANGUAGES:
+            if self.__punctuation(lang):
+                self.__set_punctuation(lang, None)
+                
+        self.__parse()
+        assert(all(not self.__punctuation(lang) for lang in LANGUAGES))
+        
+    def _set_template_text(self, lang, text):
+        assert(self._writable())
+        self.__data['langs'][lang]['template'] = text # is there any way to DRY this out with template_text()?
+        self.__parse()
+        assert(self._template_text(lang) == text) # this is no longer true, since trailing punctuation is treated separately
+
+
+    def __pop_symbol(self, symbol):
         '''
         Removes all traces of a symbol, even from dependencies.
         Return value: symbol signature (from "symbols" dict)
@@ -357,24 +413,7 @@ class Template:
         assert(not self.syntax_tags_for_symbol(symbol))
         assert(not self.deps_for_symbol(symbol))
         
-        return popped
-        
-    def remove_trailing_punctuation(self):
-        assert(self._writable())
-        
-        for lang in LANGUAGES:
-            if self.__punctuation(lang):
-                self.__set_punctuation(lang, None)
-                
-        self.__parse()
-        assert(all(not self.__punctuation(lang) for lang in LANGUAGES))
-        
-    def _set_template_text(self, lang, text):
-        assert(self._writable())
-        self.__data['langs'][lang]['template'] = text # is there any way to DRY this out with template_text()?
-        self.__parse()
-        assert(self._template_text(lang) == text) # this is no longer true, since trailing punctuation is treated separately
-        
+        return popped        
         
     def __remove_symbol_from_template_text(self, symbol):
         assert(self._writable())
@@ -412,7 +451,10 @@ class Template:
                 for s, d in list(deps.items()):
                     if d == symbol:
                         deps.pop(s)
-                
+   
+    # i'm not totally sure descriptions are going to stay fixed
+    # let's just go with symbols for now, for want of a better idea...
+    
                 
     def __merge_dict(self, destination, input):
         '''precondition: destination and input are both nested dicts, except for leaf nodes'''
@@ -437,9 +479,10 @@ class Template:
             else: # safe to copy in - there's nothing to clobber
                 destination[key] = copy.deepcopy(value) # deepcopy JUST in case...
     # assert(self._writable())
+
+
     
-    # i'm not totally sure descriptions are going to stay fixed
-    # let's just go with symbols for now, for want of a better idea...
+
 
 
         
@@ -449,6 +492,9 @@ class Transformation:
         
     def additions(self):
         return self.__data.get('additions') # don't need deepcopy, because you need to do a "deep merge" anyway to avoid destroying old Template
+        
+    def conversions(self):
+        return self.__data.get('conversions', {})
         
     def input_type(self):
         return self.__data['input']
@@ -462,9 +508,10 @@ class Transformation:
     #def remove_trailing_punctuation(self):
     #    return 'remove trailing punctuation' in self.__data['options']
         
-    def targets(self):
-        conversions = self.__data.get('conversions', {})
-        return [symbol for symbol, new_type in conversions.items() if new_type == 'target']
+    #def targets(self):
+    #    conversions = self.__data.get('conversions', {})
+    #    return [symbol for symbol, new_type in conversions.items() if new_type == 'target']
+    
     
     
      

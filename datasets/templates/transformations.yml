@@ -21,7 +21,9 @@ infinitive.vp:
   # will need to tag this at some point for Generator, right? WELL, there's always the list of transformations...
   #output template: VP # VP.infinitive?
   
-  conversions: { S: target } # hijack participle's target-matching system for semantic checks
+  conversions: 
+    #{ S: target } # hijack participle's target-matching system for semantic checks? doesn't quite work...
+    { S: ghost }
   
   additions:
     langs:
