@@ -213,48 +213,57 @@ def make_modal_topdown(**kwargs):
     O = C._get_symbol_subnode('O')
     O.set_template('noun'); O.add_options({'tags': ['object']})
     
-    
-    # TODO: semantic matching between outer S and the ghost S from the VP
-    
     return modal
+    
+    
+# moved down to allow a call to generate_all() in the middle of the building
+def make_modal_bottomup(**kwargs):
         
-    ## bottom-up version
-    #vp = nodes.node_factory('Clause')#manually_create_subnodes=True)
-    #vp.set_template('modal', readonly=False)
+    # bottom-up version
+    vp = nodes.node_factory('Clause')#, manually_create_subnodes=True)
+    vp.set_template('transitive', readonly=False)
     #vp.add_transformation('infinitive.vp')
-    #vp.set_verb_category('emotion.desire')
-    ##vp.create_symbol_subnodes_manually()
+    vp.set_verb_category('action')
+    #vp.create_symbol_subnodes_manually()
     #
-    #S, O = [vp._get_symbol_subnode(sym) for sym in 'SO']
-    #S.set_template('name')
-    #O.set_template('name')
+    S, O = [vp._get_symbol_subnode(sym) for sym in 'SO']
+    S.set_template('name')
+    O.set_template('name'); 
+    #vp._get_symbol_subnode('O').set_template('name')    
+    print('"derivation intermediate" - ', end='')
+    generate_all(vp)
+    
+    modal = nodes.node_factory('Clause')
+    modal.set_template('modal', readonly=False)
+    modal.add_symbol_subnode('C', vp) 
+    modal.add_symbol_subnode('S', S)
+    vp.add_transformation('infinitive.vp')
+    vp.convert_symbol_to_ghostnode('S', 'target') 
+    modal.set_verb_category('emotion.desire.modal') # this performs vp.add_transformation(infinitive.vp) via template
+    print('"derivation intermediate" - ', end='')
+    generate_all(modal)
+    
+    # currently needs to be done after set_verb_category(), which propagates transformations down to subnodes in create_symbol_subnodes
+    # TODO must I do this externally? it's definitely easier, but...
+    
+    modal2 = nodes.node_factory('Clause')
+    modal2.set_template('modal')
+    modal2.add_symbol_subnode('C', modal) 
+    modal2.add_symbol_subnode('S', S)
+    modal.add_transformation('infinitive.vp')
+    modal.convert_symbol_to_ghostnode('S', 'target') 
+    modal2.set_verb_category('emotion.desire.modal')
+    
+    return modal2
     
     
     
+
+  
+
     
     
-clauses = [ None
-    , make_transitive_clause()
-    , make_transitive_clause(template_readonly=False, transformations=['tense.past'])
-    #, make_transitive_clause(template_readonly=False).add_transformation('tense.past') # doesn't work since add_transformation() returns None
-    ##, make_transitive_clause(number='plural')
-    ##, make_transitive_clause(modifiers=['determiner'])
-    ##, make_transitive_clause(number='plural', modifiers=['determiner'])
-    ##, make_transitive_clause(modifiers=['adjective'])
-    , make_transitive_clause(modifiers=['adjective', 'determiner'])
-    ###, make_transitive_clause(modifiers=['adjective', 'determiner', 'adjective']) # works, but has awkward repeated adjs right now
-    ###, make_transitive_clause(modifiers=['adjective', 'determiner', 'adjective', 'adjective'])
-    , make_transitive_clause(number='plural', modifiers=['adjective', 'determiner'])
-    , make_transitive_clause(number='plural', modifiers=['adjective', 'determiner', 'participle'])
-    , make_transitive_clause(modifiers=['adjective', 'adverb'])
-    , make_meta(modifiers=['adjective', 'determiner'])
-    , make_meta(modifiers=['adjective', 'determiner'], bottom_up=True)
-    , make_modal_topdown()
-    #, make_custom()
-    #, make_custom(number='plural')
-    #, make_custom(modifiers=['determiner'])
-    #, make_custom(number='plural', modifiers=['determiner'])    
-    ]
+
     
 
 ### 2. Generate sentences ###
@@ -289,7 +298,7 @@ def count_digits(bases):
         overflow = (place == len(digits))
 
 
-def generate_all(clause, outputs):
+def generate_all(clause, outputs=None):
     # TODO: only need to analyze # samples for a SINGLE language? well, this more general way permits different sample numbers for different langs
         # but then you'd have to have nested indices... still, it's doable in principle.
     # this would be required to reuse analyzer  for multiple trees...should this go in Node.analyze_all()?
@@ -328,24 +337,50 @@ def generate_all(clause, outputs):
         # TODO: do this somewhere else instead of tacking it on at the end??
         print(sentence_case(clause.generated_text('en')))
         
-        for lang in LANGUAGES:
-            outputs[lang].write(sentence_case(clause.generated_text(lang)) + '\n')
+        if outputs:
+            for lang in LANGUAGES:
+                outputs[lang].write(sentence_case(clause.generated_text(lang)) + '\n')
     
 def sentence_case(sentence):
     return sentence[:1].upper() + sentence[1:]
     
     
-# hmm, should I really be using singletons for this?
-analyzer = generator.analyzer
-generators = generator.generators
-assert(set(generator.generators.keys()) == set(LANGUAGES))
+if __name__ == '__main__':
+    # hmm, should I really be using singletons for this?
+    analyzer = generator.analyzer
+    generators = generator.generators
+    assert(set(generator.generators.keys()) == set(LANGUAGES))
 
-outputs = { lang: open('output_{}.txt'.format(lang), 'w', encoding='utf8') for lang in LANGUAGES }
-for c in clauses:
-    if c:
-        generate_all(c, outputs)
-for o in outputs.values():
-    o.close()
+    clauses = [ None
+        , make_transitive_clause()
+        , make_transitive_clause(template_readonly=False, transformations=['tense.past'])
+        #, make_transitive_clause(template_readonly=False).add_transformation('tense.past') # doesn't work since add_transformation() returns None
+        ##, make_transitive_clause(number='plural')
+        ##, make_transitive_clause(modifiers=['determiner'])
+        ##, make_transitive_clause(number='plural', modifiers=['determiner'])
+        ##, make_transitive_clause(modifiers=['adjective'])
+        , make_transitive_clause(modifiers=['adjective', 'determiner'])
+        ###, make_transitive_clause(modifiers=['adjective', 'determiner', 'adjective']) # works, but has awkward repeated adjs right now
+        ###, make_transitive_clause(modifiers=['adjective', 'determiner', 'adjective', 'adjective'])
+        , make_transitive_clause(number='plural', modifiers=['adjective', 'determiner'])
+        , make_transitive_clause(number='plural', modifiers=['adjective', 'determiner', 'participle'])
+        , make_transitive_clause(modifiers=['adjective', 'adverb'])
+        , make_meta(modifiers=['adjective', 'determiner'])
+        , make_meta(modifiers=['adjective', 'determiner'], bottom_up=True)
+        , make_modal_topdown()
+        , make_modal_bottomup()
+        #, make_custom()
+        #, make_custom(number='plural')
+        #, make_custom(modifiers=['determiner'])
+        #, make_custom(number='plural', modifiers=['determiner'])    
+        ]
+    
+    outputs = { lang: open('output_{}.txt'.format(lang), 'w', encoding='utf8') for lang in LANGUAGES }
+    for c in clauses:
+        if c:
+            generate_all(c, outputs)
+    for o in outputs.values():
+        o.close()
 
 
 #with open('output.txt', 'w', encoding='utf8') as output:

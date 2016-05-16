@@ -361,6 +361,9 @@ class TemplatedNode(Node):
     def _get_symbol_subnode(self, symbol):
         return self.__symbol_subnodes.get(symbol)
         
+    def _pop_symbol_subnode(self, symbol):
+        return self.__symbol_subnodes.pop(symbol)
+        
     def _get_headnodes(self):
         return self.__headnodes
    
@@ -431,24 +434,6 @@ class TransformableNode(ModifierNode):
         self.__finished_transformations = []
         
         self.__waiting_for_manual_subnodes = manually_create_subnodes 
-        
-    def add_ghostnode(self, key, new_ghost, kind=None):
-        __template = self._template()
-        assert(__template)        
-        assert(key not in __template.symbols())
-        assert(key in __template.ghost_keys())
-        assert(kind in ['target', 'linked'])
-        
-        if key not in self.__ghostnodes:        
-            self.__ghostnodes[key] = new_ghost                  
-            if kind == 'target':
-                self.__ghosttargets.append(new_ghost)
-            #elif kind == 'linked':
-            #    self.__ghostlinks.append(new_ghost) # wait, why do I need to keep track of that?
-            #else:
-            #    raise Exception('Unsupported kind of ghost node', kind)
-        else:
-            raise Exception('Ghost node already exists', key)
             
         
     def can_modify(self, target_head):
@@ -523,7 +508,31 @@ class TransformableNode(ModifierNode):
         assert(self.__waiting_for_manual_subnodes is True)
         self.__waiting_for_manual_subnodes = False # ready to proceed
         self._create_symbol_subnodes()
+        
+    ### Direct node manipulation by tree builder ###
+    def add_ghostnode(self, key, new_ghost, kind=None):
+        __template = self._template()
+        assert(__template)     
+        assert(key not in __template.symbols())
+        assert(key in __template.ghost_keys())
+        assert(kind in ['target', 'linked'])
+        
+        if key not in self.__ghostnodes:        
+            self.__ghostnodes[key] = new_ghost                  
+            if kind == 'target':
+                self.__ghosttargets.append(new_ghost)
+            #elif kind == 'linked':
+            #    self.__ghostlinks.append(new_ghost) # wait, why do I need to keep track of that?
+            #else:
+            #    raise Exception('Unsupported kind of ghost node', kind)
+        else:
+            raise Exception('Ghost node already exists', key)
             
+    def convert_symbol_to_ghostnode(self, symbol, kind):
+        self.add_ghostnode(symbol, self._pop_symbol_subnode(symbol), kind=kind)
+        
+    ### end Direct node manipulation by tree builder ###
+    
     def _can_create_symbol_subnodes(self):
         return not self.__waiting_for_manual_subnodes
             
@@ -576,7 +585,10 @@ class TransformableNode(ModifierNode):
         transform = data.TRANSFORMATION_BANK.get_transformation_by_id(transformation_str)
         assert(transform) # although you'd never get here, since get_transformation() would throw KeyError...
         assert(type(transform) is data.Transformation)
-        assert(transformation_str not in self.__finished_transformations)
+        
+        #assert(transformation_str not in self.__finished_transformations)
+        if transformation_str in self.__finished_transformations: # allows more flexible ordering in main logic
+            return
         
         # transformation will directly modify the template data structure
         __template = self._template()        
