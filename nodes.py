@@ -444,7 +444,7 @@ class TransformableNode(ModifierNode):
         # syntactic compatibility
         if not all(gt.type() == target_head.type()  or  gt.type() == target_head.parent().type()  for gt in self.__ghosttargets):
             return False
-        
+
         # check tags on ghosted target nodes
         # TODO: can't FULLY check semantics here, since we haven't lexicalized yet...
             # here, we assume that all tags have been set on the target, and then reject if match is not guaranteed...
@@ -999,10 +999,10 @@ class Noun(GenericNoun):
         
     def _get_lexical_candidates(self):
         semantic_tags = [tag for tag in self._get_option('tags') if type(tag) is str] 
-        
-        assert(len(semantic_tags) <= 1)
+
+        #assert(len(semantic_tags) <= 1)
         if semantic_tags:
-            candidates = data.NOUNSET_BANK.find_tagged(semantic_tags[0])   
+            candidates = data.NOUNSET_BANK.find_tagged(semantic_tags)   
         else:
             candidates = data.NOUNSET_BANK.all_nounsets()
         return candidates

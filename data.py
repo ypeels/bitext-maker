@@ -104,9 +104,12 @@ class NounSetBank(WordSetBank):
         assert(len(result) > 0)
         return result
         
-    def find_tagged(self, target_tag):
+    def find_tagged(self, target_tags):
+        '''
+        Returns all noun synsets satisfying ALL target tags.
+        '''
         return [NounSet(item['nounset']) for item in self._data()
-            for tag in item['tags'] if TAXONOMY.isa(tag, target_tag)]
+            for tag in item['tags'] if all(TAXONOMY.isa(tag, tt) for tt in target_tags)]
             
     def _is_dummy(self, datum):
         return all(adj == None for adj in datum['nounset'].values())  
