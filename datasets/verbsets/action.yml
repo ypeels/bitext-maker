@@ -21,6 +21,8 @@
 
 action:
   template: transitive
+  #tags:
+  #  S: [animal]
   verbsets:
   - en: use
     zh: 使用 # more common than 用 in IWSLT

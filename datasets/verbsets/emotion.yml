@@ -30,7 +30,7 @@ emotion.desire.modal:
   template: modal
   transformations: { C: infinitive.vp }
   tags:
-    S: [object]    #[animal]
+    S: [animal]
   
   verbsets:
   - en: want

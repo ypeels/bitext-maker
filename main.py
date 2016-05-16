@@ -190,7 +190,7 @@ def make_meta(bottom_up=False, **kwargs): # n.b. these are kwargs for INTERNAL u
 
 
     
-def make_modal(**kwargs):
+def make_modal_topdown(**kwargs):
 
     # OKAY, I see - there are actually TWO versions of this
         # top-down: initialize S directly - no need to migrate it from C. MAYBE set a link to outer S from C
@@ -203,17 +203,10 @@ def make_modal(**kwargs):
     assert(modal._subnodes())
     
     S, C = [modal._get_symbol_subnode(sym) for sym in 'SC']
-    S.set_template('noun'); S.add_options({'tags': ['person']})
-    
-    # top-down - lazy version
-    ## hijack modification system for semantic checking (ghost subject of C matches S)?
-    ## no, this won't work directly, since can_modify() also does some syntactic type checking.
-    #for head in S._get_headnodes():
-    #    print(head, C.can_modify(head))
-    #assert(all(C.can_modify(head) for head in S._get_headnodes())) 
-    #configure_transitive_clause(C, template_readonly=False, **kwargs)
-    
+    S.set_template('noun'); #S.add_options({'tags': ['object']})
     C.set_template('transitive', readonly=False)
+    
+    # semantic matching between outer S and the ghost S from the VP is enforced by the ghost node mechanism (I think)
     C.add_ghostnode('S', S, kind='linked')
     C.set_verb_category('action')
     
@@ -256,7 +249,7 @@ clauses = [ None
     , make_transitive_clause(modifiers=['adjective', 'adverb'])
     , make_meta(modifiers=['adjective', 'determiner'])
     , make_meta(modifiers=['adjective', 'determiner'], bottom_up=True)
-    , make_modal()
+    , make_modal_topdown()
     #, make_custom()
     #, make_custom(number='plural')
     #, make_custom(modifiers=['determiner'])
