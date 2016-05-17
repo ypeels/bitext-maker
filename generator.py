@@ -504,6 +504,7 @@ class ZhGenerator(Generator):
         assert(len(head_symbols) is 1) # TODO: with multiple heads, verb category may vary between heads
         head = head_symbols[0]
         if 'tense.past' in node.syntax_tags_for_symbol(head, self.LANG):
+            assert(node._get_symbol_subnode(head).get_tense() == 'past')
         
             # the same crude way that default determiners are handled...
             if node.verb_category_id() in ['action']:

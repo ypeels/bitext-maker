@@ -1073,9 +1073,6 @@ class Verb(LexicalNode):
         self.__category = {} # data.VerbCategory
         #self.__verbsets = [] # data.VerbSet
         
-        # TODO: does this really belong here, in a multilingual data structure?
-        self.__tense = 'present' # default tense
-        
     #def get_verbset_by_index(self, index):
     #    return self.get_dataset_by_index(index) #self.__verbsets[index]
         
@@ -1085,13 +1082,27 @@ class Verb(LexicalNode):
     def compatible_modifier_types(self):
         return { 'ADVP' }
         
+    # TODO: does this really belong here, in a multilingual data structure? 
+    # well, could tag different languages with different tenses, although that is assumed NOT to be the case below...
     def get_tense(self):
-        return self.__tense
+    
+        # uh, this requires a suspiciously large amount of knowledge about the tag data structure...
+        tags_per_lang = [item for item in self._get_option('tags') if type(item) is dict]
+        assert(len(tags_per_lang) <= 1)
+        if tags_per_lang:
+            TENSE_PREFIX = 'tense.'
+            tense_tags = [tag for lang in utility.LANGUAGES for tag in tags_per_lang[0][lang] if tag.startswith(TENSE_PREFIX)]
+            if tense_tags:
+                if all(tag == tense_tags[0] for tag in tense_tags[1:]):
+                    return tense_tags[0][len(TENSE_PREFIX):]
+                else:
+                    raise Exception('Non-unique tense?', tense_tags)
+                
+        return 'present'
         
     def verb(self, lang):    
         verbset = self._sample_dataset()
         return verbset.verb(lang)
-
         
     def _get_lexical_candidates(self):
         # TODO: filter further by, say, semantic tags 

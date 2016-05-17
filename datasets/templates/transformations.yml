@@ -88,7 +88,7 @@ tense.past:
   output: # no change
   additions:
     symbols:
-      # TODO: language-independent syntax tags in Template, instead of slapping them into EVERY language
+      # TODO: language-independent syntax tags in Template, instead of slapping them into EVERY language (which is done here)
       V: { tags: [tense.past] }
     langs:
       en:
