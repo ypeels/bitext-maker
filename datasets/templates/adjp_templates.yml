@@ -24,8 +24,17 @@ determiner:
     zh: { template: D }
     
     
-# TODO: noun ("clown car")
 # TODO: restrict target types? or is it noun only for now? expand to names?
+    
+noun:
+  example: clown|NN car|NN
+  symbols:
+    N:
+      type: noun
+      description: head
+  langs:
+    en: { template: N }
+    zh: { template: N }
     
     
 # hmm, these should be accompanied by significant code components...

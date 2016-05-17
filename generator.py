@@ -375,6 +375,10 @@ class EnGenerator(Generator):
             # TODO: adjective ordering
             adj_strings = [a.generated_text(self.LANG) for a in adjs]
             result += self.__conjunction(adj_strings) 
+            
+        # nouns (clown car)
+        nouns = self._pop_modifiers(modifiers, 'noun')
+        result += [n.generated_text(self.LANG) for n in nouns]            
                     
         result += template
 
@@ -556,7 +560,10 @@ class ZhGenerator(Generator):
                 result.append(text)            
                 if len(text) > 1:
                     result.append('的')
-                
+                    
+        # nouns (clown car)
+        nouns = self._pop_modifiers(modifiers, 'noun')
+        result += [n.generated_text(self.LANG) for n in nouns]                
 
         assert(self._modifiers_are_done(modifiers))
         

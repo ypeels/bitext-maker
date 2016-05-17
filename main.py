@@ -89,7 +89,7 @@ def configure_transitive_clause(clause, number='singular', modifiers=[], transfo
     # add a determiner. oooooo
     # TODO: does this logic really belong here?
     for mod in modifiers:
-        if mod in ['determiner', 'adjective']:
+        if mod in ['determiner', 'adjective', 'noun']:
             adjp = nodes.node_factory('ADJP') 
             adjp.set_template(mod)
             if mod == 'determiner':
@@ -358,8 +358,9 @@ if __name__ == '__main__':
         ##, make_transitive_clause(number='plural')
         ##, make_transitive_clause(modifiers=['determiner'])
         ##, make_transitive_clause(number='plural', modifiers=['determiner'])
-        ##, make_transitive_clause(modifiers=['adjective'])
+        , make_transitive_clause(modifiers=['adjective'])
         , make_transitive_clause(modifiers=['adjective', 'determiner'])
+        , make_transitive_clause(modifiers=['noun'])
         ###, make_transitive_clause(modifiers=['adjective', 'determiner', 'adjective']) # works, but has awkward repeated adjs right now
         ###, make_transitive_clause(modifiers=['adjective', 'determiner', 'adjective', 'adjective'])
         , make_transitive_clause(number='plural', modifiers=['adjective', 'determiner'])
