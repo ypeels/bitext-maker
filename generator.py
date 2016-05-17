@@ -507,7 +507,7 @@ class ZhGenerator(Generator):
         
             # the same crude way that default determiners are handled...
             if node.verb_category_id() in ['action']:
-                result.insert(result.index(head), '了')
+                result.insert(result.index(head) + 1, '了')
             elif not adverbs:
                 # horrible hack: a topicalized time point phrase - use if desired...
                 raise Exception('TODO: something better than topicalized time point for zh non-action past tense?')
