@@ -1,0 +1,38 @@
+- tags: []
+  gender:
+  pronounset:
+    en:
+    zh:
+    
+- person: 1
+  pronounset:
+    en: I
+    zh: 我
+    
+- person: 2
+  pronounset:
+    en: you
+    zh: 你
+    
+- person: 3
+  gender: masculine
+  pronounset:
+    en: he
+    zh: 他
+    
+- person: 3
+  gender: feminine # TODO: boats
+  pronounset:
+    en: she
+    zh: 她
+    
+- person: 3
+  gender: neuter # if tags were used here instead, how would you prevent a person from being called "it"?
+  pronounset:
+    en: it
+    zh: 它
+    
+#- person: 3
+#  pronounset:
+#    en: He # tempting, but it's not clear how to pluralize... They?
+#    zh: 祂

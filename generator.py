@@ -103,12 +103,14 @@ class Generator:
             name = node.name(self.LANG)
             self._generate_node_text(node, name)   
         elif node_type == 'noun':
-            self._generate_noun(node) # punt to subclass            
+            self._generate_noun(node) # punt to subclass
+        elif node_type == 'pronoun':
+            self._generate_pronoun(node)
         elif node_type == 'verb':
             assert(not node.has_modifiers()) # TODO: insert verb modifiers into Clause template
             self._generate_verb(node)
         else:
-            raise Exception('Unimplemented lexical node type ' + node_type)
+            raise Exception('Unimplemented generation for lexical node type ' + node_type)
             
     def _generate_node_text(self, node, text):
         node.set_generated_text(self.LANG, text)
@@ -277,7 +279,12 @@ class EnGenerator(Generator):
             noun = self.__pluralize_noun(noun_base)
         self._generate_node_text(node, noun)
       
-        
+    def _generate_pronoun(self, node):
+        if node.has_antecedent():
+            raise Exception('TODO: generate pronoun from antecedent')
+        else:
+            pronoun = node.pronoun(self.LANG)
+            node.set_generated_text(self.LANG, pronoun)
         
     def _generate_verb(self, node):
         # should depend on subject
@@ -489,6 +496,15 @@ class ZhGenerator(Generator):
     def _generate_noun(self, node):
         noun = self._get_noun_base(node) # no inflections
         self._generate_node_text(node, noun)
+        
+    def _generate_pronoun(self, node):
+        if node.has_antecedent():
+            raise Exception('TODO: generate pronoun from antecedent')
+        else:
+            pronoun = node.pronoun(self.LANG)
+            if node.number() == 'plural':
+                pronoun += '们'
+            node.set_generated_text(self.LANG, pronoun)
         
     # ah, conjugation-free Chinese...
     def _generate_verb(self, node):

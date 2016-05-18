@@ -1064,6 +1064,54 @@ class Noun(GenericNoun):
             candidates = data.NOUNSET_BANK.all_nounsets()
         return candidates
         
+        
+class Pronoun(GenericNoun):
+    def __init__(self, **options):
+        GenericNoun.__init__(self, **options)
+        self.__antecedent = None # Node subclass
+        # TODO: specify person (I, you, he) externally? via options?
+        
+    def has_antecedent(self):
+        has_antecedent = bool(self.__antecedent)
+        # for now, antecedent must mean third-person pronoun... TODO: We (antecedent 
+        assert(not has_antecedent or (has_antecedent and self.person() is 3)) 
+        return has_antecedent
+    def set_antecedent(self, node):
+        assert(issubclass(type(node), NounPhrase) or (issubclass(type(node), TemplatedNode) and node.type() == 'NP'))
+        if node.type() != 'NP':
+            raise Exception('Pronoun must refer to a NounPhrase...right?')
+        self.__antecedent = node 
+
+    def person(self): 
+        if self.has_antecedent():
+            return 3
+        else:
+            assert(self._sample_dataset())
+            pronset = self._sample_dataset()
+            return pronset.person() # TODO: here is where this can finally get set to something other than 3
+
+    # TODO: public option to set number? oh that's via options...
+    
+    def pronoun(self, lang):
+        assert(not self.has_antecedent())
+        pronset = self._sample_dataset()
+
+        assert(pronset.num_words(lang) is 1)
+        return pronset.pronoun(lang, 0)
+        
+    def _get_lexical_candidates(self):
+        assert(not self.has_antecedent()) # should never get here; just read antecedent metadata at generation time
+        return data.PRONSET_BANK.all_pronsets()
+    
+    def _lexicalize(self):
+        # with antecedent, this node is empty and just waits until generation time to read metadata from antecedent
+        if self.has_antecedent(): 
+            raise Exception('Should not lexicalize pronoun with antecedent')            
+        else:
+            GenericNoun._lexicalize(self)
+            
+    
+
 
         
     
@@ -1133,6 +1181,7 @@ FACTORY_MAP = {
     'determiner': Determiner,
     'name': Name, 
     'noun': Noun,
+    'pronoun': Pronoun,
     'verb': Verb
 }
 

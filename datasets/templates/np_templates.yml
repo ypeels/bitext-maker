@@ -20,6 +20,14 @@ noun:
     en: { template: N }
     zh: { template: N }
     
+pronoun:
+  symbols:
+    P:
+      type: pronoun
+      description: head
+  langs:
+    en: { template: P }
+    zh: { template: P }
     
 # red cat - is this doable in data, or must it be done in code??
   # code: noun(animal) + modifier(color). i suppose this could go in the meta templates...
@@ -28,7 +36,6 @@ noun:
     
 
 
-# TODO: pronoun - n.b. a nonlocal dependency may have to be wired up externally
 # TODO: VP-NP - like gerunds or infinitives. I guess you could have a single symbol and punt to its template??
   # also tag as "action" or maybe "verb" - since it can't be used EVERYWHERE, semantically (*the cat in the kicking)
   # OR better, I should write out the full template here, and then transformations would TRANSDUCE symbols
@@ -36,6 +43,7 @@ noun:
     # e.g. for participle, start with Clause and turn one of the NPs into a target/slot
   # n.b. infinitives don't take determiners, but gerunds MIGHT ("the killing")
 # TODO: subgroups for conjunctions? but they're only weird as subjects... "The taco and flying a bike"
+# TODO: NN, NN (apposition)
 # TODO: custom templates 
 # TODO: PP's - hmm, those belong in transformations, maybe stored in some kind of nounset file?
 

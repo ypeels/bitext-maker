@@ -113,6 +113,27 @@ class NounSetBank(WordSetBank):
             
     def _is_dummy(self, datum):
         return all(adj == None for adj in datum['nounset'].values())  
+        
+class PronounSetBank(WordSetBank):
+    # useful when just inserting a random dangling pronoun (sentence level)
+    #def all_nounsets(self):
+    #    result = [NounSet(item['nounset']) for item in self._data()]
+    #    assert(len(result) > 0)
+    #    return result
+    def all_pronsets(self):
+        return [PronounSet(item) for item in self._data()]
+    
+    # TODO: queryable function that just takes metadata and returns the right pronset - for referential pronouns
+        
+    #def find_tagged(self, target_tags):
+    #    '''
+    #    Returns all noun synsets satisfying ALL target tags.
+    #    '''
+    #    return [NounSet(item['nounset']) for item in self._data()
+    #        for tag in item['tags'] if all(TAXONOMY.isa(tag, tt) for tt in target_tags)]
+            
+    def _is_dummy(self, datum):
+        return all(adj == None for adj in datum['pronounset'].values()) 
 
             
 class TemplateBank(Bank):
@@ -146,6 +167,9 @@ class NounFormBank(Bank):
             return NounForms(nf)
         else:
             return None
+            
+class PronounFormBank(Bank):
+    pass
         
 class VerbFormBank(Bank):
     def get(self, word):
@@ -639,6 +663,26 @@ class NounSet(WordSet):
     def noun(self, lang, index):
         return WordSet.word(self, lang, index)
         
+class PronounSet:
+    '''Unlike NounSet, etc., this is the entire list item - duck typing + reach a little deeper'''
+    def __init__(self, data):
+        self.__data = data
+        self.__wordset = WordSet(data['pronounset'])
+        
+    def person(self):
+        return self._data()['person']
+        
+    def _data(self):
+        return self.__data
+    
+    # WordSet facade via duck-typing
+    def num_words(self, lang):
+        return self.__wordset.num_words(lang)
+        
+    def pronoun(self, lang, index): # still delegate to WordSet - to leverage any error-checking there
+        return self.__wordset.word(lang, index)
+        
+        
 class VerbSet(WordSet):
     def verb(self, lang):
         verb = self._data()[lang]
@@ -665,6 +709,9 @@ NAME_BANK = NameSetBank(DATA_DIR + 'namesets.yml')
 
 NOUNSET_BANK = NounSetBank(DATA_DIR + 'nounsets.yml')
 NOUN_FORMS = { lang: NounFormBank(DATA_DIR + 'nouns_{}.yml'.format(lang)) for lang in LANGUAGES }
+
+PRONSET_BANK = PronounSetBank(DATA_DIR + 'pronsets.yml')
+PRONOUN_FORMS = { lang: PronounFormBank(DATA_DIR + 'prons_{}.yml'.format(lang)) for lang in LANGUAGES }
 
 TAXONOMY = Taxonomy(DATA_DIR + 'taxonomy.yml')
 
