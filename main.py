@@ -48,7 +48,7 @@ def configure_transitive_clause(clause, number='singular', subject_type='noun', 
         if subject_type == 'noun':
             S.add_options({'tags': ['animal']})
             
-        if subject_type in ['noun', 'pronoun']:
+        if subject_type in ['pronoun']:
             S.add_options({'number': [number]})
     #S.set_template('name'); #O.add_options({'tags': ['man']})
     #S.set_template('name'); #O.add_options({'tags': ['man']})
