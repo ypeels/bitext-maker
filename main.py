@@ -28,7 +28,7 @@ def make_transitive_clause(**kwargs):
     return configure_transitive_clause(clause, **kwargs)
     
 # broken off for reuse in make_meta()
-def configure_transitive_clause(clause, number='singular', modifiers=[], transformations=[], template_readonly=True):
+def configure_transitive_clause(clause, number='singular', subject_type='noun', modifiers=[], transformations=[], template_readonly=True):
     clause.set_template('transitive', readonly=template_readonly)
     assert(not clause._subnodes())
     
@@ -43,7 +43,10 @@ def configure_transitive_clause(clause, number='singular', modifiers=[], transfo
             clause.add_transformation(trans)
 
     S, V, O = [clause._get_symbol_subnode(sym) for sym in 'SVO']
-    if S: S.set_template('noun'); S.add_options({'tags': ['person']})#, 'number': 'plural'})
+    if S: 
+        S.set_template(subject_type); #S.add_options({'tags': ['person']})#, 'number': 'plural'})
+        if subject_type == 'noun':
+            S.add_options({'tags': ['animal']})
     #S.set_template('name'); #O.add_options({'tags': ['man']})
     #S.set_template('name'); #O.add_options({'tags': ['man']})
     #O.set_template('name')
@@ -83,7 +86,10 @@ def configure_transitive_clause(clause, number='singular', modifiers=[], transfo
         
         PO = participle._get_symbol_subnode('O') # note that current test harness requires all NP's to have specified templates...
         PO.set_template('noun'); PO.add_options({'tags': ['object']})
-        if S: S.add_modifier(participle)
+        if S and S.template_id() == 'noun': 
+            S.add_modifier(participle)
+        else:
+            O.add_modifier(participle)
     
     
     # add a determiner. oooooo
