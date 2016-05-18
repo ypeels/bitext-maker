@@ -45,7 +45,7 @@ def configure_transitive_clause(clause, number='singular', subject_type='noun', 
     S, V, O = [clause._get_symbol_subnode(sym) for sym in 'SVO']
     if S: 
         S.set_template(subject_type); #S.add_options({'tags': ['person']})#, 'number': 'plural'})
-        if subject_type == 'noun':
+        if subject_type in ['noun', 'pronoun']:
             S.add_options({'tags': ['animal']})
             
         if subject_type in ['pronoun']:
@@ -134,9 +134,9 @@ def configure_transitive_clause(clause, number='singular', subject_type='noun', 
     for d in determiners:
         d.set_num_samples(5)
         
-    #for node in lexical_nodes:
-    #    if node.type() == 'name':
-    #        node.set_num_samples(5)
+    for node in lexical_nodes:
+        if node.type() == 'pronoun':
+            node.set_num_samples(10)
     
     
 

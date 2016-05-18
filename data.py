@@ -120,17 +120,15 @@ class PronounSetBank(WordSetBank):
     #    result = [NounSet(item['nounset']) for item in self._data()]
     #    assert(len(result) > 0)
     #    return result
-    def all_pronsets(self):
-        return [PronounSet(item) for item in self._data()]
+    def all_pronsets(self): # PronounSet wraps the whole list item, not just the 'pronounset' subkey
+        return self.find_tagged([]) #[PronounSet(item) for item in self._data()]
+        # TODO: backport this intraclass DRYing to other WordSetBanks
     
     # TODO: queryable function that just takes metadata and returns the right pronset - for referential pronouns
-        
-    #def find_tagged(self, target_tags):
-    #    '''
-    #    Returns all noun synsets satisfying ALL target tags.
-    #    '''
-    #    return [NounSet(item['nounset']) for item in self._data()
-    #        for tag in item['tags'] if all(TAXONOMY.isa(tag, tt) for tt in target_tags)]
+    
+    def find_tagged(self, target_tags):
+        return [PronounSet(item) for item in self._data() 
+            for tag in item.get('tags', []) if all(TAXONOMY.isa(tag, tt) for tt in target_tags)]
             
     def _is_dummy(self, datum):
         return all(adj == None for adj in datum['pronounset'].values()) 

@@ -1067,7 +1067,7 @@ class Noun(GenericNoun):
         self.add_options({'number': ['plural']})
         
     def _get_lexical_candidates(self):
-        semantic_tags = [tag for tag in self._get_option('tags') if type(tag) is str] 
+        semantic_tags = self.semantic_tags() #[tag for tag in self._get_option('tags') if type(tag) is str]  #
 
         #assert(len(semantic_tags) <= 1)
         if semantic_tags:
@@ -1107,18 +1107,29 @@ class Pronoun(GenericNoun):
     def pronoun(self, lang):
         assert(not self.has_antecedent())
         pronset = self._sample_dataset()
-
+        
         assert(pronset.num_words(lang) is 1)
         return pronset.pronoun(lang, 0)
         
     def _get_lexical_candidates(self):
-        assert(not self.has_antecedent()) # should never get here; just read antecedent metadata at generation time
-        return data.PRONSET_BANK.all_pronsets()
+        if self.has_antecedent():
+            # currently should never get here; just read antecedent metadata at generation time
+            raise Exception('currently unused')
+            # OR maybe this should get called after all, but at generation time?
+                # call _get_lexical_candidates() from pronoun()?
+            
+            # TODO: subject-verb semantic matching with antecedents...
+                # to do this properly, should really pull tags from antecedent, then feed to VERB at lexicalization time...
+                # for now, just rely on the tree writer...
+        else:
+            return data.PRONSET_BANK.find_tagged(self.semantic_tags() or [])
+
     
     def _lexicalize(self):
         # with antecedent, this node is empty and just waits until generation time to read metadata from antecedent
         if self.has_antecedent(): 
             raise Exception('Should not lexicalize pronoun with antecedent')            
+            # wait, doesn't this function get called, but should just do nothing?
         else:
             GenericNoun._lexicalize(self)
             

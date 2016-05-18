@@ -1,33 +1,34 @@
-- tags: []
-  gender:
-  pronounset:
-    en:
-    zh:
-    
 - person: 1
-  pronounset:
+  tags: [person]
+  pronounset:  
     en: I
     zh: 我
     
 - person: 2
-  pronounset:
+  tags: [person] # TODO: talking to animals or inanimate objects...
+  pronounset:  
     en: you
     zh: 你
     
 - person: 3
-  gender: masculine
+  #gender: masculine # still need tags for subject-verb semantic matching...
+  tags: [man] 
   pronounset:
     en: he
     zh: 他
     
 - person: 3
-  gender: feminine # TODO: boats
+  #gender: feminine 
+  # TODO: boats - maybe put that as a separate PronSet?
+  # TODO: animals with genders
+  tags: [woman]
   pronounset:
     en: she
     zh: 她
     
 - person: 3
-  gender: neuter # if tags were used here instead, how would you prevent a person from being called "it"?
+  #gender: neuter # if tags were used here instead, how would you prevent a human antecedent from being called "it"?
+  #tags: [person] # toggle this to test semantic matching
   pronounset:
     en: it
     zh: 它
