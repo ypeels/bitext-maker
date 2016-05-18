@@ -47,6 +47,9 @@ def configure_transitive_clause(clause, number='singular', subject_type='noun', 
         S.set_template(subject_type); #S.add_options({'tags': ['person']})#, 'number': 'plural'})
         if subject_type == 'noun':
             S.add_options({'tags': ['animal']})
+            
+        if subject_type in ['noun', 'pronoun']:
+            S.add_options({'number': [number]})
     #S.set_template('name'); #O.add_options({'tags': ['man']})
     #S.set_template('name'); #O.add_options({'tags': ['man']})
     #O.set_template('name')
@@ -376,6 +379,8 @@ if __name__ == '__main__':
         , make_meta(modifiers=['adjective', 'determiner'], bottom_up=True)
         , make_modal_topdown()
         , make_modal_bottomup()
+        , make_transitive_clause(subject_type='pronoun')
+        , make_transitive_clause(subject_type='pronoun', number='plural')
         #, make_custom()
         #, make_custom(number='plural')
         #, make_custom(modifiers=['determiner'])

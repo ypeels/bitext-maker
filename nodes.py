@@ -872,6 +872,18 @@ class LexicalNode(Node):
             raise Exception('out of range: {}/{}'.format(index, len(self.__datasets))) 
             # can't just let the system raise IndexError, because it might not for a WHILE before it actually uses index to access
             
+    def tags_for_lang(self, lang):
+        tags = self._get_option('tags')
+        
+        # start by grabbing any language-independent tags
+        lang_tags = [tag for tag in tags if type(tag) is str]
+        
+        for item in tags:
+            if type(item) is not str:
+                lang_tags += item.get(lang, [])
+        return lang_tags
+        
+            
     def total_num_datasets(self, lang): # TODO: rename this atrocity
         # each dataset object could contain more than one "dataset" (nameset, etc.), e.g., en: [Bob, Robert]
         return sum(ds.num_words(lang) for ds in self.__datasets) 
@@ -991,7 +1003,7 @@ class GenericNoun(LexicalNode):
     def number(self):
         #if 'plural' in self._get_option('tags'): # should this really be lumped with semantic tags? well, it is language-independent...
         number_options = self._get_option('number')        
-        assert(not number_options or not('plural' in number_options and 'singular' in number_options))
+        assert(not number_options or not('plural' in number_options and 'singular' in number_options)) # must be either unspecified or not overspecified
         if number_options and 'plural' in number_options:
             return 'plural'
         else:

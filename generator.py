@@ -51,6 +51,7 @@ class Generator:
         
         self._det_form_bank = data.DET_FORMS.get(self.LANG)
         self._noun_form_bank = data.NOUN_FORMS.get(self.LANG)
+        self._pronoun_form_bank = data.PRONOUN_FORMS.get(self.LANG)
         self._verb_form_bank = data.VERB_FORMS.get(self.LANG)
         
         
@@ -283,7 +284,25 @@ class EnGenerator(Generator):
         if node.has_antecedent():
             raise Exception('TODO: generate pronoun from antecedent')
         else:
-            pronoun = node.pronoun(self.LANG)
+            pron_base = node.pronoun(self.LANG)
+            pron_forms = self._pronoun_form_bank.get(pron_base)
+            
+            # so the logic here is language AND data dependent... but I guess I've been doing that the whole time
+            tags = node.tags_for_lang(self.LANG)
+            if 'subjective' in tags:
+                case = 'subjective'
+            elif 'objective' in tags:
+                case = 'objective'
+            else:
+                raise Exception('Unsupported case', tags)
+                
+            if node.number() == 'singular':
+                form = case
+            else:
+                assert(node.number() == 'plural')
+                form = 'PRPS.' + case
+                
+            pronoun = pron_forms.get(form, pron_base)
             node.set_generated_text(self.LANG, pronoun)
         
     def _generate_verb(self, node):
@@ -319,7 +338,8 @@ class EnGenerator(Generator):
             verb_forms = self._verb_form_bank.get(verb_base)
             return verb_forms.get_form(form)
             
-            
+    # TODO: move morphological logic into LexicalNode, which would then have language-dependent code, and grow with # languages?
+        # the alternative, which is currently used, is to punch a new hole in LexicalNode every time you need more metadata...
     def __generate_verb_present(self, verb_node, subject_node):
         # person and number
         # need to choose between the forms of the verb's word
@@ -555,7 +575,7 @@ class ZhGenerator(Generator):
             assert(len(dets) is 1) 
             result.append(dets[0].generated_text(self.LANG))            
         else:
-            if node.number() != 'singular':
+            if node.number() != 'singular' and node.template_id() == 'noun':
                 assert('object' in node._get_option('tags')) # for now, assume countable? 一些时间 != times...
                 assert(not node.has_modifiers()) # would need to check modifiers for "pluralizers" like CD
                 result.append('一些')

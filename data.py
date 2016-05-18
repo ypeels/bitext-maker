@@ -143,41 +143,61 @@ class TemplateBank(Bank):
 class TransformationBank(Bank):
     def get_transformation_by_id(self, id):
         return Transformation(self._data()[id])
-        
+
+
+
+class WordFormBank(Bank):
+    def get(self, word):
+        wf = self._data().get(word)
+        if wf:
+            return self.DATA_FACTORY(wf)
+        else:
+            return None
         
 # TODO: need these to implement comparatives/superlatives for en
-class AdjectiveFormBank(Bank):
+class AdjectiveFormBank(WordFormBank):
     pass     
-class AdverbFormBank(Bank):
+class AdverbFormBank(WordFormBank):
     pass
     
+
         
-class DeterminerFormBank(Bank):
-    def get(self, word):
-        df = self._data().get(word)
-        if df:
-            return DeterminerForms(df)
-        else:
-            return None
+class DeterminerFormBank(WordFormBank):
+    def __init__(self, filename):
+        WordFormBank.__init__(self, filename)
+        self.DATA_FACTORY = DeterminerForms
+    #def get(self, word):
+    #    df = self._data().get(word)
+    #    if df:
+    #        return DeterminerForms(df)
+    #    else:
+    #        return None
         
-class NounFormBank(Bank):
-    def get(self, word):
-        nf = self._data().get(word)
-        if nf:
-            return NounForms(nf)
-        else:
-            return None
+class NounFormBank(WordFormBank):
+    def __init__(self, filename):
+        WordFormBank.__init__(self, filename)
+        self.DATA_FACTORY = NounForms
+    #def get(self, word):
+    #    nf = self._data().get(word)
+    #    if nf:
+    #        return NounForms(nf)
+    #    else:
+    #        return None
             
-class PronounFormBank(Bank):
-    pass
-        
-class VerbFormBank(Bank):
+class PronounFormBank(WordFormBank):
+    # need to differentiate between key with empty entry and a missing key
+    # TODO: backport this into WordFormBank? does it work with other subclasses?
     def get(self, word):
-        vf = self._data().get(word)
-        if vf:
-            return VerbForms(vf)
+        if word in self._data():
+            return PronounForms(self._data().get(word))
         else:
             return None
+        
+class VerbFormBank(WordFormBank):
+    def __init__(self, filename):
+        WordFormBank.__init__(self, filename)
+        self.DATA_FACTORY = VerbForms
+    
 
 # not currently inheriting Bank, since this is multi-file...
 class VerbSetBank:
@@ -578,7 +598,7 @@ class VerbCategory:
         
 class WordForms:
     def __init__(self, data):
-        self.__data = data
+        self.__data = data or {}
         
     def __repr__(self): # meh, this is okay, right? it's pretty definitive (no other data)...
         return "{}({})".format(self.__class__, self.__data.__repr__())
@@ -593,6 +613,10 @@ class DeterminerForms(WordForms):
 class NounForms(WordForms):
     def get(self, key, default=None):
         return self._get(key, default) # hmm, all this does is expose the base class's raw accessor...
+        
+class PronounForms(WordForms):
+    def get(self, key, default=None):
+        return self._get(key, default)
         
 class VerbForms(WordForms):       
     def get_form(self, form):        
