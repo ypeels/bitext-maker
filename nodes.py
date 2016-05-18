@@ -1085,8 +1085,7 @@ class Pronoun(GenericNoun):
         
     def has_antecedent(self):
         has_antecedent = bool(self.__antecedent)
-        # for now, antecedent must mean third-person pronoun... TODO: We (antecedent 
-        assert(not has_antecedent or (has_antecedent and self.person() is 3)) 
+        #assert(not has or (has and self.person() is 3)) # duh, infinite recursion
         return has_antecedent
     def set_antecedent(self, node):
         assert(issubclass(type(node), NounPhrase) or (issubclass(type(node), TemplatedNode) and node.type() == 'NP'))
@@ -1096,6 +1095,7 @@ class Pronoun(GenericNoun):
 
     def person(self): 
         if self.has_antecedent():
+            # TODO: first or second person antecedent (Alice and I, we ... )
             return 3
         else:
             assert(self._sample_dataset())
