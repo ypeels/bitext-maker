@@ -31,11 +31,11 @@ __regular__:
 be: 
   VBD: were
   VBG: being
-  VBN: been
-  VBP: [are, "'re"]
-  VBZ: [is, "'s"]
+  VBN: been # should this really be "have been"?
+  VBP: are #, "'re"]
+  VBZ: is #, "'s"]
   irregular:
-    VBP1: [am, "'m"] # should i add more metadata here?
+    VBP1: am #, "'m"] # should i add more metadata here?
     VBD1: was
     VBD3: was
     # TODO: subjunctives
