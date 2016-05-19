@@ -746,6 +746,12 @@ class CustomTemplate(TemplatedNode):
 class NounPhrase(TemplatedNode):
     def __init__(self, **options):
         TemplatedNode.__init__(self, data.NP_TEMPLATE_BANK, **options)
+
+    def lexical_tags(self):
+        '''Reaches down deep into LexicalNodes to get concrete tags as antecedent for Pronoun'''
+        headnodes = self._get_headnodes()
+        headtags = [head.lexical_tags() for head in headnodes]
+        return headtags
         
     def number(self):
         '''singular or plural?'''
@@ -757,7 +763,6 @@ class NounPhrase(TemplatedNode):
             return 'plural' # in a disjunction like "candy or dogs", only one should be marked as a headword, right?
         else:
             return heads[0].number()
-        
     
     def person(self):
         '''1: I/we, 2: You/y'all, 3: all others'''
@@ -844,6 +849,13 @@ class LexicalNode(Node):
             
         else:
             return ''
+    
+    def lexical_tags(self):
+        '''Returns (language-independent, presumably semantic) tags from currently selected WordSet'''
+        selected_wordset = self._sample_dataset()
+        tags = selected_wordset.tags()
+        assert(type(tags) is list and all(type(t) is str for t in tags)) # single word WordSets for now...
+        return tags        
     
     def lexical_targets(self):
         return self.parent().lexical_targets()
@@ -1014,6 +1026,7 @@ class GenericNoun(LexicalNode):
         raise UNIMPLEMENTED_EXCEPTION
         
         
+        
 # leaf nodes - hmm, are all non-leaf nodes Templated, then?
 class Name(GenericNoun):
     #def __init__(self, **kwargs):
@@ -1044,12 +1057,8 @@ class Name(GenericNoun):
             candidates = data.NAME_BANK.all_namesets()
             
         return candidates
-            
 
         
-            
-            
-
     
 class Noun(GenericNoun):
     def compatible_modifier_types(self):
@@ -1076,13 +1085,13 @@ class Noun(GenericNoun):
             candidates = data.NOUNSET_BANK.all_nounsets()
         return candidates
         
-        
 class Pronoun(GenericNoun):
     def __init__(self, **options):
         GenericNoun.__init__(self, **options)
         self.__antecedent = None # Node subclass
         # TODO: specify person (I, you, he) externally? via options?
         
+    # TODO: merge this with the "dependencies" system (is that relegated to template-specified dependencies at this point?)
     def has_antecedent(self):
         has_antecedent = bool(self.__antecedent)
         #assert(not has or (has and self.person() is 3)) # duh, infinite recursion
@@ -1093,6 +1102,35 @@ class Pronoun(GenericNoun):
             raise Exception('Pronoun must refer to a NounPhrase...right?')
         self.__antecedent = node 
 
+    def pronoun(self, lang):
+        if self.has_antecedent():
+            # have to figure out correct pronset from antecedent
+            antecedent = self.__antecedent
+            assert(len(self.__antecedent.lexical_tags()) is 1)
+            antecedent_tags = self.__antecedent.lexical_tags()[0]            
+            # can't merge antecedent's tags in, because this tree node might need to be reused with a different antecedent word...?
+            
+            if any(data.TAXONOMY.isa(tag, 'man') for tag in antecedent_tags):
+                pronset = data.PRONSET_BANK.find_tagged_third_person('man')[0]         # he
+            elif any(data.TAXONOMY.isa(tag, 'woman') for tag in antecedent_tags):
+                pronset = data.PRONSET_BANK.find_tagged_third_person('woman')[0]       # she
+            elif any(data.TAXONOMY.isa(tag, 'person') for tag in antecedent_tags):
+                pronset = data.PRONSET_BANK.find_tagged_third_person('man')[0]         # he
+            else:
+                pronset = data.PRONSET_BANK.find_tagged_third_person('nonhuman')[0]    # it
+            
+        else:
+            pronset = self._sample_dataset()
+        return pronset.pronoun(lang, 0)
+        
+        
+    # overriding GenericNoun
+    def number(self):
+        if self.has_antecedent():
+            return self.__antecedent.number()
+        else:
+            return GenericNoun.number(self)
+    
     def person(self): 
         if self.has_antecedent():
             # TODO: first or second person antecedent (Alice and I, we ... )
@@ -1102,14 +1140,19 @@ class Pronoun(GenericNoun):
             pronset = self._sample_dataset()
             return pronset.person() # TODO: here is where this can finally get set to something other than 3
 
-    # TODO: public option to set number? oh that's via options...
+            
+    # overriding LexicalNode
+    def num_samples(self):
+        if self.has_antecedent():
+            return 1
+        else:
+            return GenericNoun.num_samples(self)
     
-    def pronoun(self, lang):
-        assert(not self.has_antecedent())
-        pronset = self._sample_dataset()
-        
-        assert(pronset.num_words(lang) is 1)
-        return pronset.pronoun(lang, 0)
+    def select_sample(self, index):
+        if self.has_antecedent():
+            pass # will read tags from antecedent at generation time instead
+        else:
+            GenericNoun.select_sample(self, index)
         
     def _get_lexical_candidates(self):
         if self.has_antecedent():
@@ -1118,18 +1161,21 @@ class Pronoun(GenericNoun):
             # OR maybe this should get called after all, but at generation time?
                 # call _get_lexical_candidates() from pronoun()?
             
-            # TODO: subject-verb semantic matching with antecedents...
+            # TODO: subject-verb semantic matching with antecedents?
                 # to do this properly, should really pull tags from antecedent, then feed to VERB at lexicalization time...
-                # for now, just rely on the tree writer...
+                # for now, just rely on the tree writer to enforce that...
         else:
             return data.PRONSET_BANK.find_tagged(self.semantic_tags() or [])
 
     
     def _lexicalize(self):
-        # with antecedent, this node is empty and just waits until generation time to read metadata from antecedent
+        
         if self.has_antecedent(): 
-            raise Exception('Should not lexicalize pronoun with antecedent')            
-            # wait, doesn't this function get called, but should just do nothing?
+            # with antecedent, this node is empty and just waits until generation time to read metadata from antecedent
+            # - CANNOT lexicalize here without knowing the exact antecedent word being used.
+                # - for example, pronoun(#animal) could be he, she, OR it, depending on what #animal gets chosen at generation time
+            pass #raise Exception('Should not lexicalize pronoun with antecedent')            
+            
         else:
             GenericNoun._lexicalize(self)
             

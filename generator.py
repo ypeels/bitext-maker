@@ -281,29 +281,26 @@ class EnGenerator(Generator):
         self._generate_node_text(node, noun)
       
     def _generate_pronoun(self, node):
-        if node.has_antecedent():
-            raise Exception('TODO: generate pronoun from antecedent')
+        pron_base = node.pronoun(self.LANG)
+        pron_forms = self._pronoun_form_bank.get(pron_base)
+        
+        # so the logic here is language AND data dependent... but I guess I've been doing that the whole time
+        tags = node.tags_for_lang(self.LANG)
+        if 'subjective' in tags:
+            case = 'subjective'
+        elif 'objective' in tags:
+            case = 'objective'
         else:
-            pron_base = node.pronoun(self.LANG)
-            pron_forms = self._pronoun_form_bank.get(pron_base)
+            raise Exception('Unsupported case', tags)
             
-            # so the logic here is language AND data dependent... but I guess I've been doing that the whole time
-            tags = node.tags_for_lang(self.LANG)
-            if 'subjective' in tags:
-                case = 'subjective'
-            elif 'objective' in tags:
-                case = 'objective'
-            else:
-                raise Exception('Unsupported case', tags)
-                
-            if node.number() == 'singular':
-                form = case
-            else:
-                assert(node.number() == 'plural')
-                form = 'PRPS.' + case
-                
-            pronoun = pron_forms.get(form, pron_base)
-            node.set_generated_text(self.LANG, pronoun)
+        if node.number() == 'singular':
+            form = case
+        else:
+            assert(node.number() == 'plural')
+            form = 'PRPS.' + case
+            
+        pronoun = pron_forms.get(form, pron_base)
+        node.set_generated_text(self.LANG, pronoun)
         
     def _generate_verb(self, node):
         # should depend on subject
@@ -518,13 +515,10 @@ class ZhGenerator(Generator):
         self._generate_node_text(node, noun)
         
     def _generate_pronoun(self, node):
-        if node.has_antecedent():
-            raise Exception('TODO: generate pronoun from antecedent')
-        else:
-            pronoun = node.pronoun(self.LANG)
-            if node.number() == 'plural':
-                pronoun += '们'
-            node.set_generated_text(self.LANG, pronoun)
+        pronoun = node.pronoun(self.LANG)
+        if node.number() == 'plural':
+            pronoun += '们'
+        node.set_generated_text(self.LANG, pronoun)
         
     # ah, conjugation-free Chinese...
     def _generate_verb(self, node):

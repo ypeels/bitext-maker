@@ -41,7 +41,7 @@ class WordSetBank(Bank):
 
 class AdjectiveSetBank(WordSetBank):
     def all_adjsets(self):
-        result = [AdjectiveSet(item['adjset']) for item in self._data()]
+        result = [AdjectiveSet(item) for item in self._data()]
         assert(len(result) > 0)
         return result
         
@@ -62,12 +62,12 @@ class AdverbSetBank(WordSetBank):
         
 class DeterminerSetBank(WordSetBank):
     def all_detsets(self):
-        result = [DeterminerSet(item['detset']) for item in self._data()]
+        result = [DeterminerSet(item) for item in self._data()]
         assert(len(result) > 0)
         return result
         
     def find_tagged(self, target_tag):
-        return [DeterminerSet(item['detset']) for item in self._data() if target_tag in item['tags']]
+        return [DeterminerSet(item) for item in self._data() if target_tag in item['tags']]        
         
     def _is_dummy(self, datum):
         return all(adj == None for adj in datum['detset'].values())  
@@ -87,12 +87,12 @@ class NameSetBank(WordSetBank):
     #    raise Exception('Unimplemented in abstract base class' + __class__)
         
     def all_namesets(self):
-        return [NameSet(item['nameset']) for item in self._data()]
+        return [NameSet(item) for item in self._data()]
         
     def find_tagged(self, target_tag):
         # TODO: handle single-tag case where it's not even a list?
         # TODO: share code with NounSetBank? is it worth sacrificing clarity just to DRY out 2 lines?
-        return [NameSet(item['nameset']) for item in self._data() 
+        return [NameSet(item) for item in self._data() 
             for tag in item['tags'] if TAXONOMY.isa(tag, target_tag)]
             
     def _is_dummy(self, datum):
@@ -100,7 +100,7 @@ class NameSetBank(WordSetBank):
             
 class NounSetBank(WordSetBank):
     def all_nounsets(self):
-        result = [NounSet(item['nounset']) for item in self._data()]
+        result = self.find_tagged([]) #[NounSet(item) for item in self._data()]
         assert(len(result) > 0)
         return result
         
@@ -108,7 +108,7 @@ class NounSetBank(WordSetBank):
         '''
         Returns all noun synsets satisfying ALL target tags.
         '''
-        return [NounSet(item['nounset']) for item in self._data()
+        return [NounSet(item) for item in self._data()
             for tag in item['tags'] if all(TAXONOMY.isa(tag, tt) for tt in target_tags)]
             
     def _is_dummy(self, datum):
@@ -129,6 +129,11 @@ class PronounSetBank(WordSetBank):
     def find_tagged(self, target_tags):
         return [PronounSet(item) for item in self._data() 
             for tag in item.get('tags', []) if all(TAXONOMY.isa(tag, tt) for tt in target_tags)]
+            
+    def find_tagged_third_person(self, target_tag):
+        return [PronounSet(item) for item in self._data()  
+            for tag in item['tags'] if TAXONOMY.isa(tag, target_tag) and item['person'] is 3]
+    
             
     def _is_dummy(self, datum):
         return all(adj == None for adj in datum['pronounset'].values()) 
@@ -595,6 +600,7 @@ class VerbCategory:
 
         
 class WordForms:
+    '''Language-specific morphological forms (e.g., nouns_en.yml)'''
     def __init__(self, data):
         self.__data = data or {}
         
@@ -624,7 +630,8 @@ class VerbForms(WordForms):
         return not bool(self._get('irregular'))
 
 
-class WordSet:        
+class WordSet:     
+    '''Multilingual synsets (e.g., nounsets.yml)'''
     def __init__(self, data):
         self.__data = data
         
@@ -639,6 +646,12 @@ class WordSet:
         else:
             return len(words)
             
+    def tags(self):
+        # don't have to worry about multiple synsets here, since semantic tags apply to all words in the synset
+        tags = self._data().get('tags', [])
+        return tags
+        
+            
     def word(self, lang, index):
         word = self._words(lang)
         assert(type(word) is str)
@@ -647,7 +660,7 @@ class WordSet:
             
     def _words(self, lang):
         #raise UNIMPLEMENTED_EXCEPTION
-        return self._data()[lang] or []
+        return self._data()[self._wordset_key()][lang] or []
         
     # ugh, expose to derived classes...
     def _data(self):
@@ -656,6 +669,9 @@ class WordSet:
 class AdjectiveSet(WordSet):
     def adjective(self, lang, index):
         return WordSet.word(self, lang, index)
+        
+    def _wordset_key(self):
+        return 'adjset'
         
         
 
@@ -667,49 +683,50 @@ class AdverbSet(WordSet):
         return self._data()['targets']
         
     # TODO: refactor other WordSets to allow additional fields like this? actually, just rewriting this low-level primitive seemed to work?
-    def _words(self, lang):
-        return self._data()['advset'][lang]
-
+    def _wordset_key(self):
+        return 'advset'
         
 class DeterminerSet(WordSet):
     def determiner(self, lang, index):
         return WordSet.word(self, lang, index)
-            
-    #def _words(self, lang):
+    
+    def _wordset_key(self):
+        return 'detset'
         
 class NameSet(WordSet):
     def name(self, lang, index):
-        return WordSet.word(self, lang, index)
+        return self.word(lang, index)
+        
+    def _wordset_key(self):
+        return 'nameset'
         
 class NounSet(WordSet):
     def noun(self, lang, index):
-        return WordSet.word(self, lang, index)
+        return self.word(lang, index)
         
-class PronounSet:
+    def _wordset_key(self):
+        return 'nounset'
+        
+class PronounSet(WordSet):
     '''Unlike NounSet, etc., this is the entire list item - duck typing + reach a little deeper'''
-    def __init__(self, data):
-        self.__data = data
-        self.__wordset = WordSet(data['pronounset'])
-        
     def person(self):
         return self._data()['person']
         
-    def _data(self):
-        return self.__data
-    
-    # WordSet facade via duck-typing
-    def num_words(self, lang):
-        return self.__wordset.num_words(lang)
-        
     def pronoun(self, lang, index): # still delegate to WordSet - to leverage any error-checking there
-        return self.__wordset.word(lang, index)
+        return self.word(lang, index)
         
+    def _wordset_key(self):
+        return 'pronounset'        
         
 class VerbSet(WordSet):
     def verb(self, lang):
         verb = self._data()[lang]
         assert(type(verb) is str)
         return verb
+     
+    # TODO: unify this
+    #def _wordset_key(self):
+    #    return 'verbset'
             
             
 ### module-level variables (intended to be read-only after initialization) ###

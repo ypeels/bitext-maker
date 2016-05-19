@@ -27,8 +27,7 @@
     zh: 她
     
 - person: 3
-  #gender: neuter # if tags were used here instead, how would you prevent a human antecedent from being called "it"?
-  #tags: [person] # toggle this to test semantic matching
+  tags: [nonhuman] #, human] # toggle this to test subject-verb semantic matching
   pronounset:
     en: it
     zh: 它

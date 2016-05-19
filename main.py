@@ -55,7 +55,9 @@ def configure_transitive_clause(clause, number='singular', subject_type='noun', 
     #O.set_template('name')
     #S.set_template('noun'); #S.add_options({'tags': ['animal']})
     
-    O.set_template('noun'); O.add_options({'tags': ['object']})
+    O.set_template(object_type); 
+    if object_type == 'noun':
+        O.add_options({'tags': ['object']})
     O.add_options({'number': [number]}) # TODO: how to pluralize more robustly?? set_plural() would not be scalable to other options...
         
     #A, B = [np._get_subnode('N') for np in [S, O]] # calling "protected" functions externally is a bad sign/smell]
@@ -74,7 +76,6 @@ def configure_transitive_clause(clause, number='singular', subject_type='noun', 
     # add a participle...
     if 'participle' in modifiers:
         assert(modifiers.count('participle') is 1)
-        #modifiers.remove('participle')
         participle = nodes.node_factory('Clause', manually_create_subnodes=True)
         participle.set_template('transitive', readonly=False)
         
@@ -88,10 +89,15 @@ def configure_transitive_clause(clause, number='singular', subject_type='noun', 
 
         
         PO = participle._get_symbol_subnode('O') # note that current test harness requires all NP's to have specified templates...
-        PO.set_template('noun'); PO.add_options({'tags': ['object']})
+        PO.set_template(kwargs.get('participle_object_type', 'noun')); 
+        if PO.template_id() == 'noun':
+            PO.add_options({'tags': ['object']})
         if S and S.template_id() == 'noun': 
             S.add_modifier(participle)
+            if object_type == 'pronoun':
+                O._get_symbol_subnode('P').set_antecedent(PO)
         else:
+            assert(not O.template_id() == 'pronoun')
             O.add_modifier(participle)
     
     
@@ -381,6 +387,8 @@ if __name__ == '__main__':
         , make_modal_bottomup()
         , make_transitive_clause(subject_type='pronoun')
         , make_transitive_clause(subject_type='pronoun', number='plural')
+        , make_transitive_clause(object_type='pronoun', modifiers=['participle'])
+        , make_transitive_clause(object_type='pronoun', modifiers=['participle'], participle_object_type='name')
         #, make_custom()
         #, make_custom(number='plural')
         #, make_custom(modifiers=['determiner'])
