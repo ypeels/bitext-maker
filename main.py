@@ -28,7 +28,8 @@ def make_transitive_clause(**kwargs):
     return configure_transitive_clause(clause, **kwargs)
     
 # broken off for reuse in make_meta()
-def configure_transitive_clause(clause, number='singular', subject_type='noun', modifiers=[], transformations=[], template_readonly=True):
+def configure_transitive_clause(clause, number='singular', subject_type='noun', object_type='noun',
+                        modifiers=[], transformations=[], template_readonly=True, **kwargs):    
     clause.set_template('transitive', readonly=template_readonly)
     assert(not clause._subnodes())
     
