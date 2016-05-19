@@ -282,7 +282,7 @@ class TemplatedNode(Node):
                 # language-specific syntax tags 
                 subnode.add_options({'tags': self._tags_for_symbol(symbol)})
                    
-                # literal lexical forms hard-coded into template - propagate to lexical node
+                # literal lexical forms (VBG, VBP, etc.) hard-coded into template - propagate to lexical node
                 # rebuild data structure using data API, instead of assuming particular form of raw data. probably no slower than deepcopy...?
                 literal_forms = { lang: self._template().literal_form_for_symbol(symbol, lang)
                     for lang in utility.LANGUAGES
@@ -1089,7 +1089,7 @@ class Pronoun(GenericNoun):
     def __init__(self, **options):
         GenericNoun.__init__(self, **options)
         self.__antecedent = None # Node subclass
-        # TODO: specify person (I, you, he) externally? via options?
+        # TODO: specify person (I, you, he) externally using option pronoun.person (can't be a tag though - would clash with semantic check)
         
     # TODO: merge this with the "dependencies" system (is that relegated to template-specified dependencies at this point?)
     def has_antecedent(self):
