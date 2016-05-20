@@ -314,14 +314,20 @@ class TemplatedNode(Node):
             # hook up dependencies between NODES and their data - all nodes must have been instantiated first
             # add_dependency() should allow pronouns to work all the way across the tree...right?
             # TODO: move this to _bequeath()? should deps be allowed to change from transformations?
-            for s in self._symbols():                
-                for lang, deps in self._deps_for_symbol(s).items():
-                    for d in deps:
-                        self.__symbol_subnodes[s].add_dependency(self.__symbol_subnodes[d], lang=lang)
+            for sym in self._symbols():
+                for lang, dependents in self._per_lang_deps_for_symbol(sym):
+                    for dep in dependents:
+                        assert(self._get_symbol_subnode(dep) and self._get_symbol_subnode(sym))
+                        self._get_symbol_subnode(sym).add_dependency(self._get_symbol_subnode(dep), lang=lang)
             
-            self.__headnodes = [self._get_symbol_subnode(s) for s in self.__template.head_symbols()]
+            self.__headnodes = [self._get_symbol_subnode(sym) for sym in self.__template.head_symbols()]
             assert(len(self.__headnodes) <= 1)            
             # TODO: alter head upon transformation
+            
+            # after a bit of ugliness in Template (and calls to it), all-lang deps can be specified in data now
+            for sym in self._symbols():
+                for dep in self._lang_indep_deps_for_symbol(sym):
+                    self._get_symbol_subnode(sym).add_dependency(self._get_symbol_subnode(dep))
 
             self._bequeath_to_subnodes()
 
@@ -353,19 +359,24 @@ class TemplatedNode(Node):
 
 
     ### "protected" functions - available to derived classes ###
-
-    
-    def _deps_for_symbol(self, symbol):
-        return self.__template.deps_for_symbol(symbol)
+    def _get_headnodes(self):
+        return self.__headnodes
         
     def _get_symbol_subnode(self, symbol):
         return self.__symbol_subnodes.get(symbol)
         
+    def _lang_indep_deps_for_symbol(self, symbol):
+        return self.__template.lang_indep_deps_for_symbol(symbol)
+
+    def _per_lang_deps_for_symbol(self, symbol):
+        result = self.__template.per_lang_deps_for_symbol(symbol) #.items()        
+        assert(all(type(item) is tuple for item in result))
+        return result
+        
     def _pop_symbol_subnode(self, symbol):
         return self.__symbol_subnodes.pop(symbol)
         
-    def _get_headnodes(self):
-        return self.__headnodes
+
    
     def _symbols(self):
         return self.__template.symbols()
@@ -1086,28 +1097,26 @@ class Noun(GenericNoun):
         return candidates
         
 class Pronoun(GenericNoun):
-    def __init__(self, **options):
-        GenericNoun.__init__(self, **options)
-        self.__antecedent = None # Node subclass
+    #def __init__(self, **options):
+    #    GenericNoun.__init__(self, **options)
         # TODO: specify person (I, you, he) externally using option pronoun.person (can't be a tag though - would clash with semantic check)
         
     # TODO: merge this with the "dependencies" system (is that relegated to template-specified dependencies at this point?)
-    def has_antecedent(self):
-        has_antecedent = bool(self.__antecedent)
-        #assert(not has or (has and self.person() is 3)) # duh, infinite recursion
-        return has_antecedent
+    def has_antecedent(self):        
+        return bool(self.__antecedent())
     def set_antecedent(self, node):
         assert(issubclass(type(node), NounPhrase) or (issubclass(type(node), TemplatedNode) and node.type() == 'NP'))
         if node.type() != 'NP':
             raise Exception('Pronoun must refer to a NounPhrase...right?')
-        self.__antecedent = node 
+        assert(not self.has_antecedent())
+        self.add_dependency(node)
 
     def pronoun(self, lang):
         if self.has_antecedent():
             # have to figure out correct pronset from antecedent
-            antecedent = self.__antecedent
-            assert(len(self.__antecedent.lexical_tags()) is 1)
-            antecedent_tags = self.__antecedent.lexical_tags()[0]            
+            antecedent = self.__antecedent()
+            assert(len(antecedent.lexical_tags()) is 1)
+            antecedent_tags = antecedent.lexical_tags()[0]
             # can't merge antecedent's tags in, because this tree node might need to be reused with a different antecedent word...?
             
             if any(data.TAXONOMY.isa(tag, 'man') for tag in antecedent_tags):
@@ -1127,7 +1136,7 @@ class Pronoun(GenericNoun):
     # overriding GenericNoun
     def number(self):
         if self.has_antecedent():
-            return self.__antecedent.number()
+            return self.__antecedent().number()
         else:
             return GenericNoun.number(self)
     
@@ -1179,6 +1188,14 @@ class Pronoun(GenericNoun):
         else:
             GenericNoun._lexicalize(self)
             
+    def __antecedent(self):
+        dependencies = self.get_dependencies()
+        assert(len(dependencies) <= 1)
+        assert(all(issubclass(type(node), NounPhrase) or (issubclass(type(node), TemplatedNode) and node.type() == 'NP') for node in dependencies))
+        if dependencies:
+            return dependencies[0] 
+        else:
+            return None
     
 
 

@@ -12,7 +12,7 @@
   pinyin: ren2
   M: 位 
  
-人们: 
+人们: # TODO: IWSLT probably uses 人们 as the standard plural for 人... nounset with people/人们 and tag plural?
   pinyin: ren2 men
   tags: plural   # hmm
   

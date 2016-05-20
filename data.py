@@ -240,11 +240,20 @@ class Template:
         # "declarations"
         self.__data = {}
         self.__symbols = {}
-        
-        self.__deps_per_symbol = collections.defaultdict(dict)
-        self.__forms_per_symbol = collections.defaultdict(dict) # { V: { en: VBG } }
-        self.__syntax_tags_per_symbol = collections.defaultdict(dict)  # { en: { S: subjective } }      
         self.__writable = bool(not readonly)
+        
+        self.__forms_per_symbol = collections.defaultdict(dict) # { V: { en: VBG } }
+        self.__lang_indep_deps_per_symbol = collections.defaultdict(list)
+        self.__per_lang_deps_per_symbol = collections.defaultdict(dict)
+        self.__syntax_tags_per_symbol = collections.defaultdict(dict)  # { en: { S: subjective } }      
+                
+        # comprehensive list of data structures to be reparsed on template change
+        if self._writable():
+            self.__parsed = [self.__forms_per_symbol, 
+                             self.__lang_indep_deps_per_symbol,
+                             self.__per_lang_deps_per_symbol, 
+                             self.__syntax_tags_per_symbol]
+
         
         #self.__symbol_metadata = collections.defaultdict(collections.defaultdict(dict))
         # e.g., symbol_metadata[symbol]['tags']
@@ -261,9 +270,6 @@ class Template:
         
     def description_for_symbol(self, symbol):
         return self.__data['symbols'][symbol].get('description') or []
-        
-    def deps_for_symbol(self, symbol):
-        return self.__deps_per_symbol[symbol]
         
     def ghosts(self):    
         result = {}
@@ -282,13 +288,19 @@ class Template:
         
     def head_symbols(self):
         return [s for s in self.symbols() if 'head' in self.description_for_symbol(s)]
-        
+      
+    def lang_indep_deps_for_symbol(self, symbol):
+        return self.__lang_indep_deps_per_symbol[symbol]
+      
     def literal_form_for_symbol(self, symbol, lang):
         forms_per_lang = self.__forms_per_symbol.get(symbol, {}) 
         return forms_per_lang.get(lang) 
         
     def options_for_symbol(self, symbol):
         return self.__data['symbols'][symbol]['options']
+    
+    def per_lang_deps_for_symbol(self, symbol):
+        return self.__per_lang_deps_per_symbol[symbol].items()
     
     def prewords(self, lang):
         return self.__data['langs'][lang].get('prewords', {})
@@ -343,8 +355,8 @@ class Template:
         
         # clear old entries and re-parse 
         if self._writable(): 
-            self.__syntax_tags_per_symbol.clear()
-            self.__deps_per_symbol.clear()
+            for dest in self.__parsed:
+                dest.clear()
         
         # parse tags for each symbol - a bit of non-trivial inversion, so do it here at load time, once-only
         # imperative style is just a bit more DRY and flexible for something like this...
@@ -358,13 +370,13 @@ class Template:
                 for symbol, deps in metadata.get('dependencies', {}).items():
                     deps_list = self.__wrap_as_list(deps)
                     assert(all(d in self.symbols() for d in deps_list)) # ok again? ghost nodes get stripped from dependencies
-                    self.__deps_per_symbol[symbol][lang] = deps_list
+                    self.__per_lang_deps_per_symbol[symbol][lang] = deps_list
                     
                 for symbol, form in metadata.get('forms', {}).items():
                     assert(type(form) is str)
                     self.__forms_per_symbol[symbol][lang] = form
                     
-        # also append language-independent tags
+        # also append language-independent data
         for symbol in self.symbols():
             tags = self.__data['symbols'][symbol].get('tags')
             if tags:
@@ -372,6 +384,10 @@ class Template:
                     old_tags = self.__syntax_tags_per_symbol[symbol].get(lang, [])
                     self.__syntax_tags_per_symbol[symbol][lang] = old_tags + self.__wrap_as_list(tags)
 
+            deps = self.__data['symbols'][symbol].get('dependencies')
+            if deps:
+                self.__lang_indep_deps_per_symbol[symbol] = self.__wrap_as_list(deps)
+            
 
     def __linked_keys(self):
         linked = self.__data.get('linked')
@@ -463,7 +479,7 @@ class Template:
         
         self.__parse()
         assert(not self.syntax_tags_for_symbol(symbol))
-        assert(not self.deps_for_symbol(symbol))
+        assert(not self.per_lang_deps_for_symbol(symbol) and not self.lang_indep_deps_for_symbol(symbol))
         
         return popped        
         
@@ -496,13 +512,23 @@ class Template:
         assert(self._writable())
         assert(symbol in self.symbols())
 
+        self.__data['symbols']
+        for other_symbol in self.symbols():
+            other_deps = self.__data['symbols'][other_symbol].get('dependencies')
+            if other_deps:
+                while symbol in other_deps: # TODO: DRY this out with the language-dependent symbol removal code below? it's just 2 lines...
+                    other_deps.remove(symbol)
+        
         for lang in LANGUAGES:
             lang_data = self.__data['langs'][lang]
-            deps = lang_data.get('dependencies')
-            if deps:
-                for s, d in list(deps.items()):
-                    if d == symbol:
-                        deps.pop(s)
+            deps_for_all_symbols = lang_data.get('dependencies')
+            if deps_for_all_symbols:
+                for other_symbol, other_deps in list(deps_for_all_symbols.items()):
+                    other_deps = self.__wrap_as_list(other_deps)
+                    while symbol in other_deps:
+                        other_deps.remove(symbol)
+                    deps_for_all_symbols[other_symbol] = other_deps
+            
    
     # i'm not totally sure descriptions are going to stay fixed
     # let's just go with symbols for now, for want of a better idea...

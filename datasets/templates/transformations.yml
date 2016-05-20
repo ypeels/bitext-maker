@@ -100,8 +100,36 @@ tense.past:
   
   
 
-# topicalization (O, S V)
-# 把 (S took O and V PN(O)) - this may be my crowning achievement
-# passive?
+topicalization:
+  input: Clause
+  input template: transitive # TODO: multiple input template types? but need to encode how O gets moved to beginning...
+  output: Clause
+  #output template: topicalized # not compatible with set_verb_category... if need be, read off list of transformations
+  
+  additions:
+    symbols:
+      P:
+        type: pronoun # will this work? or should it be wrapped with an NP? (I suppose could query NP's dependency)
+        description: needed for en
+        
+        # the dependency system is NOT mono-lingual! it's just USED that way for subject-verb
+          # it's SUPER flexible, the way it's set up, sufficiently flexible for this usage too.
+        # these template additions should get loaded before subnode creation (true of all template transformations, right?)
+        dependencies: O 
+          # oh, okay,
+          
+    langs:        
+      en:
+        template: O , S V P
+        tags: { P: objective }
+    
+      zh: 
+        template: O ， S V
+  
+
+
+
+# 把 (S took O and V PN(O)) - this may be my crowning achievement - but requires changing head verb monolingually...
+# passive - requires changing head verb monolingually, and also requires copula
 # negation? would vary with zh verb bin... much harder
 

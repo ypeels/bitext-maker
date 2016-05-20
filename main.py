@@ -33,15 +33,16 @@ def configure_transitive_clause(clause, number='singular', subject_type='noun', 
     clause.set_template('transitive', readonly=template_readonly)
     assert(not clause._subnodes())
     
+    # oops, this should be called before subnodes are created
+    if transformations and not template_readonly:
+        for trans in transformations:
+            clause.add_transformation(trans)
+    
     # must be called after set_template() now, due to current transformation implementation...
     # subnodes are generated after both template and verb category have been set.
     # this gives transformations the chance to modify the template.
     clause.set_verb_category('action')  #'action.possession')#
     assert(clause._subnodes())
-    
-    if transformations and not template_readonly:
-        for trans in transformations:
-            clause.add_transformation(trans)
 
     S, V, O = [clause._get_symbol_subnode(sym) for sym in 'SVO']
     if S: 
@@ -390,11 +391,13 @@ if __name__ == '__main__':
         , make_transitive_clause(subject_type='pronoun', number='plural')
         , make_transitive_clause(object_type='pronoun', modifiers=['participle'])
         , make_transitive_clause(object_type='pronoun', modifiers=['participle'], participle_object_type='name')
+        , make_transitive_clause(transformations=['topicalization'], template_readonly=False)
         #, make_custom()
         #, make_custom(number='plural')
         #, make_custom(modifiers=['determiner'])
         #, make_custom(number='plural', modifiers=['determiner'])    
         ]
+
     
     outputs = { lang: open('output_{}.txt'.format(lang), 'w', encoding='utf8') for lang in LANGUAGES }
     for c in clauses:
