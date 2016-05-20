@@ -407,16 +407,7 @@ if __name__ == '__main__':
         o.close()
 
 
-#with open('output.txt', 'w', encoding='utf8') as output:
-#    for lang in LANGUAGES:
-#        output.write(clause.generated_text(lang) + '\n')
-
-
-    
-# TODO (ugh basically EVERYTHING is left to do...)
-    # transformations (tense, participle, etc.)
-    # modifiers
-    # additional modifications or constraints like plural or tag
+# TODO: external mapping of noun classes (animal, person, object) to eligible adjectives (color, etc.) - internal would take longer
 
 #
 ## TODO: have the Clause grab its own data from a TemplateBank
