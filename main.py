@@ -208,7 +208,7 @@ def make_meta(bottom_up=False, **kwargs): # n.b. these are kwargs for INTERNAL u
     if not bottom_up:
         configure_transitive_clause(C, template_readonly=False, **kwargs)
     #C.add_transformation('infinitive.clause') # hey, this works! even though subnodes have already been created
-    #C.add_transformation('remove punctuation')
+    #C.add_transformation('remove punctuation') # considered this, but removing the wrapping meta's punctuation for now
     
     #raise Exception('TODO: C-template change for things like "I forced HIM TO VB"')
     

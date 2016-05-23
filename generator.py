@@ -333,7 +333,10 @@ class EnGenerator(Generator):
             return verb_base
         else:
             verb_forms = self._verb_form_bank.get(verb_base)
-            return verb_forms.get_form(form)
+            verb = verb_forms.get_form(form)
+            if not verb:
+                raise Exception('verb form not found', verb_base, form)
+            return verb
             
     # TODO: move morphological logic into LexicalNode, which would then have language-dependent code, and grow with # languages?
         # the alternative, which is currently used, is to punch a new hole in LexicalNode every time you need more metadata...

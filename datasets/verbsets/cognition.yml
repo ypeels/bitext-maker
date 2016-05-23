@@ -11,9 +11,9 @@ cognition.knowledge.meta: #&knowledge
     langs:
       en:
         prewords: { C: that }
-        punctuation:
-      zh:
-        punctuation:
+      #  punctuation: # moved into tree maker 
+      #zh:
+      #  punctuation:
     
   verbsets:
   - en: know
@@ -22,6 +22,20 @@ cognition.knowledge.meta: #&knowledge
   - en: think
     zh: 想
     
+cognition.opinion.meta:
+  template: meta
+  tags:
+    S: [person]
+  additions:
+    langs:
+      en:
+        prewords: { C: that }
+      #  punctuation:
+      #zh:
+      #  punctuation:
+  verbsets:
+  - en: feel
+    zh: 觉得
     
     # note that these are already kind of transformation-like, since they are not part of the original template
 

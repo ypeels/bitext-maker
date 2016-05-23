@@ -7,10 +7,10 @@ infinitive.clause:
       en: # hmm, literal prewords is kind of dangerous? they don't live in the multilingual tree at all...
         forms: { V: VB }        
         prewords: { V: to }
-        punctuation:
         tags: { S: objective } # hmm, does this clobber other S tags?
-      zh:
-        punctuation:
+      #  punctuation: # remove wrapping meta's punctuation instead for now
+      #zh:
+      #  punctuation:
         
 
 

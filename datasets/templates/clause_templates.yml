@@ -90,13 +90,13 @@ meta:
       template: S V C
       dependencies: { V: S }
       #prewords: { C: that } # not passed down - for lang-specific, currently only tags and forms get auto-propagated down
-      punctuation: '.'
+      #punctuation: '.' # use punctuation from C for now - beats having to remember to add "remove punctuation" transform over and over
       tags: { S: subjective }
       
       
     zh: 
       template: S V C
-      punctuation: 。
+      #punctuation: 。
         
     
 modal:
