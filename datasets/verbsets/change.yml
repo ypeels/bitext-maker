@@ -1,0 +1,7 @@
+change.start.modal:
+  template: modal
+  transformations: { C: infinitive.vp }
+  
+  verbsets:
+  - en: start
+    zh: 开始

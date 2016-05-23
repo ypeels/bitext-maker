@@ -342,6 +342,9 @@ class EnGenerator(Generator):
         # need to choose between the forms of the verb's word
         verb_base = self._get_verb_base(verb_node)
         verb_forms = self._verb_form_bank.get(verb_base) # needed by is_regular() below
+        if not verb_forms:
+            raise Exception('Missing verb form', verb_base)
+
         if verb_forms.is_regular():
 
             # if subject third person and regular, then use VBZ

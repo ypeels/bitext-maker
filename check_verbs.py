@@ -25,6 +25,7 @@ if __name__ == '__main__':
                 missing_word_forms[lang].add(word)
         
     with open('missing_verbs.txt', 'w', encoding='utf8') as output:
-         for lang, missing_list in missing_word_forms.items():
-             output.write('\n\nWords missing from verbs_{}.yml\n'.format(lang))
-             output.write('\n'.join(sorted(missing_list)))
+        for lang, missing_list in missing_word_forms.items():
+            missing_str = '\n\nWords missing from verbs_{}.yml\n'.format(lang) + '\n'.join(sorted(missing_list))
+            output.write(missing_str)
+            print(missing_str)

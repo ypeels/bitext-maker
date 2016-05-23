@@ -5,15 +5,15 @@
 #VB:     # infinitive
 #VBD:    # past
 #VBG:    # present participle
-#VBN:    # past participle
-#VBP:    # present (all except )
-#VBZ:
+#VBN:    # past participle - he had VBN the O
+#VBP:    # present - we now VBP the car
+#VBZ:    # present 3-sing - he now VBZ the car
 __verb__:
-  VBD:
-  VBG:
-  VBN:
-  VBP:
-  VBZ:
+  VBD: 
+  VBG: 
+  VBN: 
+  VBP: 
+  VBZ: 
   
 # COULD use references, but that would add an annoying extra key to EVERY entry...
 # unused? isn't it easier to just check each verb for an "irregular" key? well, doesn't hurt to have this info...
@@ -26,7 +26,7 @@ __regular__:
 # - don't see a compelling reason to use multiple documents per file right now, other than maybe indentation
 # - this way, can use references between words if needed (on its own line, to get the whole list item)
 
-
+# auxiliaries ------------------------------------------------------  
 # TODO: omit regular forms like VBZ = VBP+s?
 be: 
   VBD: were
@@ -40,6 +40,20 @@ be:
     VBD3: was
     # TODO: subjunctives
 
+do:
+  VBD: did
+  VBG: doing
+  VBN: done
+  VBP: do
+  VBZ: does
+  
+go:
+  VBD: went
+  VBG: going
+  VBN: gone
+  VBP: go
+  VBZ: goes
+    
 # VB != [have, 've] - VB is the unique infinitive form (you don't say "to 've")
 have:
   VBD: had # TODO: 'd when auxiliary - maybe throw that into "irregular"?
@@ -47,6 +61,12 @@ have:
   VBN: had
   VBP: have # TODO: 've when auxiliary
   VBZ: has # "he's a lovely face" - I don't think that's very standard en-us... save for a transformation?
+# ------------------------------------------------------------------  
+  
+  
+  
+  
+  
   
 know:
   VBD: knew
@@ -61,6 +81,34 @@ possess:
   VBN: possessed
   VBP: possess
   VBZ: possesses
+  
+say:
+  VBD: said
+  VBG: saying
+  VBN: said
+  VBP:
+  VBZ:
+  
+see:
+  VBD: saw
+  VBG: seeing
+  VBN: seen
+  VBP: see
+  VBZ: sees
+  
+start:
+  VBD: started
+  VBG: starting
+  VBN: started
+  VBP: start
+  VBZ: starts
+  
+think:
+  VBD: thought
+  VBG: thinking
+  VBN: thought
+  VBP: think
+  VBZ: thinks
   
 use:
   VBD: used

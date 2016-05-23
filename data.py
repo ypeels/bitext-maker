@@ -215,6 +215,9 @@ class VerbSetBank:
         
     def get_category(self, category):
         return VerbCategory(self.__data[category])
+        
+    def get_categories_by_template(self, template):
+        return sorted([cat for cat in self.categories() if self.__data[cat]['template'] == template])
     
     def __add_file(self, filename):
         new_data = read_file(filename)

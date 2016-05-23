@@ -902,7 +902,7 @@ class LexicalNode(Node):
         lang_tags = [tag for tag in tags if type(tag) is str]
         
         for item in tags:
-            if type(item) is not str:
+            if item and type(item) is not str:
                 lang_tags += item.get(lang, [])
         return lang_tags
         

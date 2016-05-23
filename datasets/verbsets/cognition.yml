@@ -1,6 +1,6 @@
 # file title admittedly taken from WordNet (sounds better than "thinking")
 
-cognition.knowledge: #&knowledge
+cognition.knowledge.meta: #&knowledge
   template: meta
   
   tags:
@@ -11,10 +11,16 @@ cognition.knowledge: #&knowledge
     langs:
       en:
         prewords: { C: that }
+        punctuation:
+      zh:
+        punctuation:
     
   verbsets:
   - en: know
     zh: 知道
+    
+  - en: think
+    zh: 想
     
     
     # note that these are already kind of transformation-like, since they are not part of the original template

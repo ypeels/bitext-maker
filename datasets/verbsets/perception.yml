@@ -1,0 +1,10 @@
+perception.vision: 
+  template: transitive
+  
+  tags:
+    S: [animal]
+    
+  verbsets:
+  - en: see
+    zh: 看到
+    

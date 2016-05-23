@@ -4,6 +4,8 @@ import data # may take a while
 
 import generator
 import nodes
+import random
+import utility
 from utility import LANGUAGES, seed_rng
 
 
@@ -13,6 +15,13 @@ assert(__name__ == '__main__') # for now
 
 #seed_rng() # output still not deterministic? loops over dicts are still random
 
+def get_verb_category_by_template(template):
+    verb_categories = data.VERBSET_BANK.get_categories_by_template(template)
+    if utility.USE_RANDOM:
+        category = random.choice(verb_categories)
+    else:
+        category = verb_categories[0]
+    return category
 
 
 ### 1. Specify sentences ###
@@ -41,7 +50,8 @@ def configure_transitive_clause(clause, number='singular', subject_type='noun', 
     # must be called after set_template() now, due to current transformation implementation...
     # subnodes are generated after both template and verb category have been set.
     # this gives transformations the chance to modify the template.
-    clause.set_verb_category('action')  #'action.possession')#
+    category = get_verb_category_by_template('transitive')
+    clause.set_verb_category(category)  #'action.possession')#
     assert(clause._subnodes())
 
     S, V, O = [clause._get_symbol_subnode(sym) for sym in 'SVO']
@@ -187,7 +197,8 @@ def make_meta(bottom_up=False, **kwargs): # n.b. these are kwargs for INTERNAL u
     if bottom_up:
         C = make_transitive_clause(template_readonly=False, **kwargs)
         meta.add_symbol_subnode('C', C)    
-    meta.set_verb_category('emotion.desire.meta') #'cognition.knowledge')  
+    category = get_verb_category_by_template('meta')
+    meta.set_verb_category(category)#'emotion.desire.meta') #'cognition.knowledge')  
     assert(meta._subnodes())
  
     S, C = [meta._get_symbol_subnode(sym) for sym in 'SC']
@@ -216,7 +227,8 @@ def make_modal_topdown(**kwargs):
     # top-down
     modal = nodes.node_factory('Clause')
     modal.set_template('modal')
-    modal.set_verb_category('emotion.desire.modal')
+    category = get_verb_category_by_template('modal')
+    modal.set_verb_category(category)#'emotion.desire.modal')
     assert(modal._subnodes())
     
     S, C = [modal._get_symbol_subnode(sym) for sym in 'SC']
@@ -240,7 +252,8 @@ def make_modal_bottomup(**kwargs):
     vp = nodes.node_factory('Clause')#, manually_create_subnodes=True)
     vp.set_template('transitive', readonly=False)
     #vp.add_transformation('infinitive.vp')
-    vp.set_verb_category('action')
+    category = get_verb_category_by_template('transitive')
+    vp.set_verb_category(category)
     #vp.create_symbol_subnodes_manually()
     #
     S, O = [vp._get_symbol_subnode(sym) for sym in 'SO']
@@ -256,7 +269,8 @@ def make_modal_bottomup(**kwargs):
     modal.add_symbol_subnode('S', S)
     vp.add_transformation('infinitive.vp')
     vp.convert_symbol_to_ghostnode('S', 'target') 
-    modal.set_verb_category('emotion.desire.modal') # this performs vp.add_transformation(infinitive.vp) via template
+    #modal.set_verb_category('emotion.desire.modal') # this performs vp.add_transformation(infinitive.vp) via template
+    modal.set_verb_category(get_verb_category_by_template('modal'))
     print('"derivation intermediate" - ', end='')
     generate_all(modal)
     
@@ -363,6 +377,8 @@ def sentence_case(sentence):
     
     
 if __name__ == '__main__':
+    seed_rng() # for reproducibility
+
     # hmm, should I really be using singletons for this?
     analyzer = generator.analyzer
     generators = generator.generators

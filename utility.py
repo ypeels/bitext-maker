@@ -8,6 +8,7 @@ LANGUAGES = ['en', 'zh']
 USE_RANDOM = True
 
 import operator # itemgetter
+import random
 
 def nested_sort(items):
     '''
@@ -23,9 +24,8 @@ def nested_sort(items):
 
 # TODO: call this once at startup
 # BUT there might still be nondeterminism in terms of dict key ordering...
-def seed_rng():
-    import random
-    random.seed(2016)
+def seed_rng(seed=2016):
+    random.seed(seed)
 
 
 # run with "python -O" to disable assertions globally

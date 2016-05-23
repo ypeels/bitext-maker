@@ -15,6 +15,9 @@ emotion.desire:
     en: want
     zh: 要
     
+  - en: want
+    zh: 想要 
+    
     
 emotion.desire.meta:
   template: meta
