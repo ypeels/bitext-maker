@@ -7,6 +7,20 @@ DATA_DIR = 'datasets/'
 LANGUAGES = ['en', 'zh']
 USE_RANDOM = True
 
+import operator # itemgetter
+
+def nested_sort(items):
+    '''
+    Sort (string, number) tuples deterministically
+    - descending in number
+    - within each number, ascending in string
+    '''
+    return (
+        sorted(
+            sorted(items, key=operator.itemgetter(0)),      # inner ascending sort by secondary key (string)
+            reverse=True, 
+            key=operator.itemgetter(1)))                    # outer descending sort by primary key (number)
+
 # TODO: call this once at startup
 # BUT there might still be nondeterminism in terms of dict key ordering...
 def seed_rng():
