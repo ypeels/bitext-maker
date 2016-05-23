@@ -1060,10 +1060,10 @@ class Name(GenericNoun):
     def _get_lexical_candidates(self):
         assert(self._get_option('tags') is not None)
         semantic_tags = [tag for tag in self._get_option('tags') if type(tag) is str]
-        assert(len(semantic_tags) <= 1)
+        #assert(len(semantic_tags) <= 1)
         
         if semantic_tags:
-            candidates = data.NAME_BANK.find_tagged(semantic_tags[0])   
+            candidates = data.NAME_BANK.find_tagged(semantic_tags)   
         else:
             candidates = data.NAME_BANK.all_namesets()
             

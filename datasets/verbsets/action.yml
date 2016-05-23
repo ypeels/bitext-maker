@@ -25,29 +25,12 @@ action:
     S: [animal]
   verbsets:
   - en: use
-    zh: 使用 # more common than 用 in IWSLT
+    zh: 使用 # more common than 用 in IWSLT...but not by much
+  - en: use
+    zh: 用
 
 
-# TODO: this should really be stative.possession (does not take 了 suffix for completion)
-action.possession:
-  # TODO: PP-style modifications, before all verbs in the set - probably with an example
-  
-  # see clause_templates.yml
-  template: transitive 
-  
-  # semantic constraints on (the head word of) S, O. TODO: allow override on per-verb basis?
-  tags:
-    O:
-    S: # could make this "entity", but what about figurative uses?
-    
-  verbsets:
-  - example: Alice has cookies .
-    en: have
-    zh: 有
-    
-    # not common - just testing multiple verbsets
-  - en: possess
-    zh: 独有
+
 
   
   

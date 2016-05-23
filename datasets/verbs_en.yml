@@ -80,6 +80,13 @@ know:
   VBP: know
   VBZ: knows
   
+like:
+  VBD: liked
+  VBG: liking
+  VBN: liked
+  VBP: like
+  VBZ: likes
+  
 possess:
   VBD: possessed
   VBG: possessing

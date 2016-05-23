@@ -1,3 +1,12 @@
+change.start:
+  template: transitive
+  tags:
+    
+  
+  verbsets:
+  - en: start
+    zh: 开始
+
 change.start.modal:
   template: modal
   transformations: { C: infinitive.vp }

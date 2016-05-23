@@ -89,11 +89,11 @@ class NameSetBank(WordSetBank):
     def all_namesets(self):
         return [NameSet(item) for item in self._data()]
         
-    def find_tagged(self, target_tag):
+    def find_tagged(self, target_tags):
         # TODO: handle single-tag case where it's not even a list?
         # TODO: share code with NounSetBank? is it worth sacrificing clarity just to DRY out 2 lines?
         return [NameSet(item) for item in self._data() 
-            for tag in item['tags'] if TAXONOMY.isa(tag, target_tag)]
+            for tag in item['tags'] if all(TAXONOMY.isa(tag, tt) for tt in target_tags)]
             
     def _is_dummy(self, datum):
         return all(adj == None for adj in datum['nameset'].values()) 
@@ -613,11 +613,11 @@ class VerbCategory:
         return [VerbSet(item) for item in self.__data['verbsets']]
         
     def tags_for_symbol(self, symbol):
-        tags = self.__data.get('tags', {})
+        tags = self.__data.get('tags') or {}
         return tags.get(symbol)
         
     def tagged_symbols(self):
-        tags = self.__data.get('tags', {})
+        tags = self.__data.get('tags') or {}
         return tags.keys()
         
     def template_id(self):

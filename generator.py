@@ -547,11 +547,11 @@ class ZhGenerator(Generator):
             assert(node._get_symbol_subnode(head).get_tense() == 'past')
         
             # the same crude way that default determiners are handled...
-            if node.verb_category_id() in ['action']:
+            if node.verb_category_id() in ['action', 'change.start']:
                 result.insert(result.index(head) + 1, '了')
             elif not adverbs:
                 # horrible hack: a topicalized time point phrase - use if desired...
-                raise Exception('TODO: something better than topicalized time point for zh non-action past tense?')
+                #raise Exception('TODO: something better than topicalized time point for zh non-action past tense?')
                 result = ['当时'] + result
             else:
                 raise Exception('TODO: check adverbs for time phrases')
