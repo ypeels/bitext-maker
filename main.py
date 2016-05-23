@@ -283,7 +283,8 @@ def make_modal_bottomup(**kwargs):
     modal2.add_symbol_subnode('S', S)
     modal.add_transformation('infinitive.vp')
     modal.convert_symbol_to_ghostnode('S', 'target') 
-    modal2.set_verb_category('emotion.desire.modal')
+    #modal2.set_verb_category('emotion.desire.modal')
+    modal2.set_verb_category(get_verb_category_by_template('modal'))
     
     return modal2
     
@@ -329,10 +330,16 @@ def count_digits(bases):
         overflow = (place == len(digits))
 
 
-def generate_all(clause, outputs=None):
+def generate_all(clause, outputs=None, blow_it_up=False):
     # TODO: only need to analyze # samples for a SINGLE language? well, this more general way permits different sample numbers for different langs
         # but then you'd have to have nested indices... still, it's doable in principle.
     # this would be required to reuse analyzer  for multiple trees...should this go in Node.analyze_all()?
+    
+    if blow_it_up:
+        nodes = clause.get_all_lexical_nodes()
+        for n in nodes:
+            n.set_num_samples(100) # blow this sucker up. how many lines do I get? (this is largely for morale)
+    
     analyzer.reset_num_samples() 
     clause.analyze_all(analyzer)
 

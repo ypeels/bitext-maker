@@ -1,4 +1,4 @@
-action.possession:
+possession:
   # TODO: PP-style modifications, before all verbs in the set - probably with an example
   
   # see clause_templates.yml
@@ -7,7 +7,7 @@ action.possession:
   # semantic constraints on (the head word of) S, O. TODO: allow override on per-verb basis?
   tags:
     O:
-    S: # could make this "entity", but what about figurative uses?
+    S: [entity] # what about figurative uses? different semantic category?
     V: # stative? "*我 有 了 O" is not past tense...
     
   verbsets:
@@ -18,3 +18,11 @@ action.possession:
     # not common - just testing multiple verbsets
   - en: possess
     zh: 独有
+    
+possession.obtain:
+  template: transitive
+  tags: 
+    S: [entity]
+  verbsets:
+  - en: find
+    zh: 找到

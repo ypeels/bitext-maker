@@ -30,7 +30,15 @@ action:
     zh: 用
 
 
-
+action.creation:
+  template: transitive
+  tags:
+    S: [entity]
+  verbsets:
+  - en: create
+    zh: 创造
+  - en: make
+    zh: 做
 
   
   

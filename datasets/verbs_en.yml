@@ -64,7 +64,26 @@ have:
 # ------------------------------------------------------------------  
   
   
+believe:
+  VBD: believed
+  VBG: believing
+  VBN: believed
+  VBP: believe
+  VBZ: believes
   
+change:
+  VBD: changed
+  VBG: changing
+  VBN: changed
+  VBP: change
+  VBZ: changes
+  
+create:
+  VBD: created
+  VBG: creating
+  VBN: created
+  VBP: create
+  VBZ: creates
   
 feel:
   VBD: felt
@@ -72,6 +91,13 @@ feel:
   VBN: felt
   VBP: feel
   VBZ: feels
+  
+find:
+  VBD: found
+  VBG: finding
+  VBN: found
+  VBP: find
+  VBZ: finds
   
 know:
   VBD: knew
@@ -86,6 +112,13 @@ like:
   VBN: liked
   VBP: like
   VBZ: likes
+  
+make:
+  VBD: made
+  VBG: making
+  VBN: made
+  VBP: make
+  VBZ: makes
   
 possess:
   VBD: possessed
@@ -121,6 +154,13 @@ think:
   VBN: thought
   VBP: think
   VBZ: thinks
+  
+understand:
+  VBD: understood
+  VBG: understanding
+  VBN: understood
+  VBP: understand
+  VBZ: understands
   
 use:
   VBD: used

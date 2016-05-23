@@ -872,9 +872,9 @@ class LexicalNode(Node):
         return self.parent().lexical_targets()
     
     def num_samples(self):
-        if self.__datasets:
-            assert(self.__num_samples == len(self.__datasets))
-            pass
+        #if self.__datasets: # used to assume self.__datasets was only initialized once, but that's changed, with bottom-up metas... 
+        #    #assert(self.__num_samples == len(self.__datasets))
+        #    pass
         return self.__num_samples
     def set_num_samples(self, num):
         '''Number of samples desired from the candidate datasets'''

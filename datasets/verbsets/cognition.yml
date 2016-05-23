@@ -1,5 +1,16 @@
 # file title admittedly taken from WordNet (sounds better than "thinking")
 
+cognition.knowledge:
+  template: transitive
+  tags: 
+    S: [animal] # hmm, should this really be "person"? or "entity"?
+  verbsets:
+  - en: understand
+    zh: 了解
+  - en: understand
+    zh: 里解
+  
+
 cognition.knowledge.meta: #&knowledge
   template: meta
   
@@ -34,6 +45,8 @@ cognition.opinion.meta:
       #zh:
       #  punctuation:
   verbsets:
+  - en: believe
+    zh: 相信
   - en: feel
     zh: 觉得
     

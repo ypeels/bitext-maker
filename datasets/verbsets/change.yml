@@ -4,6 +4,8 @@ change.start:
     
   
   verbsets:
+  - en: change
+    zh: 改变
   - en: start
     zh: 开始
 
