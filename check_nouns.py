@@ -26,7 +26,7 @@ if __name__ == '__main__':
                 missing_word_forms[lang].append(word)
             
     # record missing monolingual morphological forms 
-    with open('missing.txt', 'w', encoding='utf8') as output:
+    with open('missing_nouns.txt', 'w', encoding='utf8') as output:
          for lang, missing_list in missing_word_forms.items():
              output.write('\n\nWords missing from nouns_{}.yml\n'.format(lang))
              output.write('\n'.join(sorted(missing_list)))
