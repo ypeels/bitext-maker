@@ -73,11 +73,17 @@ For instance, EBMT suffers from relatively poor generalization and SMT has probl
 (RNN built on relatively shaky ground, since word vectors don't QUITE make sense for function words?)
  
 Such synthetic parallel corpora can also be viewed as benchmark tasks (need to cite Facebook bAbI).
+This is actually probably more important than you'd think, because looking at IWSLT15, some of the human translations are VERY loose.
+So there's another element of noise in the data, and it's one that no amount of downstream machine learning can get rid of.
+(Although people have tried corpus evaluation...)
 
 One might conjecture that the fundamental problem in natural language processing is one of data representation
 
 With the ALPAC report's pessimistic outlook on MT arguably responsible for sparking decades of fundamental linguistics research in the tradition of Chomsky, it is only fitting that we now bring linguistics back?
 No, my Return of the Linguist had more to do with how RBMT systems have fallen out of favor in research
+
+My main point seems to be that nobody makes high quality and quantity parallel corpora JUST for machine translation, and it seems like that's sorely needed for both training and benchmarking.
+Even the fanciest new machine learning model is dead in the water if it doesn't have enough data.
 
 \section{Related Work}
 \label{sec:related}

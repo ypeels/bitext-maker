@@ -9,17 +9,29 @@
 # TODO: noun templates, which you need to generate non-compositional semantic tags like "last night #past"
   # funny noun phrases could go here
 
-man: 
-  NNS: men
-  
-person: 
-  NNS: people # TODO: "persons", as in "persons of interest"
-
-# it's tempting to delete these entries, but a blank entry confirms that somebody has done and checked the data input
+brain:
+child: { NNS: children }  
+country: { NNS: countries }  
+data: { NNS: data } # technically, datum/data... but it's used so commonly as singular... or is it being used as a quantity?
+information: 
+life: { NNS: lives }  
+man: { NNS: men }  
+part:
+person: { NNS: people } # TODO: "persons", as in "persons of interest"  
+place: # it's tempting to delete blank entries, but they confirm that somebody has done and checked the data input
+problem:
+research: { NNS: research } # or researches?
 right:
-
-thing:
-  
+society:
+story: { NNS: stories }
+system:
+technology: 
+  NNS: technologies
+thing:  
 time:
+today:
+  NNS:
+work:
+world:
   
 # any words whose morphology changes with meaning can be marked with extra tags

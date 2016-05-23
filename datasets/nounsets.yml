@@ -1,26 +1,119 @@
-
+- tags: []
+  nounset:
+    en:
+    zh:
 
 
 # semantic tags that should apply to all languages
+# sorted by English alphabetical order for now - because at least that's not subject to change...
+
+# it seems a bit too slow to just go down the unigram list... 
+  # probably consult a thesaurus/dictionary, and grab similar category words?
+  
+# TODO: quick script that outputs tag statistics. this can eventually grow into a syntax checker, too
+  # can i leverage NounBank, etc.?
+
+- tags: [organ]
+  nounset:
+    en: brain
+    zh: 大脑
+  
+- tags: [person]
+  nounset:
+    en: child
+    zh: 孩子 # TODO: plural 孩子们... maybe throw into nouns_zh.yml?
+
+- tags: [organization, location]
+  nounset:
+    en: country
+    zh: 国家
+    
+# but it's more specific than that, isn't it? numerical?
+# PLUS, it's a divisible quantity, right? 
+- tags: [information, quantity] 
+  nounset:
+    en: data
+    zh: 数据
+    
+- tags: [information, quantity]
+  nounset:
+    en: information
+    zh: 信息
+    
+- tags: [activity]
+  nounset:
+    en: life
+    zh: 生活
+    
+- tags: [abstract] # probably needs to be more specific than that, since it can function without an article... quantifier-ish?
+  nounset:
+    en: part
+    zh: 部分
+
 - tags: [person]
   nounset:
     en: person
     zh: 人
+    
+- tags: [location]
+  nounset:
+    en: place
+    zh: 地方
+
+- tags: [abstract]
+  nounset:
+    en: problem # TODO: question
+    zh: 问题
+    
+- tags: [activity]
+  nounset:
+    en: research
+    zh: 研究
+    
+- tags: [organization] # hmm, this is like a name, but you usually talk about "the economy"...
+  nounset:
+    en: society
+    zh: 社会
+    
+- tags: [communication]
+  nounset:
+    en: story
+    zh: 故事
+    
+- tags: [object] # TODO: a system can also be something abstract...
+  nounset:
+    en: system
+    zh: 系统
 
 - tags: [object]
   nounset:
     en: thing
     zh: 东西
     
-- tags: [duration]
+- tags: [ability]
+  nounset:
+    en: technology
+    zh: 技术
+    
+- tags: [duration] # or should it just be "time"?
   nounset: 
     en: time
-    zh: 时间
+    zh: 时间 # TODO: 时候
     
-- tags: [object]
+- tags: [time]
+  nounset:
+    en: today
+    zh: 今天
+    
+- tags: [object, organization, location]
   nounset:
     en: world
     zh: 世界
+    
+- tags: [activity]
+  nounset:
+    en: work
+    zh: 工作
 
 
 

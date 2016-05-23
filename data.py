@@ -635,14 +635,19 @@ class WordForms:
         
     def _get(self, key, default=None):
         return self.__data.get(key, default)
+
         
 class DeterminerForms(WordForms):
     def get(self, key, default=None):
         return self._get(key, default)
         
 class NounForms(WordForms):
-    def get(self, key, default=None):
-        return self._get(key, default) # hmm, all this does is expose the base class's raw accessor...
+    def get(self, key, default=None):        
+        try:
+            result = self._get(key, default) # hmm, all this does is expose the base class's raw accessor...
+        except AttributeError:
+            result = default # allow keys with scalars, like 人: ren2
+        return result            
         
 class PronounForms(WordForms):
     def get(self, key, default=None):

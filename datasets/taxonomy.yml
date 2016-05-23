@@ -15,17 +15,30 @@ living:
 animate:
   animal:
   
+entity: # might be non-living
+  organization:
+  living:
+  
 physical:  
+  location:
+  material: # hmm, some words can be both object and material, like "cloth"...
   object:
-    animal:
-  material: # hmm, some words can be both, like "cloth"...
+    animal: 
+    bodypart: # cell
+      organ: # foot, liver
     
 abstract:
+  ability:
   action:
+    activity:
   communication:
     verbal:
     written:  
-  duration:
-  event:
   idea:
+  information: 
+  state: # uh, the number of tags seems to be proliferating...
+  time:
+    duration:
+    event:
+
   

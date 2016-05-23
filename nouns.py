@@ -34,6 +34,9 @@ if __name__ == '__main__':
     for tag, count in utility.nested_sort(tag_counts.items()):
         print('{:>9} {}'.format(count, tag))
         
+    print('Total number of nounsets:', len(nounset__data))
+
+        
     
         
     # TODO: syntax checking of individual yaml files

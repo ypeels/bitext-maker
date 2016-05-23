@@ -4,9 +4,37 @@
   # Q: is there any word that CAN'T use 个? well, you could just flag it if it ever comes up...
   # A: words that are not countable (but then couldn't they use 种?)
 
+部分: bu4 fen
+  
+大脑: da4 nao3
+  
+地方: 
+  pinyin: di4 fang
+  #M: 块 # kind of secondary...
+  
 东西:  
   pinyin: dong1 xi1
   M: 件  
+  
+工作:
+  pinyin: gong1 zuo4
+  #M: [份， 项] # kind of uncommon...
+
+故事: gu4 shi4
+
+国家:
+  pinyin: guo2 jia1
+  
+孩子:
+  pinyin: hai2 zi
+  
+技术:
+  pinyin: ji4 shu4
+  M: 种
+  
+今天:
+  pinyin: jin1 tian1
+  M:
 
 人:
   pinyin: ren2
@@ -15,10 +43,12 @@
 人们: # TODO: IWSLT probably uses 人们 as the standard plural for 人... nounset with people/人们 and tag plural?
   pinyin: ren2 men
   tags: plural   # hmm
-  
-  
   # TODO: M2 for pluralization? like 一群狼? or is this anglicizing things too far?
+
+社会: she4 hui4
   
+生活: 
+  pinyin: sheng1 huo2
   
 时间:
   pinyin: shi2 jian1
@@ -27,6 +57,15 @@
 世界:
   pinyin: shi4 jie4
 
+数据: shu4 ju4
+  
 问题:
   pinyin: wen4 ti2
 
+系统:
+  pinyin: xi4 tong3
+  
+信息: xin4 xi1
+
+研究: # M: 项
+  pinyin: yan2 jiu4
