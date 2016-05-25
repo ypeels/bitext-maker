@@ -46,7 +46,7 @@ class AdjectiveSetBank(WordSetBank):
         return result
         
     def find_tagged(self, target_tag):
-        raise Exception('TODO: unimplemented stub')
+        raise Exception('TODO: unimplemented stub') # n.b. the "tags" key is currently optional in adjsets.yml
         
     def _is_dummy(self, datum):
         return all(adj == None for adj in datum['adjset'].values())
@@ -202,13 +202,18 @@ class VerbFormBank(WordFormBank):
         self.DATA_FACTORY = VerbForms
     
 
-# not currently inheriting Bank, since this is multi-file...
+# not currently inheriting Bank, since this is (potentially) multi-file...
 class VerbSetBank:
     def __init__(self, path):
-        self.__data = {}
-        for basename in os.listdir(path):
-            if basename.endswith('.yml'):
-                self.__add_file(path + basename)  
+        self.__data = {}        
+        if os.path.isdir(path):  
+            for basename in os.listdir(path):
+                if basename.endswith('.yml'):
+                    self.__add_file(path + basename)  
+        elif os.path.isfile(path):
+            self.__add_file(path)
+        else:
+            raise Exception('A path that is neither dir nor file - how zen...', path)
 
     def categories(self):
         return self.__data.keys()
@@ -788,7 +793,8 @@ PRONOUN_FORMS = { lang: PronounFormBank(DATA_DIR + 'prons_{}.yml'.format(lang)) 
 
 TAXONOMY = Taxonomy(DATA_DIR + 'taxonomy.yml')
 
-VERBSET_BANK = VerbSetBank(DATA_DIR + 'verbsets/')
+#VERBSET_BANK = VerbSetBank(DATA_DIR + 'verbsets/')
+VERBSET_BANK = VerbSetBank(DATA_DIR + 'verbsets.yml')
 VERB_FORMS = { lang: VerbFormBank(DATA_DIR + 'verbs_{}.yml'.format(lang)) for lang in LANGUAGES }
 
 

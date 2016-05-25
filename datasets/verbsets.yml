@@ -129,7 +129,9 @@ cognition.opinion.meta:
 #  # this is just for testing - "I know Alice to have the world" is semi-awkward
 #  verbsets:
 #  - en: know
-#    zh: 知道communication.verbal.meta:
+#    zh: 知道
+
+communication.verbal.meta:
   template: meta
   tags:
     S: [person]    
@@ -141,7 +143,9 @@ cognition.opinion.meta:
   
   verbsets:
   - en: say
-    zh: 说emotion.desire: &emotion_desire
+    zh: 说
+    
+emotion.desire: &emotion_desire
   # TODO: PP-style modifications, before all verbs in the set - probably with an example
   
   # see clause_templates.yml
@@ -188,7 +192,9 @@ emotion.opinion: &emotion_opinion
 emotion.opinion.modal: 
   <<: *emotion_opinion
   template: modal
-  transformations: { C: infinitive.vp }perception.vision: 
+  transformations: { C: infinitive.vp }
+  
+perception.vision: 
   template: transitive
   
   tags:
