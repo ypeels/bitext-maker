@@ -27,9 +27,9 @@ if __name__ == '__main__':
             
     # record missing monolingual morphological forms 
     with open('missing_nouns.txt', 'w', encoding='utf8') as output:
-         for lang, missing_list in missing_word_forms.items():
-             output.write('\n\nWords missing from nouns_{}.yml\n'.format(lang))
-             output.write('\n'.join(sorted(missing_list)))
+        for lang, missing_list in missing_word_forms.items():
+            output.write('\n\nWords missing from nouns_{}.yml\n'.format(lang))
+            output.write('\n'.join(sorted(missing_list)))
             
     for tag, count in utility.nested_sort(tag_counts.items()):
         print('{:>9} {}'.format(count, tag))
