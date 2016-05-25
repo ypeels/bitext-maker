@@ -33,5 +33,11 @@ def pick_random(items):
         return random.choice(items)
     else:
         return items[0]
+        
+def rand():
+    if USE_RANDOM:
+        return random.random()
+    else:
+        return 0.5
 
 # run with "python -O" to disable assertions globally

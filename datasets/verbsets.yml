@@ -50,8 +50,8 @@ action.creation:
   verbsets:
   - en: change
     zh: 改变
-  - en: start
-    zh: 开始
+  #- en: start # need to tag O as "event"  or "inanimate"? otherwise you get stuff like "start Bob"
+  #  zh: 开始
 
 change.start.modal:
   template: modal
@@ -141,6 +141,7 @@ communication.verbal.meta:
     langs:
       en:
         prewords: { C: that }
+        # TODO: zh: preword: C: 的是 # useful for deep stacks?
   
   verbsets:
   - en: say

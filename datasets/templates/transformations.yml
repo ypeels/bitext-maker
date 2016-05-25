@@ -30,10 +30,10 @@ infinitive.vp:
       en:
         forms: { V: VB }
         prewords: { V: to }
-        punctuation:
+      #  punctuation:
         #tags: { S: objective } no, need to delete S outright
-      zh:
-        punctuation:
+      #zh:
+      #  punctuation:
       
   
 

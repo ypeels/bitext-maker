@@ -338,30 +338,60 @@ def verb_categories_per_template(template_id):
 def make_random_clause():
     '''Make a random clause or custom, and modify it in random places too.'''
     clause = nodes.node_factory('Clause')    
-    randomly_configure_node(clause)
+    randomly_configure_clause(clause)
     return clause
     
-def randomly_configure_node(node):  
+def randomly_configure_node(node, **kwargs):  
     assert(not issubclass(type(node), nodes.LexicalNode))
     if node.type() == 'Clause':
-        randomly_configure_clause(node)
+        randomly_configure_clause(node, **kwargs)
     elif node.type() == 'NP':
-        randomly_configure_np(node)
+        randomly_configure_np(node, **kwargs)
     else:
         raise Exception('Unhandled node type, presumably non-lexical', type(node))
         
-def randomly_configure_clause(clause):
-    template_id = '把' #utility.pick_random(data.CLAUSE_TEMPLATE_BANK.all_template_ids())
+def randomly_configure_clause(clause, stack_depth=1, **kwargs):
+    '''allow non-modifiable clauses only at the outer level - some metas require transformation - I want him to have the world'''
+    if stack_depth is 1:
+        candidates = data.CLAUSE_TEMPLATE_BANK.all_template_ids()
+    else:
+        candidates = modifiable_template_ids()
+        
+    # don't go too deep down the rabbit hole (human speakers and writers typically don't)
+    if stack_depth > 2:
+        candidates.remove('meta')
+        candidates.remove('modal')
+        
+    template_id = utility.pick_random(candidates)
+    #template_id = '把' 
+    
     clause.set_template(template_id, readonly=(template_id not in modifiable_template_ids()))
-    clause.set_random_verb_category()    
+    clause.set_random_verb_category()  
+
+    # TODO : randomly add a transformation, like topicalization or past tense
+        # conditionally? e.g., past-tense should only be done with certain verb categories
+        # topicalization should only be done at the top level, right?
     
     templated_subnodes = [sn for sn in clause._subnodes() if issubclass(type(sn), nodes.TemplatedNode)]
     for subnode in templated_subnodes:
-        randomly_configure_node(subnode)
+        randomly_configure_node(subnode, stack_depth=stack_depth+1, **kwargs)
     
-def randomly_configure_np(np):
+def randomly_configure_np(np, **kwargs):
+    # pure rand() doesn't give fine-grained control over the distribution
+    #template_id = utility.pick_random(data.NP_TEMPLATE_BANK.all_template_ids())
+    if utility.rand() < 0.8:
+        template_id = 'noun'
+    elif utility.rand() < 0.95:
+        template_id = 'pronoun'
+    else:
+        template_id = 'name' # shouldn't make it THAT common
+            
+    np.set_template(template_id)
+
     
-    np.set_template('name')
+    # generator only supports objects right now (otherwise determiners get tricky... like "water" or "cloth")
+    if template_id == 'noun':
+        np.add_options({'tags': ['object']})
     
     # add modifiers
     

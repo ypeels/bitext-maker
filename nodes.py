@@ -25,7 +25,7 @@ class Node:
         
         # just store them for now and figure out what to do with them later... can always use dict.pop()
         options = dict(input_options) # make copy for trashing - would it be clearer to call self.__options.pop()?
-        self.__type = options.pop('type') 
+        self.__type = options.pop('type', None) # might be a ghost node, which doesn't need a type
         self.__options = collections.defaultdict(list, options) # need to instantiate even if empty - that way can query if empty
         
     # currently only used for subject/verb agreement? (ADJP uses a bidirectional modifier/target system...)

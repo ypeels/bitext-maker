@@ -119,13 +119,13 @@ modal:
     en:
       template: S V C
       dependencies: { V: S }
-      punctuation: '.'
+      #punctuation: '.'
       tags: { S: subjective }
       
       
     zh: 
       template: S V C
-      punctuation: 。
+      #punctuation: 。
     
     
 # ---------------------------------------------------------------------
