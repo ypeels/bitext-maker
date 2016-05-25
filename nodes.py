@@ -1146,7 +1146,10 @@ class Pronoun(GenericNoun):
             antecedent_tags = antecedent.lexical_tags()[0]
             # can't merge antecedent's tags in, because this tree node might need to be reused with a different antecedent word...?
             
-            if any(data.TAXONOMY.isa(tag, 'man') for tag in antecedent_tags):
+            if antecedent.person() is not 3: # it might be another pronoun
+                # TODO: reflexives...
+                pronset = data.PRONSET_BANK.find_by_person(antecedent.person())[0]
+            elif any(data.TAXONOMY.isa(tag, 'man') for tag in antecedent_tags):
                 pronset = data.PRONSET_BANK.find_tagged_third_person('man')[0]         # he
             elif any(data.TAXONOMY.isa(tag, 'woman') for tag in antecedent_tags):
                 pronset = data.PRONSET_BANK.find_tagged_third_person('woman')[0]       # she
@@ -1168,9 +1171,12 @@ class Pronoun(GenericNoun):
             return GenericNoun.number(self)
     
     def person(self): 
-        if self.has_antecedent():
-            # TODO: first or second person antecedent (Alice and I, we ... )
-            return 3
+        antecedent = self.__antecedent()
+        if antecedent:
+            assert(self.has_antecedent())
+            # TODO: coordinated antecedent... (Alice and I, we ... )
+            # TODO: automatically detect and abort for cyclical antecedents...
+            return antecedent.person()
         else:
             assert(self._sample_dataset())
             pronset = self._sample_dataset()

@@ -126,6 +126,9 @@ class PronounSetBank(WordSetBank):
     
     # TODO: queryable function that just takes metadata and returns the right pronset - for referential pronouns
     
+    def find_by_person(self, person):
+        return [PronounSet(item) for item in self._data() if item['person'] is person]
+    
     def find_tagged(self, target_tags):
         return [PronounSet(item) for item in self._data() 
             for tag in item.get('tags', []) if all(TAXONOMY.isa(tag, tt) for tt in target_tags)]
