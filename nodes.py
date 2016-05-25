@@ -1135,6 +1135,12 @@ class Pronoun(GenericNoun):
         assert(issubclass(type(node), NounPhrase) or (issubclass(type(node), TemplatedNode) and node.type() == 'NP'))
         if node.type() != 'NP':
             raise Exception('Pronoun must refer to a NounPhrase...right?')
+            
+        # TODO: allow longer antecedent chains? what if the cycle is really long? this would be hard in general.
+        # TODO: check heads instead of all subnodes
+        if any(sn.type() == 'pronoun' and sn.has_antecedent() for sn in node._subnodes()): 
+            raise Exception('The proposed antecedent itself has an antecedent - currently forbidden, to prevent cyclic dependencies')
+            
         assert(not self.has_antecedent())
         self.add_dependency(node)
 
@@ -1175,7 +1181,6 @@ class Pronoun(GenericNoun):
         if antecedent:
             assert(self.has_antecedent())
             # TODO: coordinated antecedent... (Alice and I, we ... )
-            # TODO: automatically detect and abort for cyclical antecedents...
             return antecedent.person()
         else:
             assert(self._sample_dataset())
