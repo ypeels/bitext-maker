@@ -148,7 +148,7 @@ modal:
   
   langs:
     en: # currently incompatible with participle, since you'd have to work with two head verbs (take and V)
-      template: S took O and V P
+      template: S took O and V P # O = pronoun can look annoyingly wrong...
       punctuation: '.'
       forms: { V: VBD }
       tags:

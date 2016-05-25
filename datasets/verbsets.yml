@@ -59,8 +59,9 @@ change.start.modal:
   
   verbsets:
   - en: start
-    zh: 开始# file title admittedly taken from WordNet (sounds better than "thinking")
-
+    zh: 开始
+    
+# category title admittedly taken from WordNet (sounds better than "thinking")
 cognition.knowledge:
   template: transitive
   tags: 
