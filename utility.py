@@ -27,5 +27,11 @@ def nested_sort(items):
 def seed_rng(seed=2016):
     random.seed(seed)
 
+    
+def pick_random(items):
+    if USE_RANDOM:
+        return random.choice(items)
+    else:
+        return items[0]
 
 # run with "python -O" to disable assertions globally

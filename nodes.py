@@ -225,6 +225,11 @@ class TemplatedNode(Node):
         
     
     # used by Generator
+    def analyze_all(self, analyzer): # an override
+        if not self.has_template():
+            raise Exception('Untemplated node', self.type())
+        Node.analyze_all(self, analyzer)        
+    
     def generated_symbols(self, lang):    
         return { symbol: subnode.generated_text(lang) 
             for symbol, subnode in self.__symbol_subnodes.items() if subnode.has_generated_text(lang) }
@@ -653,8 +658,8 @@ class Clause(TransformableNode):
         assert(not self.__verb_category)
         
         # TODO: hmm, what if you want to specify semantic category first, or neither? (like with a participle)
-        category = data.VERBSET_BANK.get_category(id)            
-        if self._template_id() == category.template_id():
+        category = data.VERBSET_BANK.get_category(id)       # assume an explicitly-specified verb category is compatible     
+        if self._template_id() == category.template_id() or id in self.__explicit_verb_categories():
             self.__verb_category_id = id
             self.__verb_category = category
 
@@ -665,10 +670,32 @@ class Clause(TransformableNode):
 
         else:
             raise Exception('incompatible template', id, self._template_id(), category.template_id())
+            # originally, verb category specifies one and only one template
+            # but now, i want to do the "reverse" - pick a random semantic verb category, based on a custom clause template
+                # i'm actually not totally sure this is going to work... the original assumption is in place,
+                # BECAUSE the verb category assumes particular symbols
+            
+    def set_random_verb_category(self):
+        category_candidates = data.VERBSET_BANK.get_categories_by_template(self._template_id())
+        if category_candidates:
+            category = utility.pick_random(category_candidates)
+        else:
+            category = utility.pick_random(self.__explicit_verb_categories())
+        self.set_verb_category(category)
+            
             
     def verb_category_id(self):
         return self.__verb_category_id
             
+    def __explicit_verb_categories(self):
+        '''Eligible verb categories, specified in data'''
+        template = self._template()
+        if template:
+            return template.categories() or []
+        else:
+            return []
+            
+    
     
     # overrides
     def _can_create_symbol_subnodes(self):

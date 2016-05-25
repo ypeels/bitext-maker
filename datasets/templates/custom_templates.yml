@@ -6,7 +6,7 @@ test:
       
       # TODO: propagate these down
       options:
-        tags: object 
+        tags: objective
         number: singular
       
 
@@ -21,19 +21,24 @@ test:
       
 # TODO: add types so you can have custom sub-nodes like "all the gold"
 
-test2:
-  symbols:
-    N:
-      type: NP
-    V: 
-      type: verb
-  langs:
-    en:
-      template: The N in Spain V mainly on the plains .
-      subject: The N in Spain
-      punctuation: '.' # the alternative is to strip off trailing punctuation in code, which I just might do for a first pass...
-    zh:
-      template: 在 西班牙 的 N 主要 V 在 平原 上 。
-      subject: 在 西班牙 的 N
-      punctuation: 。
-      # hmm, participles seem rather difficult to build from custom clause templates...
+#test2:
+#  symbols:
+#    N:
+#      type: NP
+#    V: 
+#      type: verb
+#  langs:
+#    en:
+#      template: The N in Spain V mainly on the plains
+#      #subject: The N in Spain
+#      punctuation: '.' # the alternative is to strip off trailing punctuation in code, which I just might do for a first pass...
+#    zh:
+#      template: 在 西班牙 的 N 主要 在 平原 上 V
+#      #subject: 在 西班牙 的 N
+#      punctuation: 。
+#      # hmm, participles seem rather difficult to build from custom clause templates...
+      
+      
+# if a verb can be varied, it should go in clause_templates instead, to leverage subject-verb semantic matching, etc.
+# if there is no variable verb, it really belongs here, since that's not really a "Clause" then...?
+  # well, you could specify literal verbs in the clause template...

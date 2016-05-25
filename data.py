@@ -140,9 +140,12 @@ class PronounSetBank(WordSetBank):
 
             
 class TemplateBank(Bank):
+    def all_template_ids(self):
+        return tuple(self._data().keys())
+
     def get_template_by_id(self, id, readonly=True):
         return Template(self._data()[id], readonly)
-        
+       
 class TransformationBank(Bank):
     def get_transformation_by_id(self, id):
         return Transformation(self._data()[id])
@@ -216,13 +219,13 @@ class VerbSetBank:
             raise Exception('A path that is neither dir nor file - how zen...', path)
 
     def categories(self):
-        return self.__data.keys()
+        return list(self.__data.keys())
         
     def get_category(self, category):
         return VerbCategory(self.__data[category])
         
-    def get_categories_by_template(self, template):
-        return sorted([cat for cat in self.categories() if self.__data[cat]['template'] == template])
+    def get_categories_by_template(self, template_id):
+        return sorted([cat for cat in self.categories() if self.__data[cat]['template'] == template_id])
     
     def __add_file(self, filename):
         new_data = read_file(filename)
@@ -243,7 +246,10 @@ class VerbSetBank:
 # then add processing, etc... wait a second, isn't that just standard object-oriented programming??
     # well, this is still important, since it separates Data-level logic from Linguistics-level logic
 class Template:
-    '''Verb and NP syntax'''
+    '''
+    Clause and NP syntax
+    most of the logic has ended up being only for clauses though...
+    '''
     def __init__(self, data, readonly=True):
         # "declarations"
         self.__data = {}
@@ -275,6 +281,14 @@ class Template:
         
     def __str__(self):
         return 'Template({})'.format(self.__data)
+        
+    def categories(self):
+        '''This is primarily for Clauses (verb category)'''
+        categories = self.__data.get('categories')
+        if categories:
+            return self.__wrap_as_list(categories)
+        else:
+            return []
         
     def description_for_symbol(self, symbol):
         return self.__data['symbols'][symbol].get('description') or []

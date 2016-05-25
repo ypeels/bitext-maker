@@ -290,8 +290,108 @@ def make_modal_bottomup(**kwargs):
     
     
     
-
-  
+# what are the basic operations I want?
+    # pick random template (from clause and/or custom?)
+    # modify random nodes
+        # need to be able to make random (and compatible!?) 
+    # build incrementally (wrap in modal or meta?)
+#def make_random_clauses():
+#    all_verb_categories = data.VERBSET_BANK.categories()
+#    
+#    
+#    
+#    # try one clause per category for now
+#    random_clauses = []
+#    for category in all_verb_categories:
+#        clause = nodes.node_factory('Clause')
+#        
+#        # current implementation requires setting template before verb_category...
+#        if category.endswith('.modal'):
+#            clause.set_template('modal', readonly=False)
+#        elif category.endswith('.meta'):
+#            clause.set_template('meta', readonly=False)
+#        else: # TODO: intransitive, ditransitive, custom...
+#            clause.set_template('transitive')
+#        
+#        clause.set_verb_category(category)
+#        
+#        
+#            
+#            
+#        random_clauses.append(clause)
+#        
+#    return random_clauses
+ 
+def modifiable_template_ids():
+    '''
+    ad hoc list of clause templates that can be made writable - forbid transformations
+    - this is a hack to let me hook untransformable custom clauses into the rest of Clause infrastructure
+    '''
+    return ['meta', 'modal', 'transitive']
+ 
+def verb_categories_per_template(template_id):
+    if template_id == '把': # TODO: this really belongs in data, but need to design optimal infrastructure there
+        return ['action']
+    else:
+        return data.VERBSET_BANK.categories()
+ 
+def make_random_clause():
+    '''Make a random clause or custom, and modify it in random places too.'''
+    clause = nodes.node_factory('Clause')    
+    randomly_configure_node(clause)
+    return clause
+    
+def randomly_configure_node(node):  
+    assert(not issubclass(type(node), nodes.LexicalNode))
+    if node.type() == 'Clause':
+        randomly_configure_clause(node)
+    elif node.type() == 'NP':
+        randomly_configure_np(node)
+    else:
+        raise Exception('Unhandled node type, presumably non-lexical', type(node))
+        
+def randomly_configure_clause(clause):
+    template_id = '把' #utility.pick_random(data.CLAUSE_TEMPLATE_BANK.all_template_ids())
+    clause.set_template(template_id, readonly=(template_id not in modifiable_template_ids()))
+    clause.set_random_verb_category()    
+    
+    templated_subnodes = [sn for sn in clause._subnodes() if issubclass(type(sn), nodes.TemplatedNode)]
+    for subnode in templated_subnodes:
+        randomly_configure_node(subnode)
+    
+def randomly_configure_np(np):
+    
+    np.set_template('name')
+    
+    # add modifiers
+    
+    
+    # for each non-lexical subnode
+        # configure a random new subnode (ahh, punts to a subroutine)
+        
+    # for lexical subnodes
+        # decide whether to blow them up? no, that's done externally, isn't it? in generate_all?
+        
+    # if it's a Clause, consider wrapping in a meta or modal? or do that externally?
+    
+    ## copy-pasted from make_custom
+    #noun_phrases = [n for n in custom.get_all_lexical_nodes() if n.type() == 'NP']    
+    #X = custom._get_symbol_subnode('X')
+    #X.set_template('noun')
+    ##X.add_options({'tags': ['object']})
+    ##X.add_options({'number': [number]}) # shouldn't be trying to pluralize "it can be a very complicated thing, X"
+    ##for word in custom.get_all_lexical_nodes():
+    ##    word.set_num_samples(10)
+    #    
+    #for mod in modifiers:
+    #    adjp = nodes.node_factory('ADJP') 
+    #    adjp.set_template(mod)
+    #    if mod == 'determiner':
+    #        adjp.add_options({'tags': ['demonstrative']})
+    #    X.add_modifier(adjp)
+    #    
+    ##custom.lexicalize_all()
+    #return custom
 
     
     
@@ -371,6 +471,7 @@ def generate_all(clause, outputs=None, blow_it_up=False):
             # I guess now I'm assuming all metadata has been set before even entering the generation phase... horribly inflexible?
             assert(all(clause.has_generated_text(lang) for lang in LANGUAGES))
             break
+                
             
         # TODO: do this somewhere else instead of tacking it on at the end??
         print(sentence_case(clause.generated_text('en')))
@@ -384,14 +485,15 @@ def sentence_case(sentence):
     
     
 if __name__ == '__main__':
-    seed_rng() # for reproducibility
+    #seed_rng() # for reproducibility
 
     # hmm, should I really be using singletons for this?
     analyzer = generator.analyzer
     generators = generator.generators
     assert(set(generator.generators.keys()) == set(LANGUAGES))
 
-    clauses = [ None
+    # clauses to test the overall generation system
+    test_clauses = [ None
         , make_transitive_clause()
         , make_transitive_clause(template_readonly=False, transformations=['tense.past'])
         #, make_transitive_clause(template_readonly=False).add_transformation('tense.past') # doesn't work since add_transformation() returns None
@@ -410,25 +512,32 @@ if __name__ == '__main__':
         , make_meta(modifiers=['adjective', 'determiner'], bottom_up=True)
         , make_modal_topdown()
         , make_modal_bottomup()
-        , make_transitive_clause(subject_type='pronoun')
-        , make_transitive_clause(subject_type='pronoun', number='plural')
-        , make_transitive_clause(object_type='pronoun', modifiers=['participle'])
-        , make_transitive_clause(object_type='pronoun', modifiers=['participle'], participle_object_type='name')
-        , make_transitive_clause(transformations=['topicalization'], template_readonly=False)
-        #, make_custom()
-        #, make_custom(number='plural')
-        #, make_custom(modifiers=['determiner'])
-        #, make_custom(number='plural', modifiers=['determiner'])    
+        #, make_transitive_clause(subject_type='pronoun')
+        #, make_transitive_clause(subject_type='pronoun', number='plural')
+        #, make_transitive_clause(object_type='pronoun', modifiers=['participle'])
+        #, make_transitive_clause(object_type='pronoun', modifiers=['participle'], participle_object_type='name')
+        #, make_transitive_clause(transformations=['topicalization'], template_readonly=False)
+        , make_custom()
+        , make_custom(number='plural')
+        , make_custom(modifiers=['determiner'])
+        , make_custom(number='plural', modifiers=['determiner']) 
         ]
 
+    #test_clauses = []
+        
+    # clauses that test the data set
+    random_clauses = [make_random_clause()] * 5
+    
+    clauses = random_clauses#test_clauses + random_clauses
     
     outputs = { lang: open('output_{}.txt'.format(lang), 'w', encoding='utf8') for lang in LANGUAGES }
     for c in clauses:
         if c:
-            generate_all(c, outputs)
+            generate_all(c, outputs)#, blow_it_up=True)
     for o in outputs.values():
         o.close()
 
+# TODO: enforce distinctness of names? well, can do that with man/woman... and noun list should be long enough for few repeats
 
 # TODO: external mapping of noun classes (animal, person, object) to eligible adjectives (color, etc.) - internal would take longer
 
