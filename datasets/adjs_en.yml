@@ -1,3 +1,6 @@
+# explicitly empty JJR or JJS key: comparative/superlative form is (typically) forbidden, like "male"
+# no JJR/JJS key, or marked as regular
+
 big:
   JJR: bigger
   JJS: biggest
@@ -5,6 +8,12 @@ big:
 good:
   JJR: better
   JJS: best
+  
+important: # mark as "regular"? or just leave blank, to indicate "more important" and "most important"?
+  
+new:
+  JJR: newer
+  JJS: newest
   
 small: 
   JJR: smaller

@@ -14,8 +14,19 @@
     en: good
     zh: 好
     
+- adjset:
+    en: important
+    zh: 重要
+    
+- tags:
+  adjset:
+    en: new 
+    zh: 新
     
 - tags:
   adjset:
     en: small
     zh: 小
+    
+# TODO: a tag or something for adjectives that cannot (typically) be intensified, like "male"? 
+  # and the en lack of JJR/JJS doesn't really help, since some words just take "more" and "most"
