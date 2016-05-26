@@ -320,6 +320,8 @@ def randomly_configure_node(node, **kwargs):
     else:
         raise Exception('Unhandled node type, presumably non-lexical', type(node))
         
+        
+        
 def randomly_configure_clause(clause, stack_depth=1, **kwargs):
     '''allow non-modifiable clauses only at the outer level - some metas require transformation - I want him to have the world'''
     if stack_depth is 1:
@@ -346,6 +348,8 @@ def randomly_configure_clause(clause, stack_depth=1, **kwargs):
     for subnode in templated_subnodes:
         randomly_configure_node(subnode, stack_depth=stack_depth+1, **kwargs)
     
+    
+    
 def randomly_configure_np(np, **kwargs):
     # pure rand() doesn't give fine-grained control over the distribution
     #template_id = utility.pick_random(data.NP_TEMPLATE_BANK.all_template_ids())
@@ -362,27 +366,25 @@ def randomly_configure_np(np, **kwargs):
     if template_id == 'noun':
         np.add_options({'tags': ['object']})
         
-        # add modifiers - max one determiner?
+        # at most one determiner (syntactic constraint)
         if utility.rand() <= 0.5:
             np.add_modifier(make_random_determiner(**kwargs))
         
-        # TODO: disallow ambiguous participle attachment? the man seeing the woman holding the umbrella
+        
         # TODO: disallow multiple identical adjectives (the big and big person)
         for i in range(5): # TODO: zh gets awkward with more than 2 adjectives, esp. single-char...
             if utility.rand() < 0.2: 
                 np.add_modifier(make_random_adjp(np, **kwargs))
-                
-    # for participle, you also have to check subject-verb compatibility...
-        # so let's do this wastefully but correctly 
-        # try verb categories until you get one that can_modify
+            
+        # at most one participle (practical constraint)
+        # TODO: disallow ambiguous participle attachment? the man seeing the woman holding the umbrella
+        if kwargs.get('stack_depth') < 3 and utility.rand() <= 0.25:
+            participle = make_random_participle(np, **kwargs)
+            assert(participle)
+            if participle:
+                np.add_modifier(participle)
     
     
-def make_random_determiner(**kwargs):
-    det = nodes.node_factory('ADJP')
-    det.set_template('determiner')
-    #adjp.add_options({'tags': ['demonstrative']})
-    return det
-
     
 def make_random_adjp(target, **kwargs):
 
@@ -394,12 +396,42 @@ def make_random_adjp(target, **kwargs):
     
     adjp = nodes.node_factory('ADJP')
     adjp.set_template(template_id)
+    # TODO: semantic adjective tags - probably just a very loose mapping here for now, like object: [color, size, ...]
     return adjp
-    
-    # TODO: semantic adjective tags - probably a function here for now, like object: color
- 
+
+def make_random_determiner(**kwargs):
+    det = nodes.node_factory('ADJP')
+    det.set_template('determiner')
+    #adjp.add_options({'tags': ['demonstrative']})
+    return det
 
     
+    
+def make_random_participle(target, max_runs=10, stack_depth=1, **kwargs):
+    assert(target.type() == 'NP')
+    PARTICIPLE_BLACKLIST = {'possession'} # TODO: maybe a whitelist is more in order?
+    
+    target_heads = target._get_headnodes()
+    
+    target_verb_agreement = False
+    for i in range(max_runs):
+        participle = nodes.node_factory('Clause', manually_create_subnodes=True)
+        participle.set_template('transitive', readonly=False)        
+        
+        candidate_categories = data.VERBSET_BANK.get_categories_by_template('transitive')
+        category = utility.pick_random([cat for cat in candidate_categories if cat not in PARTICIPLE_BLACKLIST])
+        participle.set_verb_category(category)
+        
+        # could in principle use head_symbols() and _get_symbol_subnodes(), but that breaks "encapsulation" too
+        participle.add_transformation('participle')        
+        
+        if all(participle.can_modify(head) for head in target_heads):
+            participle.create_symbol_subnodes_manually()
+            randomly_configure_node(participle._get_symbol_subnode('O'), stack_depth=stack_depth+1, **kwargs)
+            return participle
+            
+    return None
+        
     
 
     
