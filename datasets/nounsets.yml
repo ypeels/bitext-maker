@@ -13,7 +13,7 @@
 # TODO: quick script that outputs tag statistics. this can eventually grow into a syntax checker, too
   # can i leverage NounBank, etc.?
 
-- tags: [organ]
+- tags: [organ, inanimate]
   nounset:
     en: brain
     zh: 大脑
@@ -44,11 +44,13 @@
   nounset:
     en: life
     zh: 生活
-    
-- tags: [abstract] # probably needs to be more specific than that, since it can function without an article... quantifier-ish?
-  nounset:
-    en: part
-    zh: 部分
+ 
+# zh problem: reads like a measure word when used to modify another noun...
+# also seems to act kind of like a quantifier... disable for now.
+#- tags: [measure]
+#  nounset:
+#    en: part
+#    zh: 部分
 
 - tags: [person]
   nounset:
@@ -100,10 +102,11 @@
     en: time
     zh: 时间 # TODO: 时候
     
-- tags: [time]
-  nounset:
-    en: today
-    zh: 今天
+# disabled because "today-child" reads almost like a time adverbial in zh...
+#- tags: [time]
+#  nounset:
+#    en: today
+#    zh: 今天
     
 - tags: [object, organization, location]
   nounset:

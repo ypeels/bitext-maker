@@ -296,6 +296,10 @@ class TemplatedNode(Node):
                 # TODO: migrate away from add_options, which it won't overwrite literal forms... currently just read "newest" form in LexicalNode
                 if literal_forms:
                     subnode.add_options({'forms': literal_forms}) 
+                
+                # this was previously only done in CustomTemplatedNode. is it okay to double-add? will this break anything? 
+                subnode.add_options(self._template().options_for_symbol(symbol))
+                
         else:
             raise Exception('cannot bequeath to non-existent subnodes')
     

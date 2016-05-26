@@ -89,7 +89,9 @@ tense.past:
   additions:
     symbols:
       # TODO: language-independent syntax tags in Template, instead of slapping them into EVERY language (which is done here)
-      V: { tags: [tense.past] }
+      # TODO: specify semantic tags here too
+      # note that you can only pass SYNTAX tags this way...
+      V: { syntax tags: [tense.past] }
     langs:
       en:
         forms: { V: VBD }

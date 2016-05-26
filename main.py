@@ -32,6 +32,7 @@ def get_verb_category_by_template(template):
     # BUT, don't you have to create a public API with which you reach down into the tree?
 # I think that ideally there would be some kind of metadata format that can specify all this 
     
+# initial test harness functions 
 def make_transitive_clause(**kwargs):   
     clause = nodes.node_factory('Clause')
     return configure_transitive_clause(clause, **kwargs)
@@ -289,8 +290,8 @@ def make_modal_bottomup(**kwargs):
     return modal2
     
     
-    
-
+####################################################################################    
+# generating lots of random sentences (top-down)
  
 def modifiable_template_ids():
     '''
@@ -323,7 +324,7 @@ def randomly_configure_node(node, **kwargs):
         
         
 def randomly_configure_clause(clause, stack_depth=1, **kwargs):
-    '''allow non-modifiable clauses only at the outer level - some metas require transformation - I want him to have the world'''
+    # allow non-modifiable clauses only at the outer level - some metas require transformation - I want him to have the world
     if stack_depth is 1:
         candidates = data.CLAUSE_TEMPLATE_BANK.all_template_ids()
     else:
@@ -334,6 +335,10 @@ def randomly_configure_clause(clause, stack_depth=1, **kwargs):
         candidates.remove('meta')
         candidates.remove('modal')
         
+    # add back in some custom templates as desired... not very scalable...
+    if stack_depth > 1 and len(clause.transformation_list()) is 0:
+        candidates += ['把']
+        
     template_id = utility.pick_random(candidates)
     #template_id = '把' 
     
@@ -341,7 +346,7 @@ def randomly_configure_clause(clause, stack_depth=1, **kwargs):
     # in current implementation, topicalization breaks if this is done after verb_category is set 
         # probably need to redo something involving subnode creation    
     readonly = template_id not in modifiable_template_ids()
-    if not readonly:# and utility.rand() <= 0.25: # overall transformation rate   
+    if not readonly and utility.rand() <= 0.25: # overall transformation rate           
         if utility.rand() <= 0.75 and clause.verb_category_id() in generator.PAST_TENSE_WHITELIST:
             clause.add_transformation('tense.past')
         # syntactically, topicalization should only be done at the top level, right? (the code fails anyway at lower levels with meta/modal?)
@@ -361,12 +366,21 @@ def randomly_configure_clause(clause, stack_depth=1, **kwargs):
 def randomly_configure_np(np, **kwargs):
     # pure rand() doesn't give fine-grained control over the distribution
     #template_id = utility.pick_random(data.NP_TEMPLATE_BANK.all_template_ids())
-    if utility.rand() < 0.8:
-        template_id = 'noun'
-    elif utility.rand() < 0.95:
+    
+    # TODO: patch this data-reading code through data.py. currently breaks abstraction, for the sake of rapid development
+    try:
+        forbidden_templates = np._get_option('forbidden templates')
+    except KeyError:
+        forbidden_templates = []
+        
+    roll = utility.rand()
+    if roll < 0.05 and 'pronoun' not in forbidden_templates:
         template_id = 'pronoun'
-    else:
-        template_id = 'name' # shouldn't make it THAT common
+    elif 0.05 <= roll < 0.2:
+        assert('name' not in forbidden_templates)
+        template_id = 'name' # shouldn't make it THAT common        
+    else: 
+        template_id = 'noun'
             
     np.set_template(template_id)
     
@@ -382,7 +396,10 @@ def randomly_configure_np(np, **kwargs):
         # TODO: disallow multiple identical adjectives (the big and big person)
         for i in range(5): # TODO: zh gets awkward with more than 2 adjectives, esp. single-char...
             if utility.rand() < 0.2: 
-                np.add_modifier(make_random_adjp(np, **kwargs))
+                modifier = make_random_adjp(np, **kwargs)
+                if modifier:
+                    assert(all(modifier.can_modify(head) for head in np._get_headnodes()))
+                    np.add_modifier(modifier)
             
         # at most one participle (practical constraint)
         # TODO: disallow ambiguous participle attachment? the man seeing the woman holding the umbrella

@@ -322,7 +322,10 @@ class Template:
         return forms_per_lang.get(lang) 
         
     def options_for_symbol(self, symbol):
-        return self.__data['symbols'][symbol]['options']
+        #return self.__data['symbols'][symbol]['options']
+        symbol_data = self.__data['symbols'].get(symbol, {})
+        return symbol_data.get('options', {})
+        
     
     def per_lang_deps_for_symbol(self, symbol):
         return self.__per_lang_deps_per_symbol[symbol].items()
@@ -403,11 +406,11 @@ class Template:
                     
         # also append language-independent data
         for symbol in self.symbols():
-            tags = self.__data['symbols'][symbol].get('tags')
-            if tags:
+            syntax_tags = self.__data['symbols'][symbol].get('syntax tags')
+            if syntax_tags:
                 for lang in LANGUAGES:
                     old_tags = self.__syntax_tags_per_symbol[symbol].get(lang, [])
-                    self.__syntax_tags_per_symbol[symbol][lang] = old_tags + self.__wrap_as_list(tags)
+                    self.__syntax_tags_per_symbol[symbol][lang] = old_tags + self.__wrap_as_list(syntax_tags)
 
             deps = self.__data['symbols'][symbol].get('dependencies')
             if deps:

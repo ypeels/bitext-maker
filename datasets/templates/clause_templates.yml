@@ -132,23 +132,35 @@ modal:
     
 # so here are sentences that aren't quite ready for the full set of Clause transformations
   # they are excluded from "modifiable_template_ids()' in main
+# these are transformations that largely try to preserve a monotonic-ish order, fwiw...
 把:
   # punched an ugly hole through Template for this...
   categories: [action] 
   
   symbols:
-    S: { type: NP }
+    S: 
+      type: NP
+      options:
+        tags: [animate]
+        # oh, I had this set up the whole time
     V: 
       type: verb
       description: head 
-    O: { type: NP }
+    O: 
+      type: NP
+      options:  
+        #tags: [inanimate]        
+        # TODO: enforce in Node code? currently just check this in main harness, as an "honor code" sort of thing
+        # O = pronoun can look annoyingly wrong...
+        # ugh, S = inanimate can look wrong in en too (above)
+        forbidden templates: [pronoun] 
     P:
       type: pronoun
       dependencies: O
   
   langs:
     en: # currently incompatible with participle, since you'd have to work with two head verbs (take and V)
-      template: S took O and V P # O = pronoun can look annoyingly wrong...
+      template: S took O and V P 
       punctuation: '.'
       forms: { V: VBD }
       tags:

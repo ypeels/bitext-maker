@@ -12,17 +12,18 @@ living:
       man:
       woman:
       
-animate:
-  animal:
   
 entity: # might be non-living
   organization:
   living:
   
 physical:  
+  animate:
+    animal:
+  inanimate:
   location:
   material: # hmm, some words can be both object and material, like "cloth"...
-  object:
+  object: # "indivisible" or "countable"
     animal: 
     bodypart: # cell
       organ: # foot, liver
@@ -36,6 +37,7 @@ abstract:
     written:  
   idea:
   information: 
+  #measure: 
   state: # uh, the number of tags seems to be proliferating...
   time:
     duration:
