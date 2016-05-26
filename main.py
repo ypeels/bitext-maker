@@ -290,37 +290,7 @@ def make_modal_bottomup(**kwargs):
     
     
     
-# what are the basic operations I want?
-    # pick random template (from clause and/or custom?)
-    # modify random nodes
-        # need to be able to make random (and compatible!?) 
-    # build incrementally (wrap in modal or meta?)
-#def make_random_clauses():
-#    all_verb_categories = data.VERBSET_BANK.categories()
-#    
-#    
-#    
-#    # try one clause per category for now
-#    random_clauses = []
-#    for category in all_verb_categories:
-#        clause = nodes.node_factory('Clause')
-#        
-#        # current implementation requires setting template before verb_category...
-#        if category.endswith('.modal'):
-#            clause.set_template('modal', readonly=False)
-#        elif category.endswith('.meta'):
-#            clause.set_template('meta', readonly=False)
-#        else: # TODO: intransitive, ditransitive, custom...
-#            clause.set_template('transitive')
-#        
-#        clause.set_verb_category(category)
-#        
-#        
-#            
-#            
-#        random_clauses.append(clause)
-#        
-#    return random_clauses
+
  
 def modifiable_template_ids():
     '''
@@ -387,41 +357,47 @@ def randomly_configure_np(np, **kwargs):
         template_id = 'name' # shouldn't make it THAT common
             
     np.set_template(template_id)
-
     
     # generator only supports objects right now (otherwise determiners get tricky... like "water" or "cloth")
     if template_id == 'noun':
         np.add_options({'tags': ['object']})
-    
-    # add modifiers
-    
-    
-    # for each non-lexical subnode
-        # configure a random new subnode (ahh, punts to a subroutine)
         
-    # for lexical subnodes
-        # decide whether to blow them up? no, that's done externally, isn't it? in generate_all?
+        # add modifiers - max one determiner?
+        if utility.rand() <= 0.5:
+            np.add_modifier(make_random_determiner(**kwargs))
         
-    # if it's a Clause, consider wrapping in a meta or modal? or do that externally?
+        # TODO: disallow ambiguous participle attachment? the man seeing the woman holding the umbrella
+        # TODO: disallow multiple identical adjectives (the big and big person)
+        for i in range(5): # TODO: zh gets awkward with more than 2 adjectives, esp. single-char...
+            if utility.rand() < 0.2: 
+                np.add_modifier(make_random_adjp(np, **kwargs))
+                
+    # for participle, you also have to check subject-verb compatibility...
+        # so let's do this wastefully but correctly 
+        # try verb categories until you get one that can_modify
     
-    ## copy-pasted from make_custom
-    #noun_phrases = [n for n in custom.get_all_lexical_nodes() if n.type() == 'NP']    
-    #X = custom._get_symbol_subnode('X')
-    #X.set_template('noun')
-    ##X.add_options({'tags': ['object']})
-    ##X.add_options({'number': [number]}) # shouldn't be trying to pluralize "it can be a very complicated thing, X"
-    ##for word in custom.get_all_lexical_nodes():
-    ##    word.set_num_samples(10)
-    #    
-    #for mod in modifiers:
-    #    adjp = nodes.node_factory('ADJP') 
-    #    adjp.set_template(mod)
-    #    if mod == 'determiner':
-    #        adjp.add_options({'tags': ['demonstrative']})
-    #    X.add_modifier(adjp)
-    #    
-    ##custom.lexicalize_all()
-    #return custom
+    
+def make_random_determiner(**kwargs):
+    det = nodes.node_factory('ADJP')
+    det.set_template('determiner')
+    #adjp.add_options({'tags': ['demonstrative']})
+    return det
+
+    
+def make_random_adjp(target, **kwargs):
+
+    # first determine the type you want - determiners done separately
+    if utility.rand() <= 0.9:
+        template_id = 'adjective'
+    else:
+        template_id = 'noun'        
+    
+    adjp = nodes.node_factory('ADJP')
+    adjp.set_template(template_id)
+    return adjp
+    
+    # TODO: semantic adjective tags - probably a function here for now, like object: color
+ 
 
     
     

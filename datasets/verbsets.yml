@@ -227,10 +227,10 @@ possession:
   - en: possess
     zh: 独有
     
-possession.obtain:
-  template: transitive
-  tags: 
-    S: [entity]
-  verbsets:
-  - en: find
-    zh: 找到
+#possession.obtain:
+#  template: transitive
+#  tags: 
+#    S: [entity]
+#  verbsets:
+#  - en: find # TODO: doesn't really work in present tense
+#    zh: 找到

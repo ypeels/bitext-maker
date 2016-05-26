@@ -591,11 +591,20 @@ class ZhGenerator(Generator):
         adjs = self._pop_modifiers(modifiers, 'adjective')
         if adjs:
             # TODO: for more than 1 adj, might want to order them in a more semantically sensible order
-            for a in adjs:
-                text = a.generated_text(self.LANG)
-                result.append(text)            
-                if len(text) > 1:
-                    result.append('的')
+            
+            # single-character adj's go next to the target, and if multiple, with 和 intervening...
+            adj_strings = [a.generated_text(self.LANG) for a in adjs]
+            single_char_adjs = [s for s in adj_strings if len(s) is 1]
+            multi_char_adjs = [s for s in adj_strings if s not in single_char_adjs]
+            
+            for adj_str in multi_char_adjs:
+                result += [adj_str, '的']
+                
+            for adj_str in single_char_adjs[:-1]:
+                result += [adj_str, '和']
+                
+            result += single_char_adjs[-1:]
+                
                     
         # nouns (clown car)
         nouns = self._pop_modifiers(modifiers, 'noun')
