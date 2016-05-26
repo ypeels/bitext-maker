@@ -223,7 +223,7 @@ class VerbSetBank:
 
     def categories(self):
         return list(self.__data.keys())
-        
+       
     def get_category(self, category):
         return VerbCategory(self.__data[category])
         
@@ -295,6 +295,10 @@ class Template:
         
     def description_for_symbol(self, symbol):
         return self.__data['symbols'][symbol].get('description') or []
+
+    def form_for_symbol(self, symbol, lang):
+        forms_per_lang = self.__forms_per_symbol.get(symbol, {}) 
+        return forms_per_lang.get(lang) 
         
     def ghosts(self):    
         result = {}
@@ -316,10 +320,6 @@ class Template:
       
     def lang_indep_deps_for_symbol(self, symbol):
         return self.__lang_indep_deps_per_symbol[symbol]
-      
-    def literal_form_for_symbol(self, symbol, lang):
-        forms_per_lang = self.__forms_per_symbol.get(symbol, {}) 
-        return forms_per_lang.get(lang) 
         
     def options_for_symbol(self, symbol):
         #return self.__data['symbols'][symbol]['options']

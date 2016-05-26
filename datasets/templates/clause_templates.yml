@@ -132,7 +132,8 @@ modal:
     
 # so here are sentences that aren't quite ready for the full set of Clause transformations
   # they are excluded from "modifiable_template_ids()' in main
-# these are transformations that largely try to preserve a monotonic-ish order, fwiw...
+
+# like topicalization, 把 tries to preserve a monotonic-ish order, fwiw...
 把:
   # punched an ugly hole through Template for this...
   categories: [action] 
@@ -142,7 +143,7 @@ modal:
       type: NP
       options:
         tags: [animate]
-        # oh, I had this set up the whole time
+        # n.b. this required enabling extra code in TemplatedNode._bequeath_to_subnodes(), and wasn't fully retested...
     V: 
       type: verb
       description: head 
@@ -163,7 +164,7 @@ modal:
       template: S took O and V P 
       punctuation: '.'
       forms: { V: VBD }
-      tags:
+      tags: # no subject-verb dependency since it's "took" for all person and number settings
         S: subjective
         O: objective
         P: objective
@@ -186,6 +187,45 @@ modal:
   # in current framework, it would be a transformation that would take a second clause with null subject and "join" with first
 
 
+# this is just as hackish as 把, except you also have to choose "was" or "were" based on the person/number of O...
+# but the bottom line was that this was creating too much of a mess to be worth hacking in
+  # one idea was to add tags [voice.passive, tense.past] and hack EnGenerator._modify_verb
+    # this creates quite the mess in the generator, in a way that is very non-obvious, looking at the data here.
+      # then again, that's exactly what was done for tense.past and zh...
+  # another was to insert another verb node, 
+    # the main problem here was that you'd have to add infrastructure to specify a particular word, PER LANGUAGE
+# TODO: this should really be a verb-category-specific transformation...
+#passive.past:
+#  categories: [action, perception.vision]
+#  
+#  symbols:
+#    S: { type: NP }
+#    O: { type: NP }
+#    V:
+#      type: verb
+#      description: head
+#      options:
+#        tags: [voice.passive, tense.past] # TODO: move to symbols section, like tense.past transformation?
+#    #VC:
+#    #  type: verb
+#    
+#  langs:
+#    en:
+#      template: O V by S
+#      punctuation: '.'
+#      #dependencies: { VC: O } 
+#      forms: { V: VBN }
+#      #words: { VC: be } # literal words... very hackish... might be desirable, but not scalable w/ langs...
+#      #literals: { VC: be } # TODO: do I have to worry about lexicalization in other languages??
+#      tags:
+#        O: subjective
+#        V: [voice.passive, tense.past]
+#        S: objective
+#    zh: 
+#      template: O 被 S V 了
+#      punctuation: 。
+      
+  
 
 
     
