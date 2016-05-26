@@ -95,7 +95,7 @@ tense.past:
         forms: { V: VBD }
       #zh: 
       
-        # TODO: choose between 了 and a default adverbial in data somehow...
+        # TODO: choose between 了 and a default adverbial in data somehow... currently done in generator...
         #postwords: { V: 了 }
   
   

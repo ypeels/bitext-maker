@@ -337,12 +337,20 @@ def randomly_configure_clause(clause, stack_depth=1, **kwargs):
     template_id = utility.pick_random(candidates)
     #template_id = '把' 
     
-    clause.set_template(template_id, readonly=(template_id not in modifiable_template_ids()))
+    # randomly add a transformation, like topicalization or past tense
+    # in current implementation, topicalization breaks if this is done after verb_category is set 
+        # probably need to redo something involving subnode creation    
+    readonly = template_id not in modifiable_template_ids()
+    if not readonly:# and utility.rand() <= 0.25: # overall transformation rate   
+        if utility.rand() <= 0.75 and clause.verb_category_id() in generator.PAST_TENSE_WHITELIST:
+            clause.add_transformation('tense.past')
+        # syntactically, topicalization should only be done at the top level, right? (the code fails anyway at lower levels with meta/modal?)
+        elif utility.rand() <= 0.5 and template_id in ['transitive'] and stack_depth is 1:
+            clause.add_transformation('topicalization')    
+    
+    # TODO: nested modals with same verb read like duplicated verbs in zh... should be alleviated by scaling # verbs up...    
+    clause.set_template(template_id, readonly=readonly)
     clause.set_random_verb_category()  
-
-    # TODO : randomly add a transformation, like topicalization or past tense
-        # conditionally? e.g., past-tense should only be done with certain verb categories
-        # topicalization should only be done at the top level, right?
     
     templated_subnodes = [sn for sn in clause._subnodes() if issubclass(type(sn), nodes.TemplatedNode)]
     for subnode in templated_subnodes:

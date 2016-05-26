@@ -7,6 +7,8 @@ import data
 import nodes 
 
 
+PAST_TENSE_WHITELIST = {'action', 'change.start'}
+
 class Analyzer:
     '''
     Analyzes the tree and makes nonlocal decisions
@@ -387,6 +389,7 @@ class EnGenerator(Generator):
         # TODO there are semantics-related ordering issues.. it looks like this could get VERY complicated...
         
         # determiner goes at the very front
+        # TODO: "forbidden" det-noun pairs like "every thing" and "no body"
         dets = self._pop_modifiers(modifiers, 'determiner')        
         assert(len(node._get_headnodes()) is 1)
         if dets: 
@@ -547,7 +550,7 @@ class ZhGenerator(Generator):
             assert(node._get_symbol_subnode(head).get_tense() == 'past')
         
             # the same crude way that default determiners are handled...
-            if node.verb_category_id() in ['action', 'change.start']:
+            if node.verb_category_id() in PAST_TENSE_WHITELIST:
                 result.insert(result.index(head) + 1, '了')
             elif not adverbs:
                 # horrible hack: a topicalized time point phrase - use if desired...

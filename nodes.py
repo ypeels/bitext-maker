@@ -292,6 +292,8 @@ class TemplatedNode(Node):
                 literal_forms = { lang: self._template().literal_form_for_symbol(symbol, lang)
                     for lang in utility.LANGUAGES
                     if self._template().literal_form_for_symbol(symbol, lang) }                
+                    
+                # TODO: migrate away from add_options, which it won't overwrite literal forms... currently just read "newest" form in LexicalNode
                 if literal_forms:
                     subnode.add_options({'forms': literal_forms}) 
         else:
@@ -518,6 +520,9 @@ class TransformableNode(ModifierNode):
         # this is getting a BIT overly complicated...
         if self._subnodes():
             self._bequeath_to_subnodes()
+            
+    def transformation_list(self):
+        return self.__pending_transformations + self.__finished_transformations
 
     def create_symbol_subnodes_manually(self):
         '''Delayed manual subnode creation when instantiated with manually_create_subnodes=True'''
@@ -882,8 +887,11 @@ class LexicalNode(Node):
         if forms_option:
             assert(type(forms_option) is list)
             forms = [item.get(lang, '') for item in forms_option]
-            assert(len(forms) is 1)
-            return forms[0]
+            
+            # TODO: overwrite forms instead in TemplatedNode._bequeath_to_subnodes
+            #assert(len(forms) is 1)
+            assert(len(forms) >= 1)
+            return forms[-1]
             
         else:
             return ''
