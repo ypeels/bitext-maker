@@ -37,8 +37,28 @@ test:
 #      #subject: 在 西班牙 的 N
 #      punctuation: 。
 #      # hmm, participles seem rather difficult to build from custom clause templates...
+  
+# covers the not uncommon case in TED talks that there are multiple sentences on a line
+multiple:
+  symbols:
+    C1:
+      type: Clause
+    C2:
+      type: Clause
+      options:
+        capitalization hack: True # TODO: ONLY use a capitalization flag, instead of combining this with generate_all hack in main
       
+  langs:
+    en: { template: C1 C2 }
+    zh: { template: C1 C2 }
+      
+        
+  
+  
       
 # if a verb can be varied, it should go in clause_templates instead, to leverage subject-verb semantic matching, etc.
 # if there is no variable verb, it really belongs here, since that's not really a "Clause" then...?
-  # well, you could specify literal verbs in the clause template...
+  # well, you could specify literal verbs in the clause template... 
+  # no, that's actually kind of hard... plus, semantic matching is nice
+  
+  

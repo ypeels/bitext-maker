@@ -161,7 +161,7 @@ class TemplatedNode(Node):
     A templated node is like "S V O" - and so it generally branches into other nodes and is non-terminal.
     Currently subclasses to NP and Clause
     '''
-    def __init__(self, bank, **kwargs):
+    def __init__(self, bank, manually_create_subnodes=False, **kwargs):
         Node.__init__(self, **kwargs)
 
         self.__headnodes = [] # Node
@@ -176,6 +176,8 @@ class TemplatedNode(Node):
         self._template_readonly = None # bool - expected to be write-once
         self.__template = None # data.Template
         self.__template_id = ''
+        
+        self.__waiting_for_manual_subnodes = manually_create_subnodes 
         
     def __str__(self): # for interactive probing
         return "{type}({template})".format(type=self.__class__, template=self.__template)
@@ -222,6 +224,13 @@ class TemplatedNode(Node):
             raise Exception('Cannot add ALL symbols manually - not yet, anyway')
             
         self.__symbol_subnodes[symbol] = subnode
+        
+    # used by tree-making harness        
+    def create_symbol_subnodes_manually(self):
+        '''Delayed manual subnode creation when instantiated with manually_create_subnodes=True'''
+        assert(self.__waiting_for_manual_subnodes is True)
+        self.__waiting_for_manual_subnodes = False # ready to proceed
+        self._create_symbol_subnodes()
         
     
     # used by Generator
@@ -277,8 +286,7 @@ class TemplatedNode(Node):
         
     ### "pure virtual" functions - to be implemented in derived classes ###
     # not needed per se (duck typing will get it), but still valuable to document what this function is
-    def _can_create_symbol_subnodes(self):
-        raise UNIMPLEMENTED_EXCEPTION
+    # currently empty
         
     ### "protected" functions - default implementations, MAY be overridden in derived classes ###
     def _bequeath_to_subnodes(self):
@@ -302,7 +310,10 @@ class TemplatedNode(Node):
                 
         else:
             raise Exception('cannot bequeath to non-existent subnodes')
-    
+
+    def _can_create_symbol_subnodes(self):
+        return self.has_template() and not self.__waiting_for_manual_subnodes
+            
     def _create_symbol_subnodes(self):
         '''Creates only the subnodes specified by the template - no modifiers'''
         # currently assumes not ALL subnodes are created from bottom up - also asserted in add_subnode()
@@ -442,7 +453,7 @@ class TransformableNode(ModifierNode):
         # - also, most subclasses don't need this functionality for now
     # not kept in ModifierNode, since that covers other classes like ADJP that might never need transforming
     
-    def __init__(self, bank, manually_create_subnodes=False, **kwargs):
+    def __init__(self, bank, **kwargs):
         ModifierNode.__init__(self, bank, **kwargs)
         
         # possible ghost nodes
@@ -454,8 +465,6 @@ class TransformableNode(ModifierNode):
         
         self.__pending_transformations = []
         self.__finished_transformations = []
-        
-        self.__waiting_for_manual_subnodes = manually_create_subnodes 
             
         
     def can_modify(self, target_head):
@@ -527,12 +536,6 @@ class TransformableNode(ModifierNode):
             
     def transformation_list(self):
         return self.__pending_transformations + self.__finished_transformations
-
-    def create_symbol_subnodes_manually(self):
-        '''Delayed manual subnode creation when instantiated with manually_create_subnodes=True'''
-        assert(self.__waiting_for_manual_subnodes is True)
-        self.__waiting_for_manual_subnodes = False # ready to proceed
-        self._create_symbol_subnodes()
         
     ### Direct node manipulation by tree builder ###
     def add_ghostnode(self, key, new_ghost, kind=None):
@@ -557,9 +560,6 @@ class TransformableNode(ModifierNode):
         self.add_ghostnode(symbol, self._pop_symbol_subnode(symbol), kind=kind)
         
     ### end Direct node manipulation by tree builder ###
-    
-    def _can_create_symbol_subnodes(self):
-        return not self.__waiting_for_manual_subnodes
             
     def _create_symbol_subnodes(self):   
         assert(not self.__pending_transformations) # pending transformations get cleared upon set_template()        
@@ -711,7 +711,7 @@ class Clause(TransformableNode):
         # although set_verb_category() now also triggers propagation to subnodes,
         # it's still useful to wait for has_verb_category(), since then you get a chance to perform template transformations:
         # e.g., set_template(); transform(); set_verb_category()
-        return TransformableNode._can_create_symbol_subnodes(self) and self.has_template() and self.has_verb_category()
+        return TransformableNode._can_create_symbol_subnodes(self) and self.has_verb_category() # and self.has_template()
     
     
     def _create_symbol_subnodes(self):
@@ -778,8 +778,8 @@ class CustomTemplate(TemplatedNode):
     def __init__(self, **kwargs): 
         TemplatedNode.__init__(self, data.CUSTOM_TEMPLATE_BANK, **kwargs)
 
-    def _can_create_symbol_subnodes(self):
-        return self.has_template()
+#    def _can_create_symbol_subnodes(self):
+#        return TemplatedNode._can_create_symbol_subnodes(self) and self.has_template()
     
     def _create_symbol_subnodes(self):
         TemplatedNode._create_symbol_subnodes(self)

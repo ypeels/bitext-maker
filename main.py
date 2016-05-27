@@ -10,7 +10,7 @@ from utility import LANGUAGES, seed_rng
 
 
 
-assert(__name__ == '__main__') # for now
+#assert(__name__ == '__main__') # for now # disabled for capitalization hack
 
 
 #seed_rng() # output still not deterministic? loops over dicts are still random

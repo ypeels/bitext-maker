@@ -4,6 +4,7 @@ Monolingual generators that finally convert data to sentences
 from utility import LANGUAGES
 
 import data
+import main # for sentence_case for capitalization hack...
 import nodes 
 
 
@@ -138,6 +139,9 @@ class Generator:
             # populate the template - get(key, default value)
             result = [generated_symbols.get(token, token) for token in template ]
             
+            if node._get_option('capitalization hack'): # currently from custom_templates.yml/multiple
+                result[0] = main.sentence_case(result[0])
+
             node.set_generated_text(lang, ' '.join(result))
             
         else:

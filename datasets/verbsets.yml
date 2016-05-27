@@ -204,7 +204,7 @@ perception.vision:
     
   verbsets:
   - en: see
-    zh: 看到
+    zh: 看到 # TODO: looks weird in infinitives: Chuck likes to see Alice / Chuck 喜欢 看到 Alice
     
 possession:
   # TODO: PP-style modifications, before all verbs in the set - probably with an example
