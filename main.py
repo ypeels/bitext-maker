@@ -300,16 +300,16 @@ def modifiable_template_ids():
     '''
     return ['meta', 'modal', 'transitive']
  
-def verb_categories_per_template(template_id):
-    if template_id == '把': # TODO: this really belongs in data, but need to design optimal infrastructure there
-        return ['action']
-    else:
-        return data.VERBSET_BANK.categories()
+#def verb_categories_per_template(template_id):
+#    if template_id == '把': # TODO: this really belongs in data, but need to design optimal infrastructure there
+#        return ['action']
+#    else:
+#        return data.VERBSET_BANK.categories()
  
 def make_random_sentence():
     '''Make a random clause or custom, and modify it in random places too.'''
-        
-    roll = 0.85#utility.rand()
+    roll = utility.rand()
+    #roll = 0.85#utility.rand()
     if roll <= 0.8:
         clause = nodes.node_factory('Clause')    
         randomly_configure_clause(clause)
@@ -482,10 +482,14 @@ def make_random_participle(target, max_runs=10, stack_depth=1, **kwargs):
         
 def randomly_configure_custom(custom):
     candidates = [id for id in data.CUSTOM_TEMPLATE_BANK.all_template_ids() 
-                    if id not in { 'multiple' }]
+                    if id not in { 'multiple' }] # blacklist some that are not intended for random generation here...
     template_id = random.choice(candidates)
-    template_id = 'tst2011.45'
+    #template_id = 'test'
     custom.set_template(template_id)
+    
+    templated_subnodes = [sn for sn in custom._subnodes() if issubclass(type(sn), nodes.TemplatedNode)]
+    for subnode in templated_subnodes:
+        randomly_configure_node(subnode, stack_depth=2)
     
 
 
@@ -534,7 +538,12 @@ def generate_all(clause, outputs=None, blow_it_up=False):
             n.set_num_samples(100) # blow this sucker up. how many lines do I get? (this is largely for morale)
     
     analyzer.reset_num_samples() 
-    clause.analyze_all(analyzer)
+    
+    try:
+        clause.analyze_all(analyzer)
+    except Exception as e: # allows access to root node for debugging
+        import pdb; pdb.set_trace()
+        raise
 
 
     # note that you opt into multisampling via set_num_samples ABOVE - and that determines the length of the list passed to select_samples() 

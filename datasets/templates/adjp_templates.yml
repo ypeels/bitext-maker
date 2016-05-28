@@ -25,7 +25,7 @@ determiner:
     
     
 # TODO: restrict target types? or is it noun only for now? expand to names?
-    
+# TODO: duplicated nouns != modification in zh 
 noun:
   example: clown|NN car|NN
   symbols:

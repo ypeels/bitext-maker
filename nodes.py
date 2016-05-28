@@ -239,7 +239,8 @@ class TemplatedNode(Node):
             raise Exception('Untemplated node', self.type())
         Node.analyze_all(self, analyzer)        
     
-    def generated_symbols(self, lang):    
+    def generated_symbols(self, lang):   
+        # TODO: patch template-specified literal words properly through the data and tree system
         return { symbol: subnode.generated_text(lang) 
             for symbol, subnode in self.__symbol_subnodes.items() if subnode.has_generated_text(lang) }
             

@@ -142,7 +142,7 @@ class Generator:
             if node._get_option('capitalization hack'): # currently from custom_templates.yml/multiple
                 result[0] = main.sentence_case(result[0])
 
-            node.set_generated_text(lang, ' '.join(result))
+            self._generate_node_text(node, ' '.join(result))
             
         else:
             raise Exception('in single-pass generation, should never get here')

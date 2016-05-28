@@ -173,6 +173,22 @@ modal:
       template: S 把 O V 了 # just crudely omitting P
       punctuation: 。
 
+
+tst2011.1244: # the very tedious part is having to opt-in verb categories to these...
+  categories: [action, action.creation, change.start.modal, cognition.knowledge, perception.vision]
+  symbols:
+    V:
+      type: verb
+      description: head
+      
+  langs:
+    en: 
+      template: This is an idea worth V
+      forms: { V: VBG }
+      punctuation: '.'
+    zh:                         # TODO: allow 观点 to vary instead? does that need semantic matching between verb/object? "nonsense mode"??
+      template: 这 是 一 个 值得 V 的 观点 
+      punctuation: 。
   
 # ugh, make this one form per language, and save alternate forms for transformations? (like O, V S for "add emphasis")
   # otherwise, you'd have to keep track right here about which template goes with which, across all languages

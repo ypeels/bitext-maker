@@ -67,6 +67,7 @@ multiple:
   
   
 # inspired by tst2011 sentences with low TER
+# OH, did this work essentially because it's a monotonic alignment? in any case, I don't think much is gained here...
 tst2011.45:
   symbols:
     N:
@@ -83,8 +84,8 @@ tst2011.45:
           zh: 第一
     
   langs:
-    en:
-      template: I remember my D N
+    en: # actually, D is more properly 次 for events...in any case, en-zh seems to "understand" I remember my N
+      template: I remember my D N 
       punctuation: '.'
     zh:
       template: 我 记得 我 D N #第一 
