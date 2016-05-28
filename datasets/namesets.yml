@@ -47,3 +47,27 @@
   nameset:
     en: Chuck
     zh: 查克
+    
+    
+    
+    
+    
+- tags: [place]
+  nameset:
+    en:
+    zh:
+    
+- tags: [place]
+  nameset:
+    en: China
+    zh: 中国
+    
+- tags: [place]
+  nameset:
+    en: America # looks like "the U.S." is less common
+    zh: 美国
+    
+- tags: [place]
+  nameset:
+    en: India
+    zh: 印度

@@ -21,12 +21,12 @@ physical:
   animate:
     animal:
   inanimate:
-  location:
   material: # hmm, some words can be both object and material, like "cloth"...
   object: # "indivisible" or "countable"
     animal: 
     bodypart: # cell
       organ: # foot, liver
+  place: # location
     
 abstract:
   ability:

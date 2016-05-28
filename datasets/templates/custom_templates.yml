@@ -107,3 +107,20 @@ tst2011.1005:
     zh:
       template: 我 叫 N
       punctuation: 。
+      
+tst2011.1012:
+  symbols:
+    S:
+      type: NP
+      options: { tags: person }
+    P:
+      type: name
+      options: { tags: place }
+  langs:
+    en:
+      template: S grew up in P
+      punctuation: '.'
+      tags: { S: subjective }
+    zh:
+      template: S 在 P 长大
+      punctuation: 。
