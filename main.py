@@ -615,18 +615,17 @@ def make_test_clauses():
         , make_meta(modifiers=['adjective', 'determiner'], bottom_up=True)
         , make_modal_topdown()
         , make_modal_bottomup()
+        , make_transitive_clause(number='plural', modifiers=['adjective', 'determiner'])
         #, make_transitive_clause(subject_type='pronoun')
         #, make_transitive_clause(subject_type='pronoun', number='plural')
         #, make_transitive_clause(object_type='pronoun', modifiers=['participle'])
         #, make_transitive_clause(object_type='pronoun', modifiers=['participle'], participle_object_type='name')
-        #, make_transitive_clause(transformations=['topicalization'], template_readonly=False)
-        , make_custom()
-        , make_custom(number='plural')
-        , make_custom(modifiers=['determiner'])
-        , make_custom(number='plural', modifiers=['determiner']) 
+        , make_transitive_clause(transformations=['topicalization'], template_readonly=False)
+        #, make_custom()
+        #, make_custom(number='plural')
+        #, make_custom(modifiers=['determiner'])
+        #, make_custom(number='plural', modifiers=['determiner']) 
         ]
-
-    #test_clauses = []
         
     return test_clauses
         
