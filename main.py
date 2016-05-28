@@ -583,7 +583,7 @@ def generate_all(clause, outputs=None, blow_it_up=False):
             
         # TODO: do this somewhere else instead of tacking it on at the end??
         # ugh, sentence casing is important for multi-sentence lines... 
-        if True: #not utility.PRODUCTION:
+        if not utility.PRODUCTION:
             print(sentence_case(clause.generated_text('en')))
 
         if outputs:
