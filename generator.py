@@ -73,6 +73,12 @@ class Generator:
         self.__counter = 0 # for multiple passes through the tree (generating dependencies)
         
 
+    # en abhors "car car", and "车车" sounds like baby talk
+    # TODO: this doesn't fix the tree... it just prevents it from generating strings like that...
+    def _can_modify_with_noun(self, target_node, noun_modifier_node):
+        target_nouns = [child.generated_text(self.LANG) for child in target_node._get_headnodes()]
+        return noun_modifier_node.generated_text(self.LANG) not in target_nouns
+            
         
         
     def _generate_lexical(self, node):
@@ -415,7 +421,10 @@ class EnGenerator(Generator):
             
         # nouns (clown car)
         nouns = self._pop_modifiers(modifiers, 'noun')
-        result += [n.generated_text(self.LANG) for n in nouns]            
+        #result += [n.generated_text(self.LANG) for n in nouns]   
+        for n in nouns:
+            if self._can_modify_with_noun(node, n):
+                result.append(n.generated_text(self.LANG))
                     
         result += template
 
@@ -615,7 +624,10 @@ class ZhGenerator(Generator):
                     
         # nouns (clown car)
         nouns = self._pop_modifiers(modifiers, 'noun')
-        result += [n.generated_text(self.LANG) for n in nouns]                
+        #result += [n.generated_text(self.LANG) for n in nouns]                
+        for n in nouns:
+            if self._can_modify_with_noun(node, n):
+                result.append(n.generated_text(self.LANG))
 
         assert(self._modifiers_are_done(modifiers))
         

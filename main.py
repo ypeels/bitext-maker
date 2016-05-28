@@ -677,7 +677,7 @@ def run_production():
     
     
 if __name__ == '__main__':
-    seed_rng() # for reproducibility
+    #seed_rng() # for reproducibility? meh, doesn't work since I loop over dict keys, which is not deterministic
 
     # hmm, should I really be using singletons for this?
     analyzer = generator.analyzer
