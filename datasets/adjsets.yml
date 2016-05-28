@@ -3,12 +3,28 @@
   adjset:
     en: 
     zh:
+
+- tags: [quality]
+  adjset:
+    en: best
+    zh: 最好
     
 - tags: [size]
   adjset:
     en: big
     zh: 大
 
+- tags: [size]
+  adjset:
+    en: biggest
+    zh: 最大  # TODO: use JJS system instead... but it's segmented together in zh, so...
+ 
+# there seem to be major problems here, because adjset is looking at "all tags" 
+- tags: [target.inanimate] # actually, can't it just be nottarget.person?
+  adjset:           # this doesn't look like it will scale with languages...
+    en: common
+    zh: 共同
+    
 - tags: [quality]
   adjset:
     en: good
@@ -33,6 +49,11 @@
 #  adjset:
 #    en: last 
 #    zh: 最后
+
+- tags:
+  adjset:
+    en: real 
+    zh: 真正
     
 - tags:
   adjset:

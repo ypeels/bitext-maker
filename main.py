@@ -13,11 +13,13 @@ from utility import LANGUAGES, seed_rng
 # collected flags for quick toggling during testing
 if utility.PRODUCTION:
     FIXED_ROLL = FIXED_TEMPLATE = MUTE_OLD_TEST = None
+    NUM_RANDOM_TEST = 1
 else:
     FIXED_ROLL = FIXED_TEMPLATE = MUTE_OLD_TEST = None
-    FIXED_ROLL = 0.75 # 0-0.8 for Clause, 0.8-0.9 for Custom, 0.9-1.0 for C1 C2 - see make_random_sentence()
-    FIXED_TEMPLATE = '把'
+    #FIXED_ROLL = 0.75 # 0-0.8 for Clause, 0.8-0.9 for Custom, 0.9-1.0 for C1 C2 - see make_random_sentence()
+    #FIXED_TEMPLATE = '把'
     MUTE_OLD_TEST = True
+    NUM_RANDOM_TEST = 50
 
     
 
@@ -651,7 +653,7 @@ def run_test():
         test_clauses = []
 
     # clauses that test the data set
-    random_clauses = [make_random_sentence() for i in range(25)] 
+    random_clauses = [make_random_sentence() for i in range(NUM_RANDOM_TEST)] 
     #random_clauses = []
 
     clauses = test_clauses + random_clauses
@@ -668,6 +670,7 @@ def run_production():
     output_prefix = datetime.datetime.isoformat(datetime.datetime.now()).replace('T', '-').replace(':', '')[:-7]
     outputs = { lang: open('{}-generated.{}'.format(output_prefix, lang), 'w', encoding='utf8') for lang in LANGUAGES }
     for i in range(1, 100001): # for large corpus, you want to "stream" the trees instead of storing them all
+        # TODO: pick, say, just one random lexical node (make sure it's Noun/Verb/Adj) and blow it up - guarantee some "parallel" sentences
         generate_all(make_random_sentence(), outputs)
         if i % 1000 is 0:
             print(i)

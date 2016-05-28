@@ -10,11 +10,23 @@ good:
   JJS: best
   
 important: # mark as "regular"? or just leave blank, to indicate "more important" and "most important"?
+interesting:
   
 new:
   JJR: newer
   JJS: newest
   
+real:
+
+simple:
+  JJR: simpler
+  JJS: simplest
+  
 small: 
   JJR: smaller
   JJS: smallest
+
+
+# hacks
+biggest:
+best:
