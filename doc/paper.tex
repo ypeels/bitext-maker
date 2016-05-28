@@ -71,6 +71,10 @@ RNN encoder-decoders are not the first corpus-based MT methodology (EBMT then SM
 Focusing on corpus generation allows linguists to focus on capturing the most statistically prevalent linguistic phenomena, while insulating them from the strengths and weaknesses of various implementations.
 For instance, EBMT suffers from relatively poor generalization and SMT has problems with nonlocality.
 (RNN built on relatively shaky ground, since word vectors don't QUITE make sense for function words?)
+Seems somewhat foolhardy to marginalize the domain experts
+Significantly more engineering (man-hours?) seems to go into the machine-learning component.  (Well, granted, there are human translators who are spending many man-hours generating sentence pairs. But they're not intended for MT.)
+Traditionally, corpus construction has been considered prohibitively expensive, ``scavenged'' from other sources like parliamentary proceedings or lecture subtitles.
+But must this be so? Vast untapped resource of students or whatever.
  
 Such synthetic parallel corpora can also be viewed as benchmark tasks (need to cite Facebook bAbI).
 This is actually probably more important than you'd think, because looking at IWSLT15, some of the human translations are VERY loose.
@@ -84,6 +88,19 @@ No, my Return of the Linguist had more to do with how RBMT systems have fallen o
 
 My main point seems to be that nobody makes high quality and quantity parallel corpora JUST for machine translation, and it seems like that's sorely needed for both training and benchmarking.
 Even the fanciest new machine learning model is dead in the water if it doesn't have enough data.
+
+Return of the linguist: it is relatively easy to come up with examples that industrial-grade systems fail. (hmm,)
+he was shown the car
+他 给 展示 了 车?
+
+\section{Single-Line Scoring}
+
+It is a testament to how indisidious these errors can be that they persisted this long (tst2010 was distributed as recently as IWSLT2015
+This underscores the need for human post-editing, at the very least, for test sets.
+In a shared evaluation task with many language pairs, the most practical way for this is probably crowdsourcing.
+
+It also demonstrates the tremendous imbalance between linguistic effort and machine learning effort/investment
+
 
 \section{Related Work}
 \label{sec:related}
