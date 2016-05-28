@@ -40,13 +40,27 @@ class WordSetBank(Bank):
 
 
 class AdjectiveSetBank(WordSetBank):
+    def __init__(self, filename):
+        WordSetBank.__init__(self, filename)
+        self.__all_tags = set.union(*[set(item.tags()) for item in self.all_adjsets() if item.tags()])
+
     def all_adjsets(self):
         result = [AdjectiveSet(item) for item in self._data()]
         assert(len(result) > 0)
         return result
         
-    def find_tagged(self, target_tag):
-        raise Exception('TODO: unimplemented stub') # n.b. the "tags" key is currently optional in adjsets.yml
+    def all_tags(self):
+        return self.__all_tags
+        
+        
+    def find_tagged_with_any(self, target_tags):
+        '''
+        Unlike NounSetBank and VerbSetBank, this returns the "union" of all tags instead of the intersection.
+        This is because adjectives are generally specified w.r.t. an existing target, which can take many possible modifier types (color, size, etc.)
+        '''
+        #raise Exception('TODO: unimplemented stub') # n.b. the "tags" key is currently optional in adjsets.yml
+        return [adjset for adjset in self.all_adjsets() #AdjectiveSet(item) for item in self._data() 
+                if any(tt in adjset.tags() for tt in target_tags) or not adjset.tags()]        
         
     def _is_dummy(self, datum):
         return all(adj == None for adj in datum['adjset'].values())
@@ -721,6 +735,12 @@ class WordSet:
         #raise UNIMPLEMENTED_EXCEPTION
         return self._data()[self._wordset_key()][lang] or []
         
+    def _wrap_as_list(self, datum):
+        if type(datum) is list:
+            return datum
+        else:
+            return [datum]
+        
     # ugh, expose to derived classes...
     def _data(self):
         return self.__data
@@ -728,6 +748,13 @@ class WordSet:
 class AdjectiveSet(WordSet):
     def adjective(self, lang, index):
         return WordSet.word(self, lang, index)
+        
+    def tags(self):
+        tags = self._data().get('tags')
+        if tags:
+            return self._wrap_as_list(tags)
+        else:
+            return [] # if you try to return wrap(data.get('tags')), you can wind up with [None]
         
     def _wordset_key(self):
         return 'adjset'

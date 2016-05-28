@@ -1061,9 +1061,10 @@ class Adjective(LexicalNode):
         tags = [t for t in (self._get_option('tags') or []) if type(t) is str]
         assert(len(tags) <= 1)
         if tags:            
-            candidates = data.ADJSET_BANK.find_tagged(tags[0])
+            candidates = data.ADJSET_BANK.find_tagged_with_any(tags)
         else:
             candidates = data.ADJSET_BANK.all_adjsets()
+            
         return candidates
         
 class Determiner(LexicalNode):
