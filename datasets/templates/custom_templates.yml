@@ -91,3 +91,19 @@ tst2011.45:
       template: 我 记得 我 D N #第一 
       punctuation: 。
   
+  
+tst2011.1005:
+  symbols:
+    N:
+      type: name
+      options: { tags: person }
+
+  langs:
+    en: 
+      template: My name is N
+      #forms: { P: PRP$ } # TODO: gender matching
+      punctuation: '.'
+      #tags: { P: options: singular
+    zh:
+      template: 我 叫 N
+      punctuation: 。

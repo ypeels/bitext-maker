@@ -4,12 +4,12 @@
     en: 
     zh:
     
-- tags:
+- tags: [size]
   adjset:
     en: big
     zh: 大
 
-- tags:
+- tags: [quality]
   adjset:
     en: good
     zh: 好
@@ -18,12 +18,12 @@
     en: important
     zh: 重要
     
-- tags:
+- tags: [age] # time?
   adjset:
     en: new 
     zh: 新
     
-- tags:
+- tags: [size]
   adjset:
     en: small
     zh: 小
