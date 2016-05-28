@@ -154,6 +154,7 @@ modal:
         # TODO: enforce in Node code? currently just check this in main harness, as an "honor code" sort of thing
         # O = pronoun can look annoyingly wrong...
         # ugh, S = inanimate can look wrong in en too (above)
+        # UGH, V without a 结果补语 looks pretty awkward too
         forbidden templates: [pronoun] 
     P:
       type: pronoun

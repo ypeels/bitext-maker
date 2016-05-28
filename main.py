@@ -310,7 +310,20 @@ def make_random_clause():
     '''Make a random clause or custom, and modify it in random places too.'''
     clause = nodes.node_factory('Clause')    
     randomly_configure_clause(clause)
-    return clause
+        
+    if utility.rand() <= 0.9:
+        return clause
+    else:
+        line = nodes.node_factory('CustomTemplate', manually_create_subnodes=True)
+        line.set_template('multiple')
+        line.add_symbol_subnode('C1', clause)        
+        line.create_symbol_subnodes_manually()
+        
+        clause2 = line._get_symbol_subnode('C2')
+        assert(clause2)
+        randomly_configure_clause(clause2)
+        
+        return line
     
 def randomly_configure_node(node, **kwargs):  
     assert(not issubclass(type(node), nodes.LexicalNode))
@@ -537,6 +550,7 @@ def generate_all(clause, outputs=None, blow_it_up=False):
                 
             
         # TODO: do this somewhere else instead of tacking it on at the end??
+        # ugh, sentence casing is important for multi-sentence lines... 
         print(sentence_case(clause.generated_text('en')))
         
         if outputs:
