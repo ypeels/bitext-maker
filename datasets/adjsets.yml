@@ -18,10 +18,26 @@
     en: important
     zh: 重要
     
+- tags:
+  adjset:
+    en: interesting 
+    zh: 有趣
+    
 - tags: [age] # time?
   adjset:
     en: new 
     zh: 新
+    
+# no, this is determinerish in both zh and en - "the last big cookie"
+#- tags:
+#  adjset:
+#    en: last 
+#    zh: 最后
+    
+- tags:
+  adjset:
+    en: simple 
+    zh: 简单
     
 - tags: [size]
   adjset:

@@ -416,7 +416,8 @@ class EnGenerator(Generator):
         adjs = self._pop_modifiers(modifiers, 'adjective')
         if adjs:
             # TODO: adjective ordering
-            adj_strings = [a.generated_text(self.LANG) for a in adjs]
+            # remove duplicate adjectives. TODO: fix the tree as well, instead of just suppressing output
+            adj_strings = list(set(a.generated_text(self.LANG) for a in adjs)) # back-converted to list for use by conjunction
             result += self.__conjunction(adj_strings) 
             
         # nouns (clown car)
@@ -610,8 +611,12 @@ class ZhGenerator(Generator):
             
             # single-character adj's go next to the target, and if multiple, with 和 intervening...
             adj_strings = [a.generated_text(self.LANG) for a in adjs]
-            single_char_adjs = [s for s in adj_strings if len(s) is 1]
-            multi_char_adjs = [s for s in adj_strings if s not in single_char_adjs]
+            
+            # TODO: handle duplicated adjectives correctly - would require changing tree
+            # prevent redundant adjectives for now, which read differently in zh
+            # note that this doesn't fix the tree - it just suppresses the output
+            single_char_adjs = list(set(s for s in adj_strings if len(s) is 1))
+            multi_char_adjs = list(set(s for s in adj_strings if s not in single_char_adjs))
             
             for adj_str in multi_char_adjs:
                 result += [adj_str, '的']
