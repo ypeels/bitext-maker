@@ -777,16 +777,27 @@ class Clause(TransformableNode):
 class CustomTemplate(TemplatedNode):
     def __init__(self, **kwargs): 
         TemplatedNode.__init__(self, data.CUSTOM_TEMPLATE_BANK, **kwargs)
-
-#    def _can_create_symbol_subnodes(self):
-#        return TemplatedNode._can_create_symbol_subnodes(self) and self.has_template()
     
     def _create_symbol_subnodes(self):
         TemplatedNode._create_symbol_subnodes(self)
-        for sym in self._symbols():
-            self.add_options(self._template().options_for_symbol(sym))
+        #for sym in self._symbols(): # moved to superclass
+        #    self.add_options(self._template().options_for_symbol(sym))
         # pass other language-independent options from template
         # TODO: refactor this into TemplatedNode and the awkward _tags/_deps system?
+        
+        # TODO: move this into Template. Custom was always meant to be down and dirty, though...
+        __template_data = self._template()._Template__data
+        for sub_symbol, sub_data in __template_data['symbols'].items():
+            subnode = self._get_symbol_subnode(sub_symbol)
+        
+            sub_template = sub_data.get('template')
+            if sub_template:
+                subnode.set_template(sub_template)
+                
+            sub_target = sub_data.get('target')
+            if sub_target:
+                subnode.add_lexical_target(self._get_symbol_subnode(sub_target))
+
     
         
         
@@ -988,7 +999,21 @@ class LexicalNode(Node):
     def _sample_dataset(self):
         '''Return the currently selected dataset'''
         return self.__get_dataset_by_index(self.__selected_sample_index)
+       
+    # this function is used to hack in literal words from templates.
+    # has to be called EXPLICITLY from subclasses - 
+    def word(self, lang): 
+        # TODO: propagate words down from template into LexicalNode properly
+        words_hack = self.parent()._get_option('words hack')
+        if words_hack:
+            assert(len(self.parent()._subnodes()) is 1) # fixed word from template is intended for this only child
+            assert(self.total_num_datasets(lang) is 1) # not wasting tons of iterations on the same fixed word, fwiw
+            return words_hack[0][lang]
+        else:
+            return self._word(lang) # punt to subclass
+       
         
+    # private - for internal use by this class only
     def __get_dataset_by_index(self, index):
         return self.__datasets[index]
 
@@ -996,7 +1021,7 @@ class LexicalNode(Node):
 
 
 class Adverb(LexicalNode):
-    def adverb(self, lang):
+    def _word(self, lang):
         advset = self._sample_dataset()
         assert(advset.num_words(lang) is 1)
         return advset.adverb(lang, 0)
@@ -1023,7 +1048,7 @@ class Adverb(LexicalNode):
 # TODO: consolidate shared code with Determiner?
 # TODO: semantic filtering
 class Adjective(LexicalNode):
-    def adjective(self, lang):
+    def _word(self, lang):
         adjset = self._sample_dataset()
         assert(adjset.num_words(lang) is 1)
         return adjset.adjective(lang, 0)
@@ -1044,7 +1069,7 @@ class Determiner(LexicalNode):
     #def add_modifier(self, _):
     #    raise Exception('do not modify Determiner nodes - are you trying PDT? how about hooking on a second DT?')
         
-    def determiner(self, lang):
+    def _word(self, lang):
         detset = self._sample_dataset()
         assert(detset.num_words(lang) is 1)
         return detset.determiner(lang, 0)
@@ -1089,7 +1114,7 @@ class Name(GenericNoun):
     def person(self): # a name is always third person
         return 3
         
-    def name(self, lang):
+    def _word(self, lang):
         nameset = self._sample_dataset() #get_dataset_by_index(0) #node.get_nameset_by_index(0)
         
         assert(nameset.num_words(lang) == 1)
@@ -1117,7 +1142,7 @@ class Noun(GenericNoun):
     def person(self):
         return 3
         
-    def noun(self, lang):
+    def _word(self, lang):
         nounset = self._sample_dataset()
         assert(nounset.num_words(lang) == 1)
         return nounset.noun(lang, 0)
@@ -1156,7 +1181,7 @@ class Pronoun(GenericNoun):
         assert(not self.has_antecedent())
         self.add_dependency(node)
 
-    def pronoun(self, lang):
+    def _word(self, lang):
         if self.has_antecedent():
             # have to figure out correct pronset from antecedent
             antecedent = self.__antecedent()
@@ -1284,7 +1309,7 @@ class Verb(LexicalNode):
                 
         return 'present'
         
-    def verb(self, lang):    
+    def _word(self, lang):    
         verbset = self._sample_dataset()
         return verbset.verb(lang)
         

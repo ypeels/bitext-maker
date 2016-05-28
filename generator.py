@@ -92,9 +92,9 @@ class Generator:
         node_type = node.type()
         if node_type == 'adjective':
             assert(self.LANG in ['en', 'zh'])
-            self._generate_node_text(node, node.adjective(self.LANG))
+            self._generate_node_text(node, node.word(self.LANG))
         elif node_type == 'adverb':
-            self._generate_node_text(node, node.adverb(self.LANG))
+            self._generate_node_text(node, node.word(self.LANG))
         elif node_type == 'determiner':
             self._generate_determiner(node)
         elif node_type == 'name':        
@@ -104,7 +104,7 @@ class Generator:
             #self._generate_name(node) # neither language's names have dependencies right now
             assert(self.LANG in ['en', 'zh'])
             assert(node.number() == 'singular') # TODO: plural names, like Greeks? that would affect English subject-verb agreement
-            name = node.name(self.LANG)
+            name = node.word(self.LANG)
             self._generate_node_text(node, name)   
         elif node_type == 'noun':
             self._generate_noun(node) # punt to subclass
@@ -148,14 +148,14 @@ class Generator:
             raise Exception('in single-pass generation, should never get here')
         
     def _get_det_base(self, node):
-        return node.determiner(self.LANG)        
+        return node.word(self.LANG)        
     def _get_noun_base(self, node):
-        return node.noun(self.LANG)            
+        return node.word(self.LANG)            
     def _get_verb_base(self, node):
         #assert(node.num_datasets(self.LANG) == 1)
         #verbset = node.sample_dataset() #get_dataset_by_index(0)#get_verbset_by_index(0)
         #return verbset.verb(self.LANG)
-        return node.verb(self.LANG)
+        return node.word(self.LANG)
         
     def _get_unmodified_template(self, node):
         template_text = node.get_template_text(self.LANG)
@@ -287,7 +287,7 @@ class EnGenerator(Generator):
         self._generate_node_text(node, noun)
       
     def _generate_pronoun(self, node):
-        pron_base = node.pronoun(self.LANG)
+        pron_base = node.word(self.LANG)
         pron_forms = self._pronoun_form_bank.get(pron_base)
         
         # so the logic here is language AND data dependent... but I guess I've been doing that the whole time
@@ -528,7 +528,7 @@ class ZhGenerator(Generator):
         self._generate_node_text(node, noun)
         
     def _generate_pronoun(self, node):
-        pronoun = node.pronoun(self.LANG)
+        pronoun = node.word(self.LANG)
         if node.number() == 'plural':
             pronoun += '们'
         node.set_generated_text(self.LANG, pronoun)

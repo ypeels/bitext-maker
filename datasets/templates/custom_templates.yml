@@ -62,3 +62,29 @@ multiple:
   # no, that's actually kind of hard... plus, semantic matching is nice
   
   
+  
+  
+# inspired by tst2011 sentences with low TER
+tst2011.45:
+  symbols:
+    N:
+      type: noun
+      options:
+        tags: object # TODO: allow indivisible words too? as it stands, it doesn't allow the original "my first fire"
+    D:                #  then again, 场 is not the typical measure word for 火...
+      type: ADJP
+      template: determiner
+      target: N
+      options:
+        words hack:
+          en: first
+          zh: 第一
+    
+  langs:
+    en:
+      template: I remember my D N
+      punctuation: '.'
+    zh:
+      template: 我 记得 我 D N #第一 
+      punctuation: 。
+  

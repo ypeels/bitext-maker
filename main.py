@@ -306,14 +306,23 @@ def verb_categories_per_template(template_id):
     else:
         return data.VERBSET_BANK.categories()
  
-def make_random_clause():
+def make_random_sentence():
     '''Make a random clause or custom, and modify it in random places too.'''
-    clause = nodes.node_factory('Clause')    
-    randomly_configure_clause(clause)
         
-    if utility.rand() <= 0.9:
+    roll = 0.85#utility.rand()
+    if roll <= 0.8:
+        clause = nodes.node_factory('Clause')    
+        randomly_configure_clause(clause)
         return clause
+    elif 0.8 < roll <= 0.9:
+        custom = nodes.node_factory('CustomTemplate')
+        randomly_configure_custom(custom)
+        return custom        
     else:
+        # C1 C2 - multiple sentences on a line, TED-style
+        clause = nodes.node_factory('Clause')    
+        randomly_configure_clause(clause)
+    
         line = nodes.node_factory('CustomTemplate', manually_create_subnodes=True)
         line.set_template('multiple')
         line.add_symbol_subnode('C1', clause)        
@@ -470,7 +479,15 @@ def make_random_participle(target, max_runs=10, stack_depth=1, **kwargs):
             
     return None
         
+        
+def randomly_configure_custom(custom):
+    candidates = [id for id in data.CUSTOM_TEMPLATE_BANK.all_template_ids() 
+                    if id not in { 'multiple' }]
+    template_id = random.choice(candidates)
+    template_id = 'tst2011.45'
+    custom.set_template(template_id)
     
+
 
     
 
