@@ -36,7 +36,8 @@ class WordSetBank(Bank):
         # TODO: save them elsewhere, if I ever wanted to make them available programmatically - otherwise, they're just glorified comments...
         for i in range(len(__data)-1, -1, -1):
             if self._is_dummy(__data[i]):
-                __data.pop(i) 
+                __data.pop(i)
+
 
 
 class AdjectiveSetBank(WordSetBank):
@@ -52,15 +53,21 @@ class AdjectiveSetBank(WordSetBank):
     def all_tags(self):
         return self.__all_tags
         
-        
-    def find_tagged_with_any(self, target_tags):
-        '''
-        Unlike NounSetBank and VerbSetBank, this returns the "union" of all tags instead of the intersection.
-        This is because adjectives are generally specified w.r.t. an existing target, which can take many possible modifier types (color, size, etc.)
-        '''
+    def find_tagged(self, target_tags):
         #raise Exception('TODO: unimplemented stub') # n.b. the "tags" key is currently optional in adjsets.yml
         return [adjset for adjset in self.all_adjsets() #AdjectiveSet(item) for item in self._data() 
-                if any(tt in adjset.tags() for tt in target_tags) or not adjset.tags()]        
+                if all(tt in adjset.tags() for tt in target_tags) or not adjset.tags()] 
+        
+      
+    # I don't think I should use this - it's way too confusing
+    #def find_tagged_with_any(self, target_tags):
+    #    '''
+    #    Unlike NounSetBank and VerbSetBank, this returns the "union" of all tags instead of the intersection.
+    #    This is because adjectives are generally specified w.r.t. an existing target, which can take many possible modifier types (color, size, etc.)
+    #    '''
+    #    #raise Exception('TODO: unimplemented stub') # n.b. the "tags" key is currently optional in adjsets.yml
+    #    return [adjset for adjset in self.all_adjsets() #AdjectiveSet(item) for item in self._data() 
+    #            if any(tt in adjset.tags() for tt in target_tags) or not adjset.tags()]        
         
     def _is_dummy(self, datum):
         return all(adj == None for adj in datum['adjset'].values())
@@ -123,7 +130,8 @@ class NounSetBank(WordSetBank):
         Returns all noun synsets satisfying ALL target tags.
         '''
         return [NounSet(item) for item in self._data()
-            for tag in item['tags'] if all(TAXONOMY.isa(tag, tt) for tt in target_tags)]
+            #for tag in item['tags'] if all(TAXONOMY.isa(tag, tt) for tt in target_tags)]
+            if any( all( TAXONOMY.isa(tag, tt)         for tt in target_tags) for tag in item.get('tags', []) ) or not item.get('tags')]
             
     def _is_dummy(self, datum):
         return all(adj == None for adj in datum['nounset'].values())  
