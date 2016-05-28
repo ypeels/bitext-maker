@@ -1,7 +1,8 @@
 import os
 
-import data # may take a while
+import data # may take a while, depending on data set size
 
+import datetime
 import generator
 import nodes
 import random
@@ -340,6 +341,8 @@ def randomly_configure_node(node, **kwargs):
         randomly_configure_clause(node, **kwargs)
     elif node.type() == 'NP':
         randomly_configure_np(node, **kwargs)
+    #elif node.type() == 'ADJP':
+    #    randomly_configure_adjp(node, **kwargs)
     else:
         raise Exception('Unhandled node type, presumably non-lexical', type(node))
         
@@ -434,17 +437,19 @@ def randomly_configure_np(np, **kwargs):
     
     
 def make_random_adjp(target, **kwargs):
+    adjp = nodes.node_factory('ADJP')
+    randomly_configure_adjp(adjp, target=target, **kwargs)
+    return adjp
 
+def randomly_configure_adjp(adjp, target=None, **kwargs):
     # first determine the type you want - determiners done separately
     if utility.rand() <= 0.9:
         template_id = 'adjective'
     else:
-        template_id = 'noun'        
-    
-    adjp = nodes.node_factory('ADJP')
+        template_id = 'noun' 
+        
     adjp.set_template(template_id)
     # TODO: semantic adjective tags - probably just a very loose mapping here for now, like object: [color, size, ...]
-    return adjp
 
 def make_random_determiner(**kwargs):
     det = nodes.node_factory('ADJP')
@@ -489,7 +494,8 @@ def randomly_configure_custom(custom):
     
     templated_subnodes = [sn for sn in custom._subnodes() if issubclass(type(sn), nodes.TemplatedNode)]
     for subnode in templated_subnodes:
-        randomly_configure_node(subnode, stack_depth=2)
+        if not subnode.has_template(): # might have specified template manually in data
+            randomly_configure_node(subnode, stack_depth=2)
     
 
 
@@ -577,24 +583,18 @@ def generate_all(clause, outputs=None, blow_it_up=False):
             
         # TODO: do this somewhere else instead of tacking it on at the end??
         # ugh, sentence casing is important for multi-sentence lines... 
-        print(sentence_case(clause.generated_text('en')))
-        
+        if True: #not utility.PRODUCTION:
+            print(sentence_case(clause.generated_text('en')))
+
         if outputs:
             for lang in LANGUAGES:
                 outputs[lang].write(sentence_case(clause.generated_text(lang)) + '\n')
     
 def sentence_case(sentence):
     return sentence[:1].upper() + sentence[1:]
-    
-    
-if __name__ == '__main__':
-    #seed_rng() # for reproducibility
 
-    # hmm, should I really be using singletons for this?
-    analyzer = generator.analyzer
-    generators = generator.generators
-    assert(set(generator.generators.keys()) == set(LANGUAGES))
-
+    
+def make_test_clauses():
     # clauses to test the overall generation system
     test_clauses = [ None
         , make_transitive_clause()
@@ -628,10 +628,18 @@ if __name__ == '__main__':
 
     #test_clauses = []
         
+    return test_clauses
+        
+        
+def run_test():
+    test_clauses = make_test_clauses()
+    #test_clauses = []
+
     # clauses that test the data set
-    random_clauses = [make_random_clause()] * 5
-    
-    clauses = random_clauses#test_clauses + random_clauses
+    random_clauses = [make_random_sentence() for i in range(25)] 
+    #random_clauses = []
+
+    clauses = test_clauses + random_clauses
     
     outputs = { lang: open('output_{}.txt'.format(lang), 'w', encoding='utf8') for lang in LANGUAGES }
     for c in clauses:
@@ -639,6 +647,36 @@ if __name__ == '__main__':
             generate_all(c, outputs)#, blow_it_up=True)
     for o in outputs.values():
         o.close()
+        
+        
+def run_production():
+    output_prefix = datetime.datetime.isoformat(datetime.datetime.now()).replace('T', '-').replace(':', '')[:-7]
+    outputs = { lang: open('{}-generated.{}'.format(output_prefix, lang), 'w', encoding='utf8') for lang in LANGUAGES }
+    for i in range(1, 100001): # for large corpus, you want to "stream" the trees instead of storing them all
+        generate_all(make_random_sentence(), outputs)
+        if i % 1000 is 0:
+            print(i)
+            
+    for o in outputs.values():
+        o.close()
+    
+    
+if __name__ == '__main__':
+    seed_rng() # for reproducibility
+
+    # hmm, should I really be using singletons for this?
+    analyzer = generator.analyzer
+    generators = generator.generators
+    assert(set(generator.generators.keys()) == set(LANGUAGES))
+
+    if utility.PRODUCTION:
+        run_production()
+    else:
+        run_test()
+    
+
+
+#    raise Exception('TODO: 我 叫 N / PRP$ name is N')
 
 # TODO: enforce distinctness of names? well, can do that with man/woman... and noun list should be long enough for few repeats
 

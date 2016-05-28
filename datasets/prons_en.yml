@@ -5,26 +5,36 @@ __blank__:
 
 I:
   objective: me
+  PRP$: my
   PRPS.subjective: we
-  PRPS.objective: us
+  PRPS.objective: us  
+  PRPS$: our
   
 you:
+  PRP$: your
+  PRPS$: your
   # TODO: alternative form y'all?
 
 he:
   objective: him
+  PRP$: his
   # TODO: possessive? but that's syntactically ADJP...
   PRPS.subjective: they
   PRPS.objective: them
+  PRPS$: their # TODO: theirs - same conditions as "hers"
   
 she:
-  objective: her
+  objective: her 
+  PRP$: her # TODO: "hers" - "possessive objective"?
   PRPS.subjective: they
   PRPS.objective: them
+  PRPS$: their
 
 it:
+  PRP$: its
   PRPS.subjective: they
   PRPS.objective: them 
+  PRPS$: theirs
   
 # TODO: reflexives... notice these have person and number too - himself, yourself, ourselves
 # TODO: demonstratives (this - tagged as DT, even when used as a noun?)

@@ -5,10 +5,14 @@ if sys.version_info < (3, 0):
 # "global" read-only variables
 DATA_DIR = 'datasets/'
 LANGUAGES = ['en', 'zh']
+PRODUCTION = False
 USE_RANDOM = True
 
 import operator # itemgetter
 import random
+
+if PRODUCTION:
+    USE_RANDOM = True
 
 def nested_sort(items):
     '''
