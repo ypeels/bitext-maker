@@ -4,9 +4,10 @@ test:
       type: NP
       description: head
       
+      
       # TODO: propagate these down
       options:
-        tags: objective
+        #tags: objective
         number: singular
       
 
@@ -14,6 +15,7 @@ test:
     en: 
       template: It can be a very complicated thing , X
       punctuation: '.'
+      tags: { X: objective }
     zh: 
       template: X 是 一 个 非常 复杂 的 事物
       punctuation: 。
