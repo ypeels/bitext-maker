@@ -43,10 +43,15 @@ class WordSetBank(Bank):
 class AdjectiveSetBank(WordSetBank):
     def __init__(self, filename):
         WordSetBank.__init__(self, filename)
-        self.__all_tags = set.union(*[set(item.tags()) for item in self.all_adjsets() if item.tags()])
+        self.__all_tags = set.union(*[set(item.tags()) for item in self.__all_adjsets() if item.tags()])
 
-    def all_adjsets(self):
-        result = [AdjectiveSet(item) for item in self._data()]
+    # adjsets effectively have two types of tags
+    # the standard tag types, which you are eliminated via find_tagged (all_tags() would return "big", but find_tagged('color') would not)
+    # adjective sets with tags like "target.inanimate" can ONLY be found through find_tagged('target.inanimate')
+        # in other words, there are certain adjectives that you can only opt INTO, not just opt out of
+    def all_unrestricted_adjsets(self):
+        #result = [AdjectiveSet(item) for item in self._data()]
+        result = [adjset for adjset in self.__all_adjsets() if not any(t.startswith('target.') for t in adjset.tags())]
         assert(len(result) > 0)
         return result
         
@@ -55,9 +60,11 @@ class AdjectiveSetBank(WordSetBank):
         
     def find_tagged(self, target_tags):
         #raise Exception('TODO: unimplemented stub') # n.b. the "tags" key is currently optional in adjsets.yml
-        return [adjset for adjset in self.all_adjsets() #AdjectiveSet(item) for item in self._data() 
-                if all(tt in adjset.tags() for tt in target_tags) or not adjset.tags()] 
-        
+        return [adjset for adjset in self.__all_adjsets() #
+                if all(tt in adjset.tags() for tt in target_tags)]# or not adjset.tags()] 
+       
+    def __all_adjsets(self):
+        return [AdjectiveSet(item) for item in self._data()]
       
     # I don't think I should use this - it's way too confusing
     #def find_tagged_with_any(self, target_tags):
@@ -120,18 +127,28 @@ class NameSetBank(WordSetBank):
         return all(adj == None for adj in datum['nameset'].values()) 
             
 class NounSetBank(WordSetBank):
+    def __init__(self, filename):
+        WordSetBank.__init__(self, filename)
+        self.__all_tags = set.union(*[set(item.tags()) for item in self.all_nounsets() if item.tags()])
+        
+    def all_tags(self):
+        return self.__all_tags
+
     def all_nounsets(self):
         result = self.find_tagged([]) #[NounSet(item) for item in self._data()]
         assert(len(result) > 0)
         return result
+        
+    def all_tags(self):
+        return self.__all_tags
         
     def find_tagged(self, target_tags):
         '''
         Returns all noun synsets satisfying ALL target tags.
         '''
         return [NounSet(item) for item in self._data()
-            #for tag in item['tags'] if all(TAXONOMY.isa(tag, tt) for tt in target_tags)]
-            if any( all( TAXONOMY.isa(tag, tt)         for tt in target_tags) for tag in item.get('tags', []) ) or not item.get('tags')]
+            #for tag in item['tags'] if all(TAXONOMY.isa(tag, tt) for tt in target_tags)] # listcomps are really prone to subtle logic errors
+            if all( any(TAXONOMY.isa(tag, tt) for tag in item.get('tags', [])) for tt in target_tags ) or not item.get('tags')]
             
     def _is_dummy(self, datum):
         return all(adj == None for adj in datum['nounset'].values())  

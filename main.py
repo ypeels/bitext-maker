@@ -403,6 +403,20 @@ def randomly_configure_clause(clause, stack_depth=1, **kwargs):
     
     
     
+def add_random_tag_to_np(np):
+    '''
+    Do np's existing tags preclude adding a (presumably more specific) tag?
+    I.e., is "specific_tag" a subset of the existing tags?
+    '''    
+    specific_tag = utility.pick_random(list(data.NOUNSET_BANK.all_tags()))
+    
+    # this is thinking too hard, right? a tag is addable as long as it doesn't result in zero candidates
+    #if all(data.TAXONOMY.isa(specific_tag, t) for t in np.semantic_tags()):
+    #    np.add_options({'tags': [specific_tag]})
+    if data.NOUNSET_BANK.find_tagged(np.semantic_tags() + [specific_tag]):
+        np.add_options({'tags': [specific_tag]})
+    
+    
 def randomly_configure_np(np, **kwargs):
     # pure rand() doesn't give fine-grained control over the distribution
     #template_id = utility.pick_random(data.NP_TEMPLATE_BANK.all_template_ids())
@@ -427,6 +441,12 @@ def randomly_configure_np(np, **kwargs):
     # generator only supports objects right now (otherwise determiners get tricky... like "water" or "cloth")
     if template_id == 'noun':
         np.add_options({'tags': ['object']})
+        
+        # pick random, specific tags from the nounbank and add them to np, if possible.
+        # we'll make up for lexical variety by making lots and lots of trees, instead of lexically varying one tree many times
+        for i in range(3):
+            if utility.rand() <= 0.6:
+                add_random_tag_to_np(np)
         
         # at most one determiner (syntactic constraint)
         if utility.rand() <= 0.5:
@@ -462,9 +482,27 @@ def randomly_configure_adjp(adjp, target=None, **kwargs):
         template_id = 'adjective'
     else:
         template_id = 'noun' 
-        
     adjp.set_template(template_id)
-    # TODO: semantic adjective tags - probably just a very loose mapping here for now, like object: [color, size, ...]
+
+    if target and template_id == 'adjective':
+        
+        # first blacklist any adjectives with required tags (target.inanimate, etc.) if the required tag is not in the target
+        modifier_tags = data.ADJSET_BANK.all_tags()
+        target_tags = target.semantic_tags()
+        
+        for mt in [mt for mt in modifier_tags if mt.startswith('target.')]:
+            required_target_type = mt.split('.', maxsplit=1)[1]
+            
+            # originally was trying to do fancy stuff with the taxonomy, but it's easier to just pump in specific tags from configure_np
+            #if not any(data.TAXONOMY.isa(tt, required_target_type) for tt in target_tags):
+            if required_target_type not in target_tags: 
+                modifier_tags.difference_update({mt})                
+        
+        # TODO: target-specific blacklists, like removing the "color" tag for any "abstract" targets (optional! colorless green ideas)        
+        
+        # limit adjective choices at lexicalization time
+        adjp.add_options([utility.pick_random(list(modifier_tags))]})
+
 
 def make_random_determiner(**kwargs):
     det = nodes.node_factory('ADJP')

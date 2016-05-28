@@ -33,7 +33,20 @@ pronoun:
   # code: noun(animal) + modifier(color). i suppose this could go in the meta templates...
   # but it would be nice to be able to filter modifiers at creation time instead of failing at attachment time...
   # yes, you just use AdjectiveBank.find_tagged(), right?
-    
+
+
+## workaround to allow some degree of semantic matching without having to redo a bunch of Node code?
+## no, would need to build in way too much additional node infrastructure
+#noun.inanimate:
+#  symbols:
+#    N:
+#      type: noun
+#      description: head
+#    J:
+#      type: ADJP
+#      description: an inanimate-only adjective
+#  langs:
+#    
 
 
 # TODO: VP-NP - like gerunds or infinitives. I guess you could have a single symbol and punt to its template??

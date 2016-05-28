@@ -988,7 +988,6 @@ class LexicalNode(Node):
     # protected - used by derived classes
     def _pick_samples(self, candidates):
         num_candidates = len(candidates)
-        if not num_candidates: print('lexicalnode._pick_samples', candidates, self.type(), self._options())
         assert(num_candidates > 0)
         if self.num_samples() > num_candidates:
             self.set_num_samples(num_candidates)
@@ -1063,9 +1062,8 @@ class Adjective(LexicalNode):
         #assert(len(tags) <= 1)
         if tags:            
             candidates = data.ADJSET_BANK.find_tagged(tags)
-            #print('adj._get_lex', candidates)
         else:
-            candidates = data.ADJSET_BANK.all_adjsets()
+            candidates = data.ADJSET_BANK.all_unrestricted_adjsets() # adjs are hacked slightly differently - see data.py
             
         return candidates
         
