@@ -501,7 +501,7 @@ def randomly_configure_adjp(adjp, target=None, **kwargs):
         # TODO: target-specific blacklists, like removing the "color" tag for any "abstract" targets (optional! colorless green ideas)        
         
         # limit adjective choices at lexicalization time
-        adjp.add_options([utility.pick_random(list(modifier_tags))]})
+        adjp.add_options([utility.pick_random(list(modifier_tags))])
 
 
 def make_random_determiner(**kwargs):
