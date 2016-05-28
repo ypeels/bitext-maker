@@ -10,6 +10,16 @@ import utility
 from utility import LANGUAGES, seed_rng
 
 
+# collected flags for quick toggling during testing
+if utility.PRODUCTION:
+    FIXED_ROLL = FIXED_TEMPLATE = MUTE_OLD_TEST = None
+else:
+    FIXED_ROLL = FIXED_TEMPLATE = MUTE_OLD_TEST = None
+    FIXED_ROLL = 0.75 # 0-0.8 for Clause, 0.8-0.9 for Custom, 0.9-1.0 for C1 C2 - see make_random_sentence()
+    FIXED_TEMPLATE = '把'
+    MUTE_OLD_TEST = True
+
+    
 
 #assert(__name__ == '__main__') # for now # disabled for capitalization hack
 
@@ -310,7 +320,9 @@ def modifiable_template_ids():
 def make_random_sentence():
     '''Make a random clause or custom, and modify it in random places too.'''
     roll = utility.rand()
-    #roll = 0.85#utility.rand()
+    if FIXED_ROLL:
+        roll = FIXED_ROLL
+        
     if roll <= 0.8:
         clause = nodes.node_factory('Clause')    
         randomly_configure_clause(clause)
@@ -365,7 +377,8 @@ def randomly_configure_clause(clause, stack_depth=1, **kwargs):
         candidates += ['把']
         
     template_id = utility.pick_random(candidates)
-    #template_id = '把' 
+    if FIXED_TEMPLATE:
+        template_id = FIXED_TEMPLATE
     
     # randomly add a transformation, like topicalization or past tense
     # in current implementation, topicalization breaks if this is done after verb_category is set 
@@ -488,8 +501,10 @@ def make_random_participle(target, max_runs=10, stack_depth=1, **kwargs):
 def randomly_configure_custom(custom):
     candidates = [id for id in data.CUSTOM_TEMPLATE_BANK.all_template_ids() 
                     if id not in { 'multiple' }] # blacklist some that are not intended for random generation here...
+                    
     template_id = random.choice(candidates)
-    #template_id = 'test'
+    if FIXED_TEMPLATE:
+        template_id = FIXED_TEMPLATE
     custom.set_template(template_id)
     
     templated_subnodes = [sn for sn in custom._subnodes() if issubclass(type(sn), nodes.TemplatedNode)]
@@ -632,7 +647,8 @@ def make_test_clauses():
         
 def run_test():
     test_clauses = make_test_clauses()
-    #test_clauses = []
+    if MUTE_OLD_TEST:
+        test_clauses = []
 
     # clauses that test the data set
     random_clauses = [make_random_sentence() for i in range(25)] 
@@ -675,7 +691,7 @@ if __name__ == '__main__':
     
 
 
-#    raise Exception('TODO: 我 叫 N / PRP$ name is N')
+
 
 # TODO: enforce distinctness of names? well, can do that with man/woman... and noun list should be long enough for few repeats
 
