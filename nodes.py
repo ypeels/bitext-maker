@@ -1079,9 +1079,8 @@ class Determiner(LexicalNode):
         
     def _get_lexical_candidates(self):
         tags = [t for t in (self._get_option('tags') or []) if type(t) is str]
-        assert(len(tags) <= 1)
         if tags:            
-            candidates = data.DETSET_BANK.find_tagged(tags[0])
+            candidates = data.DETSET_BANK.find_tagged(tags)
         else:
             candidates = data.DETSET_BANK.all_detsets()
         return candidates

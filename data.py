@@ -38,12 +38,18 @@ class WordSetBank(Bank):
             if self._is_dummy(__data[i]):
                 __data.pop(i)
 
+        self.__all_tags = None # set
+                
+    def all_tags(self):
+        if self.__all_tags is None: # lazy initialization to avoid choking on unimplemented _all_datasets()
+            self.__all_tags = set.union(*[set(item.tags()) for item in self._all_datasets() if item.tags()])
+        return self.__all_tags.copy() # gets trashed all OVER the place downstream. this was an insidious bug.
+                
+    #def _all_datasets(self): # duck typing will raise a more informative exception (tells you WHICH subclass needs implementing)
+    #    raise UNIMPLEMENTED_EXCEPTION
 
 
 class AdjectiveSetBank(WordSetBank):
-    def __init__(self, filename):
-        WordSetBank.__init__(self, filename)
-        self.__all_tags = set.union(*[set(item.tags()) for item in self.__all_adjsets() if item.tags()])
 
     # adjsets effectively have two types of tags
     # the standard tag types, which you are eliminated via find_tagged (all_tags() would return "big", but find_tagged('color') would not)
@@ -54,9 +60,6 @@ class AdjectiveSetBank(WordSetBank):
         result = [adjset for adjset in self.__all_adjsets() if not any(t.startswith('target.') for t in adjset.tags())]
         assert(len(result) > 0)
         return result
-        
-    def all_tags(self):
-        return self.__all_tags.copy() # gets trashed all OVER the place externally. this was an insidious bug.
         
     #def find_tagged(self, target_tags):
     #    #raise Exception('TODO: unimplemented stub') # n.b. the "tags" key is currently optional in adjsets.yml
@@ -75,6 +78,10 @@ class AdjectiveSetBank(WordSetBank):
         return [adjset for adjset in self.__all_adjsets() #AdjectiveSet(item) for item in self._data() 
                 if any(tt in adjset.tags() for tt in target_tags) or not adjset.tags()]        
         
+    # overrides (concrete implementations)
+    def _all_datasets(self):
+        return self.__all_adjsets()
+        
     def _is_dummy(self, datum):
         return all(adj == None for adj in datum['adjset'].values())
         
@@ -89,13 +96,18 @@ class AdverbSetBank(WordSetBank):
         
 class DeterminerSetBank(WordSetBank):
     def all_detsets(self):
-        result = [DeterminerSet(item) for item in self._data()]
+        result = self.find_tagged([]) #[DeterminerSet(item) for item in self._data()]
         assert(len(result) > 0)
         return result
         
-    def find_tagged(self, target_tag):
-        return [DeterminerSet(item) for item in self._data() if target_tag in item['tags']]        
+    def find_tagged(self, target_tags):
+        assert(len(target_tags) <= 1) # determiners are currently all single-tag... quantifier/demonstrative/etc. ("a" may need 2+?)
+        return [DeterminerSet(item) for item in self._data() if all(tt in item['tags'] for tt in target_tags)]        
         
+    # overrides (concrete implementations)
+    def _all_datasets(self):
+        return self.all_detsets()
+    
     def _is_dummy(self, datum):
         return all(adj == None for adj in datum['detset'].values())  
         
@@ -126,20 +138,10 @@ class NameSetBank(WordSetBank):
         return all(adj == None for adj in datum['nameset'].values()) 
             
 class NounSetBank(WordSetBank):
-    def __init__(self, filename):
-        WordSetBank.__init__(self, filename)
-        self.__all_tags = set.union(*[set(item.tags()) for item in self.all_nounsets() if item.tags()])
-        
-    def all_tags(self):
-        return self.__all_tags
-
     def all_nounsets(self):
         result = self.find_tagged([]) #[NounSet(item) for item in self._data()]
         assert(len(result) > 0)
         return result
-        
-    def all_tags(self):
-        return self.__all_tags
         
     def find_tagged(self, target_tags):
         '''
@@ -149,6 +151,10 @@ class NounSetBank(WordSetBank):
             #for tag in item['tags'] if all(TAXONOMY.isa(tag, tt) for tt in target_tags)] # listcomps are really prone to subtle logic errors
             if all( any(TAXONOMY.isa(tag, tt) for tag in item.get('tags', [])) for tt in target_tags ) or not item.get('tags')]
             
+    # overrides (concrete implementations)
+    def _all_datasets(self):
+        return self.all_nounsets()
+        
     def _is_dummy(self, datum):
         return all(adj == None for adj in datum['nounset'].values())  
         

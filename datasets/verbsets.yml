@@ -57,6 +57,17 @@ action.creation:
   #- en: start # need to tag O as "event"  or "inanimate"? otherwise you get stuff like "start Bob"
   #  zh: 开始
 
+# TODO： verbset-specific postwords...
+change.appear.showup: 
+  template: intransitive
+  additions:
+    langs:
+      en:
+        postwords: { V: up }
+  verbsets:
+  - en: show
+    zh: 出现
+  
 change.start.modal:
   template: modal
   transformations: { C: infinitive.vp }
@@ -250,22 +261,20 @@ possession:
 #  - en: find # TODO: doesn't really work in present tense
 #    zh: 找到
 
-social.help: 
+social.help: &social_help
   template: transitive
   verbsets:
   - en: help
     zh: 帮助 # TODO: 帮 NP 的 忙 - but I suppose that's a different verb
     
-social.help.meta:
+social.help.meta: 
+  <<: *social_help
   template: meta
-  transformations: { C: finite.clause }
-  verbsets:
-  - en: help # help is idiosyncratic? other "assistance" verbs take infinitive vps?
-    zh: 帮助
+  transformations: { C: finite.clause } # TODO: "help" is idiosyncratic? other "assistance" verbs take infinitive vps?
+  
+
     
 social.help.modal:
+  <<: *social_help
   template: modal
   transformations: { C: finite.vp } # TODO: you can actually "help to VB"... but this seems less common in TED
-  verbsets:
-  - en: help
-    zh: 帮助

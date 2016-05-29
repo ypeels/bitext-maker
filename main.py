@@ -313,7 +313,7 @@ def modifiable_template_ids():
     ad hoc list of clause templates that can be made writable - forbid transformations
     - this is a hack to let me hook untransformable custom clauses into the rest of Clause infrastructure
     '''
-    return ['meta', 'modal', 'transitive']
+    return ['meta', 'modal', 'transitive', 'intransitive']
  
 #def verb_categories_per_template(template_id):
 #    if template_id == '把': # TODO: this really belongs in data, but need to design optimal infrastructure there
@@ -351,7 +351,7 @@ def make_random_sentence():
         
         sentence = line
         
-    if utility.rand() < 0.1:
+    if utility.PRODUCTION and utility.rand() < 0.1:
         # randomly expand one node lexically. (maybe do more than one?)
         random_node = utility.pick_random(sentence.get_all_lexical_nodes())
 
@@ -405,17 +405,24 @@ def randomly_configure_clause(clause, stack_depth=1, **kwargs):
     # in current implementation, topicalization breaks if this is done after verb_category is set 
         # probably need to redo something involving subnode creation    
     readonly = template_id not in modifiable_template_ids()
-    if not readonly and utility.rand() <= 0.25: # overall transformation rate           
-        if utility.rand() <= 0.75 and clause.verb_category_id() in generator.PAST_TENSE_WHITELIST:
-            clause.add_transformation('tense.past')
+    do_transform = not readonly and utility.rand() <= 0.25 # overall transformation rate  
+    if do_transform: 
         # syntactically, topicalization should only be done at the top level, right? (the code fails anyway at lower levels with meta/modal?)
-        elif utility.rand() <= 0.5 and template_id in ['transitive'] and stack_depth is 1:
+        if utility.rand() <= 0.25 and template_id in ['transitive'] and stack_depth is 1:
             clause.add_transformation('topicalization')    
+        do_transform = False # TODO: multiple transformations
     
     # TODO: nested modals with same verb read like duplicated verbs in zh... should be alleviated by scaling # verbs up...    
     clause.set_template(template_id, readonly=readonly)
     clause.set_random_verb_category()  
     
+    # randomly add a transformation - these REQUIRE verb_category to have been set...
+    if do_transform and not clause.transformation_list(): # TODO: multiple transformations (might also have been applied by enclosing meta, etc.)
+        assert(clause.verb_category_id())
+        if clause.verb_category_id() in generator.PAST_TENSE_WHITELIST and utility.rand() <= 0.75:
+            clause.add_transformation('tense.past')
+    
+    # finally, recurse to children
     templated_subnodes = [sn for sn in clause._subnodes() if issubclass(type(sn), nodes.TemplatedNode)]
     for subnode in templated_subnodes:
         randomly_configure_node(subnode, stack_depth=stack_depth+1, **kwargs)
@@ -465,14 +472,24 @@ def randomly_configure_np(np, **kwargs):
         # we'll make up for lexical variety by making lots and lots of trees, instead of lexically varying one tree many times
         if utility.rand() <= 0.8:
             add_random_tag_to_np(np)
-        
-        # at most one determiner (syntactic constraint)
-        if utility.rand() <= 0.5:
-            np.add_modifier(make_random_determiner(**kwargs))
             
         # maybe plural
-        if utility.rand() <= 0.5 and 'singular' not in np._get_option('number'):
+        if 'singular' not in np._get_option('number') and utility.rand() <= 0.5:
             np.add_options({'number': 'plural'})
+            
+        # at most one determiner (syntactic constraint)
+        if utility.rand() <= 0.5:
+            determiner = make_random_determiner(**kwargs)
+            
+            # TODO: quantifier + plural (currently using singular quanitifiers only - no "all" or "both" or...)
+            if 'plural' in np._get_option('number'):
+                det_tags = data.DETSET_BANK.all_tags()
+                det_tags.remove('quantifier') # remove() returns None... one-liner would use difference({'quantifier'}), which is uglier...
+                random_det_tag = utility.pick_random(list(det_tags))
+                determiner.add_options({'tags': [random_det_tag]})
+                assert(data.DETSET_BANK.find_tagged(determiner._get_option('tags'))) #                 
+            np.add_modifier(determiner)
+                
         
         # TODO: disallow multiple identical adjectives (the big and big person)
         for i in range(5): # TODO: zh gets awkward with more than 2 adjectives, esp. single-char...
@@ -547,7 +564,7 @@ def make_random_participle(target, max_runs=10, stack_depth=1, **kwargs):
     target_verb_agreement = False
     for i in range(max_runs):
         participle = nodes.node_factory('Clause', manually_create_subnodes=True)
-        participle.set_template('transitive', readonly=False)        
+        participle.set_template('transitive', readonly=False) # TODO: meta participles?
         
         candidate_categories = data.VERBSET_BANK.get_categories_by_template('transitive')
         category = utility.pick_random([cat for cat in candidate_categories if cat not in PARTICIPLE_BLACKLIST])
@@ -629,7 +646,7 @@ def generate_all(clause, outputs=None, blow_it_up=False):
     try:
         clause.analyze_all(analyzer)
     except AssertionError:
-        if PRODUCTION: # have to run with asserts on - beats generating garbage...
+        if utility.PRODUCTION: # have to run with asserts on - beats generating garbage...
             return
         else:
             raise

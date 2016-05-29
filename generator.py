@@ -9,7 +9,11 @@ import nodes
 
 
 # this does NOT look scalable!
-PAST_TENSE_WHITELIST = {'action', 'change.start', 'social.help'}
+PAST_TENSE_WHITELIST = {
+    'action', 
+    'change.appear.showup',
+    'change.start',     
+    'social.help'}
 
 class Analyzer:
     '''

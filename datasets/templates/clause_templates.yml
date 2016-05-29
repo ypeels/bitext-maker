@@ -128,6 +128,26 @@ modal:
       #punctuation: 。
     
     
+intransitive:
+  symbols:
+    V: 
+      type: verb
+      description: head
+    S: 
+      type: NP
+      description: subject
+      
+  langs:
+    en:
+      template: S V
+      dependencies: { V: S }
+      punctuation: '.'
+      tags: { S: subjective }
+    zh:
+      template: S V
+      punctuation: 。
+      
+    
 # ---------------------------------------------------------------------
     
 # so here are sentences that aren't quite ready for the full set of Clause transformations
