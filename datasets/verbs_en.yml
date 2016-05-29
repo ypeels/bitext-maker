@@ -70,6 +70,12 @@ believe:
   VBN: believed
   VBP: believe
   VBZ: believes
+bring:
+  VBD: brought
+  VBG: bringing
+  VBN: brought
+  VBP: bring
+  VBZ: brings
   
 change:
   VBD: changed
@@ -84,7 +90,12 @@ create:
   VBN: created
   VBP: create
   VBZ: creates
-  
+decide:
+  VBD: decided
+  VBG: deciding
+  VBN: decided
+  VBP: decide
+  VBZ: decides  
 feel:
   VBD: felt
   VBG: feeling
@@ -105,7 +116,12 @@ help:
   VBN: helped
   VBP: help
   VBZ: helps
-  
+imagine:
+  VBD: imagined 
+  VBG: imagining
+  VBN: imagined
+  VBP: imagine
+  VBZ: imagines
 know:
   VBD: knew
   VBG: knowing

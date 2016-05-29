@@ -37,6 +37,8 @@ action.creation:
   verbsets:
   - en: create
     zh: 创造
+  - en: design
+    zh: 设计
   - en: generate
     zh: 产生
   - en: make
@@ -77,6 +79,15 @@ change.start.modal:
     zh: 开始
     
 # category title admittedly taken from WordNet (sounds better than "thinking")
+cognition.decision.modal:
+  template: modal
+  transformations: { C: infinitive.vp }
+  tags:
+    S: [animal]
+  verbsets:
+  - en: decide
+    zh: 决定
+
 cognition.knowledge:
   template: transitive
   tags: 
@@ -104,6 +115,10 @@ cognition.knowledge.meta: #&knowledge
       #  punctuation:
     
   verbsets:
+  # TODO： imagine eating an apple - is "imagine" modalish, or is "eating" a gerund?
+  - en: imagine
+    zh: 想象
+  
   - en: know
     zh: 知道
     
@@ -124,11 +139,14 @@ cognition.opinion.meta:
   verbsets:
   - en: believe
     zh: 相信
+  #- en: decide # TODO: this should have a subjunctive argument? or "should"?
+  #  zh: 决定
   - en: feel
     zh: 觉得
     
     # note that these are already kind of transformation-like, since they are not part of the original template
-
+    
+  
 # TODO: NOT SCALABLE WITH # LANGUAGES! would need to combine multiple entries into one for scalability
   # still, this is not QUITE as problematic, since the set of "polymorphic" meta verbs is relatively small...right?
 # add overrides to verbsets to blacklist/whitelist additional options
@@ -219,6 +237,12 @@ emotion.opinion.modal:
   template: modal
   transformations: { C: infinitive.vp }
   
+motion.bring:
+  template: transitive
+  verbsets:
+  - en: bring
+    zh: 带来
+
 perception.vision: 
   template: transitive
   

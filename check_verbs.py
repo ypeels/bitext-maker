@@ -20,12 +20,20 @@ if __name__ == '__main__':
 
     for vs in verbsets:
         for lang in LANGS:
-            word = vs[lang]
+            try:
+                word = vs[lang]
+            except KeyError:
+                print(vs)
+                raise
             if word not in finished_word_forms[lang]:
                 missing_word_forms[lang].add(word)
-        
+
+    print('\nVerb categories')
+    print('\n'.join(sorted(verbset__data.keys())))
+                
     with open('missing_verbs.txt', 'w', encoding='utf8') as output:
         for lang, missing_list in missing_word_forms.items():
             missing_str = '\n\nWords missing from verbs_{}.yml\n'.format(lang) + '\n'.join(sorted(missing_list))
             output.write(missing_str)
             print(missing_str)
+            
