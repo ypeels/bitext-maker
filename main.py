@@ -404,6 +404,12 @@ def randomly_configure_clause(clause, stack_depth=1, **kwargs):
         
     # remove templates with 0 verbs (mainly for testing with tiny verbset lists)
     candidates = [can for can in candidates if can in data.VERBSET_BANK.all_templates()]
+    
+    # reweight things so that uncommon templates (like intransitive) don't drown everything out (like making every other verb "sleep")
+    template_weighting = { 'transitive': 10, 'modal': 3, 'meta': 2 }
+    for key, value in template_weighting.items():
+        if key in candidates:
+            candidates += [key] * (value-1)
         
     template_id = utility.pick_random(candidates)
     if FIXED_TEMPLATE:
@@ -527,7 +533,7 @@ def make_random_adjp(target, **kwargs):
 
 def randomly_configure_adjp(adjp, target=None, **kwargs):
     # first determine the type you want - determiners done separately
-    if utility.rand() <= 0.9:
+    if utility.rand() <= 0.95: # TODO: semantic matching to make N-N modification less awkward and confusing
         template_id = 'adjective'
     else:
         template_id = 'noun' 

@@ -10,9 +10,15 @@ import nodes
 
 # this does NOT look scalable!
 PAST_TENSE_WHITELIST = {
-    'action', 
+    'action', # TODO: action* seems fine
+    'action.creation',
     'change.appear.showup',
     'change.start',     
+    'cognition.solve', 
+    'communication.verbal.meta', 
+    'motion.bring', 
+    'motion.enter.into',
+    'perception.vision', 
     'possession.give',
     'social.help'}
 

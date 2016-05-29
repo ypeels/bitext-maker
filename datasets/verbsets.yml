@@ -25,9 +25,7 @@ action:
     S: [animal]
   verbsets:
   - en: use
-    zh: 使用 # more common than 用 in IWSLT...but not by much
-  - en: use
-    zh: 用
+    zh: [使用, 用] # more common than 用 in IWSLT...but not by much
 
 
 action.creation:
@@ -35,6 +33,8 @@ action.creation:
   #tags:
   #  S: [entity]
   verbsets:
+  - en: build
+    zh: 建立
   - en: create
     zh: 创造
   - en: design
@@ -54,7 +54,7 @@ action.creation:
   #- en: start # need to tag O as "event"  or "inanimate"? otherwise you get stuff like "start Bob"
   #  zh: 开始
 
-# TODO： verbset-specific postwords...
+# TODO： verbset-specific postwords... can't just add directly to verbset - how could you tell the difference between pre and post?
 change.appear.showup: 
   template: intransitive
   additions:
@@ -141,7 +141,7 @@ cognition.opinion.meta:
       #  punctuation:
   verbsets:
   - en: believe
-    zh: 相信
+    zh: [相信, 认为]
   #- en: decide # TODO: this should have a subjunctive argument? or "should"?
   #  zh: 决定
   - en: feel
@@ -242,10 +242,25 @@ emotion.opinion.modal:
   
 motion.bring:
   template: transitive
+  additions:
+    symbols:
+      O:
+        options: { forbidden templates: [pronoun, name] } # zh: 带 N 来
   verbsets:
   - en: bring
     zh: 带来
 
+motion.enter.into:
+  template: transitive
+  # TODO: location? leave it be for now - it's metaphorical like that
+  additions:
+    langs:
+      en:
+        postwords: { V: into }
+  verbsets:
+  - en: go
+    zh: 进入 # 到 is WAY more common...
+    
 perception.vision: 
   template: transitive
   
@@ -291,10 +306,6 @@ possession.give: &possession_give # TODO: ditransitive, of course...
   - en: provide
     zh: 提供
     
-possession.give2: # TODO: rework tag system to be able to handle "any" tag...
-  <<: *possession_give
-  tags: { O: [abstract] }
-    
 #possession.obtain:
 #  template: transitive
 #  tags: 
@@ -316,8 +327,6 @@ social.help.meta:
   template: meta
   transformations: { C: finite.clause } # TODO: "help" is idiosyncratic? other "assistance" verbs take infinitive vps?
   
-
-    
 social.help.modal:
   <<: *social_help
   template: modal
