@@ -447,7 +447,7 @@ def randomly_configure_np(np, **kwargs):
     # pure rand() doesn't give fine-grained control over the distribution
     #template_id = utility.pick_random(data.NP_TEMPLATE_BANK.all_template_ids())
     
-    # TODO: patch this data-reading code through data.py. currently breaks abstraction, for the sake of rapid development
+    # TODO: patch this data-reading hack through data.py. currently breaks abstraction, for the sake of rapid development
     try:
         forbidden_templates = np._get_option('forbidden templates')
     except KeyError:
