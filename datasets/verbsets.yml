@@ -279,7 +279,7 @@ possession:
     
 possession.give: &possession_give # TODO: ditransitive, of course...
   template: transitive
-  tags: { O: [inanimate] } # can also provide abstract things...
+  tags: { O: [[inanimate], [abstract]] } # VerbCategory will assign ONE of these tag lists
   additions:
     symbols:
       O:

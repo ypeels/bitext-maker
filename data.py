@@ -9,10 +9,16 @@ import os
 import random
 
 from taxonomy import Taxonomy
-from utility import DATA_DIR, LANGUAGES # kept in separate file for fast unit testing
+from utility import DATA_DIR, LANGUAGES, pick_random # kept in separate file for fast unit testing
 from yaml_reader import read_file
 
 UNIMPLEMENTED_EXCEPTION = Exception('Needs to be implemented in derived class')
+
+def wrap_as_list(item):
+    if type(item) is list:
+        return item
+    else:
+        return [item]
 
 # TODO: put Bank classes into their own file(s) once the interface is stable enough
 class Bank:
@@ -339,7 +345,7 @@ class Template:
         '''This is primarily for Clauses (verb category)'''
         categories = self.__data.get('categories')
         if categories:
-            return self.__wrap_as_list(categories)
+            return wrap_as_list(categories)
         else:
             return []
         
@@ -418,14 +424,7 @@ class Template:
         
     def _writable(self):
         return self.__writable
-        
-        
-    def __wrap_as_list(self, item):
-        if type(item) is list:
-            return item
-        else:
-            return [item]
-        
+       
     def __parse(self):
         # parse symbols
         assert(type(self.__data['symbols']) == dict)
@@ -443,10 +442,10 @@ class Template:
         for lang, metadata in self.__data['langs'].items():
             if lang in LANGUAGES:                
                 for symbol, tags in metadata.get('tags', {}).items():
-                    self.__syntax_tags_per_symbol[symbol][lang] = self.__wrap_as_list(tags)
+                    self.__syntax_tags_per_symbol[symbol][lang] = wrap_as_list(tags)
                     
                 for symbol, deps in metadata.get('dependencies', {}).items():
-                    deps_list = self.__wrap_as_list(deps)
+                    deps_list = wrap_as_list(deps)
                     assert(all(d in self.symbols() for d in deps_list)) # ok again? ghost nodes get stripped from dependencies
                     self.__per_lang_deps_per_symbol[symbol][lang] = deps_list
                     
@@ -460,11 +459,11 @@ class Template:
             if syntax_tags:
                 for lang in LANGUAGES:
                     old_tags = self.__syntax_tags_per_symbol[symbol].get(lang, [])
-                    self.__syntax_tags_per_symbol[symbol][lang] = old_tags + self.__wrap_as_list(syntax_tags)
+                    self.__syntax_tags_per_symbol[symbol][lang] = old_tags + wrap_as_list(syntax_tags)
 
             deps = self.__data['symbols'][symbol].get('dependencies')
             if deps:
-                self.__lang_indep_deps_per_symbol[symbol] = self.__wrap_as_list(deps)
+                self.__lang_indep_deps_per_symbol[symbol] = wrap_as_list(deps)
             
 
     def __linked_keys(self):
@@ -602,7 +601,7 @@ class Template:
             deps_for_all_symbols = lang_data.get('dependencies')
             if deps_for_all_symbols:
                 for other_symbol, other_deps in list(deps_for_all_symbols.items()):
-                    other_deps = self.__wrap_as_list(other_deps)
+                    other_deps = wrap_as_list(other_deps)
                     while symbol in other_deps:
                         other_deps.remove(symbol)
                     deps_for_all_symbols[other_symbol] = other_deps
@@ -677,6 +676,7 @@ class VerbCategory:
     '''Verb semantics - responsible for choosing a verb synset for generation'''
     def __init__(self, data):
         self.__data = data
+        self.__randomly_picked_symbol_tags = None
     
     def __str__(self):
         return str(self.__data)
@@ -689,7 +689,27 @@ class VerbCategory:
         
     def tags_for_symbol(self, symbol):
         tags = self.__data.get('tags') or {}
-        return tags.get(symbol)
+        symbol_tags = tags.get(symbol) # TODO: just change wrap_as_list to check for None... but that would affect a LOT of other code
+        if symbol_tags:
+            symbol_tags = wrap_as_list(symbol_tags)
+        else:
+            symbol_tags = []
+        
+        if all(type(tag) is str for tag in symbol_tags):
+            result = symbol_tags
+        else:
+            # a workaround to choose one of multiple tagsets from data
+            assert(symbol_tags) # all([]) == True, so an empty list should be in the other branch
+            assert(all(type(tag) is list for tag in symbol_tags))
+            
+            # cache so that repeated queries are NOT inconsistent.
+            # should be okay, since VERBSET_BANK re-instantiates for every query...
+            if not self.__randomly_picked_symbol_tags:
+                self.__randomly_picked_symbol_tags = pick_random(symbol_tags).copy()
+                
+            result = self.__randomly_picked_symbol_tags
+        
+        return result #tags.get(symbol)
         
     def tagged_symbols(self):
         tags = self.__data.get('tags') or {}
@@ -771,12 +791,6 @@ class WordSet:
         #raise UNIMPLEMENTED_EXCEPTION
         return self._data()[self._wordset_key()][lang] or []
         
-    def _wrap_as_list(self, datum):
-        if type(datum) is list:
-            return datum
-        else:
-            return [datum]
-        
     # ugh, expose to derived classes...
     def _data(self):
         return self.__data
@@ -788,7 +802,7 @@ class AdjectiveSet(WordSet):
     def tags(self):
         tags = self._data().get('tags')
         if tags:
-            return self._wrap_as_list(tags)
+            return wrap_as_list(tags)
         else:
             return [] # if you try to return wrap(data.get('tags')), you can wind up with [None]
         

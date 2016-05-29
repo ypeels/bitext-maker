@@ -128,7 +128,12 @@ know:
   VBN: known
   VBP: know
   VBZ: knows
-  
+learn:
+  VBD: learned 
+  VBG: learning
+  VBN: learned
+  VBP: learn
+  VBZ: learns
 like:
   VBD: liked
   VBG: liking

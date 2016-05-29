@@ -14,7 +14,6 @@ PAST_TENSE_WHITELIST = {
     'change.appear.showup',
     'change.start',     
     'possession.give',
-    'possession.give2', # BAD; not scalable
     'social.help'}
 
 class Analyzer:
