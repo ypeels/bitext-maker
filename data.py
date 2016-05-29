@@ -258,7 +258,13 @@ class VerbSetBank:
             self.__add_file(path)
         else:
             raise Exception('A path that is neither dir nor file - how zen...', path)
+            
+        self.__all_templates = { datum['template'] for datum in self.__data.values() }
 
+    def all_templates(self):
+        '''Returns all available templates - mainly for testing purposes (tiny verbset list)'''
+        return self.__all_templates.copy()
+            
     def categories(self):
         return list(self.__data.keys())
        

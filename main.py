@@ -388,6 +388,9 @@ def randomly_configure_clause(clause, stack_depth=1, **kwargs):
     if stack_depth > 1 and len(clause.transformation_list()) is 0:
         candidates += ['把']
         
+    # remove templates with 0 verbs (mainly for testing with tiny verbset lists)
+    candidates = [can for can in candidates if can in data.VERBSET_BANK.all_templates()]
+        
     template_id = utility.pick_random(candidates)
     if FIXED_TEMPLATE:
         template_id = FIXED_TEMPLATE
@@ -619,8 +622,13 @@ def generate_all(clause, outputs=None, blow_it_up=False):
     
     try:
         clause.analyze_all(analyzer)
+    except AssertionError:
+        if PRODUCTION: # have to run with asserts on - beats generating garbage...
+            return
+        else:
+            raise
     except Exception as e: # allows access to root node for debugging
-        import pdb; pdb.set_trace()
+        #import pdb; pdb.set_trace()
         raise
 
 
