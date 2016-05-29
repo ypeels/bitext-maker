@@ -8,7 +8,8 @@ import main # for sentence_case for capitalization hack...
 import nodes 
 
 
-PAST_TENSE_WHITELIST = {'action', 'change.start'}
+# this does NOT look scalable!
+PAST_TENSE_WHITELIST = {'action', 'change.start', 'social.help'}
 
 class Analyzer:
     '''

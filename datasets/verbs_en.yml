@@ -99,6 +99,13 @@ find:
   VBP: find
   VBZ: finds
   
+help:
+  VBD: helped
+  VBG: helping
+  VBN: helped
+  VBP: help
+  VBZ: helps
+  
 know:
   VBD: knew
   VBG: knowing
@@ -140,6 +147,13 @@ see:
   VBN: seen
   VBP: see
   VBZ: sees
+  
+solve:
+  VBD: solved 
+  VBG: solving
+  VBN: solved
+  VBP: solve
+  VBZ: solves
   
 start:
   VBD: started

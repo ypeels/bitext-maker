@@ -136,7 +136,7 @@ modal:
 # like topicalization, 把 tries to preserve a monotonic-ish order, fwiw...
 把:
   # punched an ugly hole through Template for this...
-  categories: [action] 
+  categories: [action] # doesn't quite work with "action.creation". overly optimistic about this template.
   
   symbols:
     S: 

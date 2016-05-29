@@ -1,3 +1,23 @@
+finite.clause:
+  input: Clause
+  output:
+  additions:
+    langs:
+      en:
+        forms: { V: VB }        
+        tags: { S: objective } 
+        
+finite.vp:
+  input: Clause
+  output:
+  conversions: 
+    { S: linked }
+  
+  additions:
+    langs:
+      en:
+        forms: { V: VB }
+
 # hmm, this is en-only right now...
 infinitive.clause:
   input: Clause

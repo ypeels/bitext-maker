@@ -51,6 +51,7 @@ abstract:
   idea:
   information: 
   #measure: 
+  problem:
   quantity: # or is this physical...?
   state: # uh, the number of tags seems to be proliferating...
   time:

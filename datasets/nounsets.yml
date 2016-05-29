@@ -62,7 +62,7 @@
     en: place
     zh: 地方
 
-- tags: [abstract]
+- tags: [problem, object] # TODO: by "object" I really mean "indivisible" or "countable"...
   nounset:
     en: problem # TODO: question
     zh: 问题

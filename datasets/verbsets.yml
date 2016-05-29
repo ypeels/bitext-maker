@@ -37,8 +37,12 @@ action.creation:
   verbsets:
   - en: create
     zh: 创造
+  - en: generate
+    zh: 产生
   - en: make
     zh: 做
+  - en: produce # TODO: combine with "generate"
+    zh: 产生 
 
   
   
@@ -132,6 +136,14 @@ cognition.opinion.meta:
 #  - en: know
 #    zh: 知道
 
+cognition.solve:
+  template: transitive
+  #tags: # TODO: "sensible" mode - currently committed to "nonsense mode" under deadline (colorless green ideas)
+  #  O: [problem] # currently chokes on lack of problem-tagged names
+  verbsets:
+  - en: solve
+    zh: 解决
+
 communication.verbal.meta:
   template: meta
   tags:
@@ -223,9 +235,12 @@ possession:
     en: have
     zh: 有
     
-    # not common - just testing multiple verbsets
-  - en: possess
-    zh: 独有
+  - en: have
+    zh: 拥有 # a fairly common zh verb. TODO: combine with 有...
+    
+  #  # not common - just testing multiple verbsets
+  #- en: possess
+  #  zh: 独有
     
 #possession.obtain:
 #  template: transitive
@@ -234,3 +249,23 @@ possession:
 #  verbsets:
 #  - en: find # TODO: doesn't really work in present tense
 #    zh: 找到
+
+social.help: 
+  template: transitive
+  verbsets:
+  - en: help
+    zh: 帮助 # TODO: 帮 NP 的 忙 - but I suppose that's a different verb
+    
+social.help.meta:
+  template: meta
+  transformations: { C: finite.clause }
+  verbsets:
+  - en: help # help is idiosyncratic? other "assistance" verbs take infinitive vps?
+    zh: 帮助
+    
+social.help.modal:
+  template: modal
+  transformations: { C: finite.vp } # TODO: you can actually "help to VB"... but this seems less common in TED
+  verbsets:
+  - en: help
+    zh: 帮助
