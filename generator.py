@@ -20,6 +20,7 @@ PAST_TENSE_WHITELIST = {
     'motion.enter.into',
     'perception.vision', 
     'possession.give',
+    'possession.obtain',
     'social.help'}
 
 class Analyzer:

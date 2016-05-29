@@ -109,7 +109,12 @@ find:
   VBN: found
   VBP: find
   VBZ: finds
-  
+get:
+  VBD: got
+  VBG: getting
+  VBN: gotten
+  VBP: get
+  VBZ: gets
 help:
   VBD: helped
   VBG: helping
@@ -147,7 +152,12 @@ make:
   VBN: made
   VBP: make
   VBZ: makes
-  
+obtain:
+  VBD: obtained
+  VBG: obtaining
+  VBN: obtained
+  VBP: obtain
+  VBZ: obtains
 provide: 
   VBD: provided
   VBG: providing
@@ -203,7 +213,12 @@ think:
   VBN: thought
   VBP: think
   VBZ: thinks
-  
+try:
+  VBD: tried
+  VBG: trying
+  VBN: tried
+  VBP: try
+  VBZ: tries
 understand:
   VBD: understood
   VBG: understanding
@@ -217,10 +232,21 @@ use:
   VBN: used
   VBP: use
   VBZ: uses
-
+utilize:
+  VBD: utilized
+  VBG: utilizing
+  VBN: utilized
+  VBP: utilize
+  VBZ: utilizes
 want:
   VBD: wanted
   VBG: wanting
   VBN: wanted
   VBP: want
   VBZ: wants
+write:
+  VBD: wrote
+  VBG: writing
+  VBN: written
+  VBP: write
+  VBZ: writes

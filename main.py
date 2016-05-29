@@ -12,7 +12,7 @@ from utility import LANGUAGES, seed_rng
 
 # collected flags for quick toggling during testing
 FIXED_ADJ_TAG = FIXED_NP_TAG = FIXED_ROLL = FIXED_TEMPLATE = None
-#MUTE_OLD_TEST = None
+SKIP_OLD_TEST = True
 if utility.PRODUCTION:
     NUM_SENTENCES = 1000000
 else:
@@ -20,7 +20,7 @@ else:
     #FIXED_ADJ_TAG = 'target.' + FIXED_NP_TAG    
     #FIXED_ROLL = 0.75 # 0-0.8 for Clause, 0.8-0.9 for Custom, 0.9-1.0 for C1 C2 - see make_random_sentence()
     #FIXED_TEMPLATE = '把'
-    MUTE_OLD_TEST = True # whether or not to display results of old (non-random) test clauses; irrelevant for production
+    SKIP_OLD_TEST = True # whether or run old test clauses; irrelevant for production
     NUM_RANDOM_TEST = 50
 
     
@@ -424,7 +424,7 @@ def randomly_configure_clause(clause, stack_depth=1, **kwargs):
         # syntactically, topicalization should only be done at the top level, right? (the code fails anyway at lower levels with meta/modal?)
         if utility.rand() <= 0.25 and template_id in ['transitive'] and stack_depth is 1:
             clause.add_transformation('topicalization')    
-        do_transform = False # TODO: multiple transformations
+            do_transform = False # TODO: multiple transformations
     
     # TODO: nested modals with same verb read like duplicated verbs in zh... should be alleviated by scaling # verbs up...    
     clause.set_template(template_id, readonly=readonly)
@@ -751,9 +751,10 @@ def make_test_clauses():
         
         
 def run_test():
-    test_clauses = make_test_clauses()
-    if MUTE_OLD_TEST:
+    if SKIP_OLD_TEST:
         test_clauses = []
+    else:
+        test_clauses = make_test_clauses()
 
     # clauses that test the data set
     random_clauses = [make_random_sentence() for i in range(NUM_RANDOM_TEST)] 

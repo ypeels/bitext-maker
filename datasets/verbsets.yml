@@ -22,11 +22,19 @@
 action:
   template: transitive
   tags:
-    S: [animal]
+    S: [animate]
   verbsets:
-  - en: use
-    zh: [使用, 用] # more common than 用 in IWSLT...but not by much
+  - en: [use, utilize]
+    zh: [使用, 用, 利用] # 使用 is more common than 用 in IWSLT...but not by much
 
+action.attempt.modal: # wordnet has this under verb.social...
+  template: modal
+  transformations: { C: infinitive.vp }
+  tags:
+    #S: animate # try for some metaphorical usages?
+  verbsets:
+  - en: try # could add "attempt", but it's BARELY in the corpus
+    zh: 尝试    
 
 action.creation:
   template: transitive
@@ -91,13 +99,6 @@ cognition.knowledge:
   - en: understand
     zh: [了解, 理解]
   
-cognition.knowledge.modal:
-  template: modal
-  tags: { S: animal }
-  transformations: { C: [[infinitive.vp], [infinitive.how.vp]] }
-  verbsets:
-  - en: learn
-    zh: 学习 # 学习 VP - hmm, that seems kind of awkward... but 学习 了解 does occur in the corpus...
 
 cognition.knowledge.meta: #&knowledge
   template: meta
@@ -109,10 +110,9 @@ cognition.knowledge.meta: #&knowledge
   additions:
     langs:
       en:
-        prewords: { C: that }
-      #  punctuation: # moved into tree maker 
-      #zh:
-      #  punctuation:
+        prewords: { C: [that, ''] }
+      zh:
+        prewords: { C: [的 是, ''] }  
     
   verbsets:
   # TODO： imagine eating an apple - is "imagine" modalish, or is "eating" a gerund?
@@ -122,11 +122,29 @@ cognition.knowledge.meta: #&knowledge
   - en: know
     zh: 知道
     
-  - en: learn # or does this belong in its own sub-category?
-    zh: 学习
-    
   - en: think
     zh: 想
+    
+cognition.learn.meta:
+  template: meta
+  tags: { S: [animal] }
+  additions:
+    langs:
+      en:
+        prewords: { C: that }
+      zh:
+        prewords: { C: [的 是, 的 是, 的 是, ''] }
+  verbsets:
+  - en: learn # or does this belong in its own sub-category? (requires "that", unlike imagine, know, think)
+    zh: 学习
+    
+cognition.learn.modal:
+  template: modal
+  tags: { S: animal }
+  transformations: { C: [[infinitive.vp], [infinitive.how.vp]] }
+  verbsets:
+  - en: learn
+    zh: 学习 # 学习 VP - hmm, that seems kind of awkward... but 学习 了解 does occur in the corpus...
     
 cognition.opinion.meta:
   template: meta
@@ -184,13 +202,43 @@ communication.verbal.meta:
   additions:
     langs:
       en:
-        prewords: { C: that }
-        # TODO: zh: preword: C: 的是 # useful for deep stacks?
+        prewords: { C: ['', that] }        
+      #zh: # TODO: useful for deep stacks... roughly equivalent to "that", but not that common? incompatible with past tense
+        #prewords: { C: ['', '', '', 的 是] } 
   
   verbsets:
   - en: say
     zh: 说
     
+# pending nouns with tag #written 
+#communication.written:
+#  template: transitive
+#  tags:
+#    S: [person]
+#    O: [written]
+#  additions:
+#    symbols:
+#      O:
+#        options: { forbidden templates: [pronoun] }
+#  verbsets:
+#  - en: write
+#    zh: 写
+
+# TODO: "it is written on NP that" / "NP 上 写的"... (that's PP territory...)
+communication.written.meta:
+  template: meta
+  tags:
+    S: [person]
+  additions:
+    langs:
+      en:
+        prewords: { C: that }
+      zh:
+        prewords: { C: 的 是 }
+  verbsets:
+  - en: write
+    zh: 写
+   
 emotion.desire: &emotion_desire
   # TODO: PP-style modifications, before all verbs in the set - probably with an example
   
@@ -206,19 +254,20 @@ emotion.desire: &emotion_desire
   verbsets:
   - example: Alice wants cookies .
     en: want
-    zh: 要
-    
-  - en: want
-    zh: 想要 
-    
+    zh: [要, 想要]
+        
     
 emotion.desire.meta:
   <<: *emotion_desire
   template: meta
   transformations: { C: infinitive.clause }
+  additions:
+    langs:
+      zh: 
+        prewords: { C: ['', 的 是] } 
   verbsets:
   - en: want
-    zh: 要
+    zh: 要 # 想要 seems kind of awkward here, though
     
 emotion.desire.modal:
   <<: *emotion_desire
@@ -226,7 +275,7 @@ emotion.desire.modal:
   transformations: { C: infinitive.vp }
   verbsets:
   - en: want
-    zh: 要
+    zh: [要, 想要]
     
 emotion.opinion: &emotion_opinion
   template: transitive
@@ -260,6 +309,22 @@ motion.enter.into:
   verbsets:
   - en: go
     zh: 进入 # 到 is WAY more common...
+    
+motion.return.to:
+  template: transitive
+  tags:
+    O: [location]
+  additions:
+    symbols:
+      O:
+        options: { forbidden templates: [pronoun] }
+    langs:
+      en:
+        postwords: { V: back to }
+  verbsets:
+  - en: go
+    zh: 回到
+        
     
 perception.vision: 
   template: transitive
@@ -306,11 +371,13 @@ possession.give: &possession_give # TODO: ditransitive, of course...
   - en: provide
     zh: 提供
     
-#possession.obtain:
-#  template: transitive
-#  tags: 
-#    S: [entity]
-#  verbsets:
+possession.obtain:
+  template: transitive
+  tags: 
+    S: [entity]
+  verbsets:
+  - en: [get, obtain] # obtain is really not that common, but "got" just looks funny sometimes...
+    zh: [得到, 获得]
 #  - en: find # TODO: doesn't really work in present tense
 #    zh: 找到
 
