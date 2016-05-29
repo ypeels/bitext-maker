@@ -31,7 +31,15 @@ else:
 #seed_rng() # output still not deterministic? loops over dicts are still random
 
 def get_verb_category_by_template(template):
-    verb_categories = data.VERBSET_BANK.get_categories_by_template(template)
+    # this function is for old tests, and the old logic kind of breaks for a lot of new verbs
+    #data.VERBSET_BANK.get_categories_by_template(template)
+    verb_categories_by_template = {
+        'transitive': ['action', 'action.creation', 'cognition.knowledge', 'emotion.desire', 'emotion.opinion', 'possession'],
+        'modal': ['change.start.modal', 'emotion.desire.modal', 'emotion.opinion.modal'],
+        'meta': ['cognition.knowledge.meta', 'cognition.opinion.meta', 'communication.verbal.meta', 'emotion.desire.meta']
+    }
+        
+    verb_categories = verb_categories_by_template[template]
     if utility.USE_RANDOM:
         category = random.choice(verb_categories)
     else:
@@ -67,7 +75,7 @@ def configure_transitive_clause(clause, number='singular', subject_type='noun', 
     # subnodes are generated after both template and verb category have been set.
     # this gives transformations the chance to modify the template.
     category = get_verb_category_by_template('transitive')
-    clause.set_verb_category(category)  #'action.possession')#
+    clause.set_verb_category(category)
     assert(clause._subnodes())
 
     S, V, O = [clause._get_symbol_subnode(sym) for sym in 'SVO']
