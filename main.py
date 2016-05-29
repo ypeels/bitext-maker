@@ -13,7 +13,9 @@ from utility import LANGUAGES, seed_rng
 # collected flags for quick toggling during testing
 FIXED_ADJ_TAG = FIXED_NP_TAG = FIXED_ROLL = FIXED_TEMPLATE = None
 #MUTE_OLD_TEST = None
-if not utility.PRODUCTION:
+if utility.PRODUCTION:
+    NUM_SENTENCES = 1000000
+else:
     #FIXED_NP_TAG = 'inanimate'
     #FIXED_ADJ_TAG = 'target.' + FIXED_NP_TAG    
     #FIXED_ROLL = 0.75 # 0-0.8 for Clause, 0.8-0.9 for Custom, 0.9-1.0 for C1 C2 - see make_random_sentence()
@@ -710,11 +712,11 @@ def run_test():
 def run_production():
     output_prefix = datetime.datetime.isoformat(datetime.datetime.now()).replace('T', '-').replace(':', '')[:-7]
     outputs = { lang: open('{}-generated.{}'.format(output_prefix, lang), 'w', encoding='utf8') for lang in LANGUAGES }
-    for i in range(1, 100001): # for large corpus, you want to "stream" the trees instead of storing them all
+    for i in range(0, NUM_SENTENCES): # for large corpus, you want to "stream" the trees instead of storing them all
         # TODO: pick, say, just one random lexical node (make sure it's Noun/Verb/Adj) and blow it up - guarantee some "parallel" sentences
         generate_all(make_random_sentence(), outputs)
-        if i % 1000 is 0:
-            print(i)
+        if (i+1) % int(NUM_SENTENCES / 100) is 0:
+            print('{} / {}'.format(i+1, NUM_SENTENCES))
             
     for o in outputs.values():
         o.close()

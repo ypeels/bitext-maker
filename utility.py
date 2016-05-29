@@ -5,7 +5,7 @@ if sys.version_info < (3, 0):
 # "global" read-only variables
 DATA_DIR = 'datasets/'
 LANGUAGES = ['en', 'zh']
-PRODUCTION = False
+PRODUCTION = True
 USE_RANDOM = True
 
 import operator # itemgetter
