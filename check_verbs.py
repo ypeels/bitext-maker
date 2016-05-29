@@ -5,6 +5,11 @@ import utility
 UNCONJUGATED_LANGUAGES = ['zh']
 LANGS = [lang for lang in utility.LANGUAGES if lang not in UNCONJUGATED_LANGUAGES]
 
+def wrap_as_list(item):
+    if type(item) is list:
+        return item
+    else:
+        return [item]
 
 if __name__ == '__main__':
     verbset__data = VERBSET_BANK._VerbSetBank__data
@@ -21,12 +26,13 @@ if __name__ == '__main__':
     for vs in verbsets:
         for lang in LANGS:
             try:
-                word = vs[lang]
+                words = vs[lang]
             except KeyError:
                 print(vs)
                 raise
-            if word not in finished_word_forms[lang]:
-                missing_word_forms[lang].add(word)
+            for word in wrap_as_list(words):
+                if word not in finished_word_forms[lang]:
+                    missing_word_forms[lang].add(word)
 
     print('\nVerb categories')
     print('\n'.join(sorted(verbset__data.keys())))

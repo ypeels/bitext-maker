@@ -14,7 +14,7 @@ __verb__:
   VBN: 
   VBP: 
   VBZ: 
-  
+
 # COULD use references, but that would add an annoying extra key to EVERY entry...
 # unused? isn't it easier to just check each verb for an "irregular" key? well, doesn't hurt to have this info...
 __regular__:
@@ -63,7 +63,12 @@ have:
   VBZ: has # "he's a lovely face" - I don't think that's very standard en-us... save for a transformation?
 # ------------------------------------------------------------------  
   
-  
+begin:
+  VBD: began 
+  VBG: beginning
+  VBN: begun
+  VBP: begin
+  VBZ: begins
 believe:
   VBD: believed
   VBG: believing
@@ -76,7 +81,12 @@ bring:
   VBN: brought
   VBP: bring
   VBZ: brings
-  
+build:
+  VBD: built
+  VBG: building
+  VBN: built
+  VBP: build
+  VBZ: builds
 change:
   VBD: changed
   VBG: changing
@@ -96,6 +106,12 @@ decide:
   VBN: decided
   VBP: decide
   VBZ: decides  
+design:
+  VBD: designed
+  VBG: designing
+  VBN: designed
+  VBP: design
+  VBZ: designs
 feel:
   VBD: felt
   VBG: feeling
@@ -109,6 +125,12 @@ find:
   VBN: found
   VBP: find
   VBZ: finds
+generate:
+  VBD: generated
+  VBG: generating
+  VBN: generated
+  VBP: generate
+  VBZ: generates
 get:
   VBD: got
   VBG: getting
@@ -158,6 +180,12 @@ obtain:
   VBN: obtained
   VBP: obtain
   VBZ: obtains
+produce:
+  VBD: produced
+  VBG: producing
+  VBN: produced
+  VBP: produce
+  VBZ: produces
 provide: 
   VBD: provided
   VBG: providing

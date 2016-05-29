@@ -43,6 +43,8 @@ action.creation:
   verbsets:
   - en: build
     zh: 建立
+  - en: change
+    zh: 改变
   - en: create
     zh: 创造
   - en: design
@@ -55,10 +57,7 @@ action.creation:
     zh: 产生 
 
   ## TODO: custom templates for multi-purpose verbs like "do" - ugh, does that require tweaking this data structure?change.start:
-  
-  verbsets:
-  - en: change
-    zh: 改变
+
   #- en: start # need to tag O as "event"  or "inanimate"? otherwise you get stuff like "start Bob"
   #  zh: 开始
 
@@ -78,7 +77,7 @@ change.start.modal:
   transformations: { C: infinitive.vp }
   
   verbsets:
-  - en: start
+  - en: [start, begin]
     zh: 开始
     
 # category title admittedly taken from WordNet (sounds better than "thinking")
