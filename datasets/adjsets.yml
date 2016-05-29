@@ -3,7 +3,12 @@
   adjset:
     en: 
     zh:
-
+    
+- tags:
+  adjset:
+    en: basic
+    zh: 基本
+    
 - tags: [quality]
   adjset:
     en: best
@@ -19,23 +24,54 @@
     en: biggest
     zh: 最大  # TODO: use JJS system instead... but it's segmented together in zh, so...
  
+- tags:
+  adjset:
+    en: clear
+    zh: 清楚
+ 
 # there seem to be major problems here, because adjset is looking at "all tags" 
 - tags: [target.inanimate] # actually, can't it just be nottarget.person?
   adjset:           # this doesn't look like it will scale with languages...
     en: common
     zh: 共同
     
+- tags:
+  adjset:
+    en: complex 
+    zh: 复杂
+    
+- tags: [target.inanimate]
+  adjset:
+    en: effective 
+    zh: 有效
+    
 - tags: [quality]
   adjset:
     en: good
     zh: 好
+    
+- tags: [color]
+  adjset:
+    en: green
+    zh: 绿色
+    
+- tags:
+  adjset:
+    en: happy
+    zh: 高兴
+    
+- tags:
+  adjset: # TODO: combine with 高兴
+    en: happy
+    zh: 快乐
 
 - tags: [target.abstract]
   adjset:
     en: high
     zh: 高
     
-- adjset:
+- tags: 
+  adjset:
     en: important
     zh: 重要
     
@@ -44,10 +80,30 @@
     en: interesting 
     zh: 有趣
     
+- tags: [length] # applies to space as well as time
+  adjset:
+    en: long
+    zh: 长
+    
+- tags: [target.inanimate] # I think?
+  adjset:
+    en: major
+    zh: 主要
+    
+- tags: [age]
+  adjset:
+    en: modern
+    zh: 现代
+    
 - tags: [age] # time?
   adjset:
     en: new 
     zh: 新
+    
+- tags:
+  adjset:
+    en: normal
+    zh: 普通
     
 # no, this is determinerish in both zh and en - "the last big cookie"
 #- tags:
@@ -70,6 +126,11 @@
     
 - tags:
   adjset:
+    en: similar
+    zh: 类似
+    
+- tags:
+  adjset:
     en: simple 
     zh: 简单
     
@@ -77,6 +138,31 @@
   adjset:
     en: small
     zh: 小
+    
+- tags:
+  adjset:
+    en: smart
+    zh: 聪明
+    
+- tags: [target.inanimate]
+  adjset:
+    en: successful 
+    zh: 成功
+    
+- tags: # inanimate?
+  adjset:
+    en: traditional 
+    zh: 传统 
+    
+- tags:
+  adjset: # TODO: combine with "normal"
+    en: typical
+    zh: 正常
+    
+- tags: [target.animate]
+  adjset:
+    en: young
+    zh: 年轻
     
 # TODO: a tag or something for adjectives that cannot (typically) be intensified, like "male"? 
   # and the en lack of JJR/JJS doesn't really help, since some words just take "more" and "most"
