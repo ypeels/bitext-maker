@@ -456,8 +456,7 @@ def randomly_configure_np(np, **kwargs):
     roll = utility.rand()
     if roll < 0.05 and 'pronoun' not in forbidden_templates:
         template_id = 'pronoun'
-    elif 0.05 <= roll < 0.2:
-        assert('name' not in forbidden_templates)
+    elif 0.05 <= roll < 0.2 and 'name' not in forbidden_templates:
         template_id = 'name' # shouldn't make it THAT common        
     else: 
         template_id = 'noun'
@@ -492,16 +491,20 @@ def randomly_configure_np(np, **kwargs):
                 
         
         # TODO: disallow multiple identical adjectives (the big and big person)
+        adjp_count = 0
         for i in range(5): # TODO: zh gets awkward with more than 2 adjectives, esp. single-char...
             if utility.rand() < 0.2: 
                 modifier = make_random_adjp(np, **kwargs)
                 if modifier:
                     assert(all(modifier.can_modify(head) for head in np._get_headnodes()))
                     np.add_modifier(modifier)
+                    adjp_count += 1
             
         # at most one participle (practical constraint)
+        # not too deep (to prevent verb overload)
+        # not too many adjectives (this affects zh more)
         # TODO: disallow ambiguous participle attachment? the man seeing the woman holding the umbrella
-        if kwargs.get('stack_depth') < 3 and utility.rand() <= 0.25:
+        if kwargs.get('stack_depth') < 3 and adjp_count <= 2 and utility.rand() <= 0.25:
             participle = make_random_participle(np, **kwargs)
             assert(participle)
             if participle:

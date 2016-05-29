@@ -32,6 +32,12 @@
     en: it
     zh: 它
     
+- person: 3
+  tags: [inanimate] # TODO: handle multiple tags with more than just "all" 
+  pronounset:
+    en: it
+    zh: 它
+    
 #- person: 3
 #  pronounset:
 #    en: He # tempting, but it's not clear how to pluralize... They?

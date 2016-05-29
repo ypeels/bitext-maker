@@ -29,7 +29,7 @@ physical:
     inanimate:
       bodypart: # cell
         organ: # foot, liver
-  location: # place
+  
   
 # separate tree because "animate" and "inanimate" should be mutually exclusive
 # TODO: combine with that "living" tree...
@@ -38,7 +38,7 @@ physical2:
   animate:
   inanimate:
     bodypart:
-  
+    location: # place
 
     
 abstract:

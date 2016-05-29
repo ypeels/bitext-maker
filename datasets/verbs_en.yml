@@ -127,6 +127,13 @@ make:
   VBP: make
   VBZ: makes
   
+provide: 
+  VBD: provided
+  VBG: providing
+  VBN: provided
+  VBP: provide
+  VBZ: provides
+  
 possess:
   VBD: possessed
   VBG: possessing
