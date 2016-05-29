@@ -387,9 +387,31 @@ class Template:
         return self.__per_lang_deps_per_symbol[symbol].items()
     
     def prewords(self, lang):
-        return self.__data['langs'][lang].get('prewords', {})
+        #return self.__data['langs'][lang].get('prewords', {})
+        return self.__pre_or_post_words(lang, 'prewords')
     def postwords(self, lang):
-        return self.__data['langs'][lang].get('postwords', {})
+        #return self.__data['langs'][lang].get('postwords', {})
+        return self.__pre_or_post_words(lang, 'postwords')        
+    def __pre_or_post_words(self, lang, kind):
+        assert(kind == 'prewords' or kind == 'postwords')
+        
+        raw_data = self.__data['langs'][lang].get(kind, {})
+        assert(type(raw_data) is dict)
+        
+        result = {}
+        for symbol, value in raw_data.items():
+            if type(value) is str:
+                result[symbol] = value
+            elif type(value) is list:
+                assert(all(type(subvalue) is str for subvalue in value))
+                result[symbol] = pick_random(value)
+            else:
+                assert(type(value) is dict) # YAML
+                raise Exception('preword/postword data should be list or str')
+                
+        return result
+                
+        
     
     def symbols(self):
         return self.__symbols.keys()
@@ -676,7 +698,8 @@ class VerbCategory:
     '''Verb semantics - responsible for choosing a verb synset for generation'''
     def __init__(self, data):
         self.__data = data
-        self.__randomly_picked_symbol_tags = None
+        self.__randomly_picked_symbol_tags = {}
+        self.__randomly_picked_symbol_transformations = {}
     
     def __str__(self):
         return str(self.__data)
@@ -704,10 +727,10 @@ class VerbCategory:
             
             # cache so that repeated queries are NOT inconsistent.
             # should be okay, since VERBSET_BANK re-instantiates for every query...
-            if not self.__randomly_picked_symbol_tags:
-                self.__randomly_picked_symbol_tags = pick_random(symbol_tags).copy()
+            if symbol not in self.__randomly_picked_symbol_tags:
+                self.__randomly_picked_symbol_tags[symbol] = pick_random(symbol_tags).copy()
                 
-            result = self.__randomly_picked_symbol_tags
+            result = self.__randomly_picked_symbol_tags[symbol]
         
         return result #tags.get(symbol)
         
@@ -717,10 +740,28 @@ class VerbCategory:
         
     def template_id(self):
         return self.__data['template']
-        
+
+    # this whole function is analogous to tags_for_symbol. tempting to refactor, but data format is subject to change...
     def transformation_for_symbol(self, symbol):
         transforms = self.__data.get('transformations', {})
-        return transforms.get(symbol)
+        symbol_transforms = transforms.get(symbol)
+        if symbol_transforms:
+            symbol_transforms = wrap_as_list(symbol_transforms)
+        else:
+            symbol_transforms = []
+            
+        if all(type(transform) is str for transform in symbol_transforms):
+            result = symbol_transforms
+        else:
+            assert(symbol_transforms)
+            assert(all(type(transform) is list for transform in symbol_transforms))
+            
+            if symbol not in self.__randomly_picked_symbol_transformations:
+                self.__randomly_picked_symbol_transformations[symbol] = pick_random(symbol_transforms).copy()
+                
+            result = self.__randomly_picked_symbol_transformations[symbol]
+        
+        return result #transforms.get(symbol)
 
         
 class WordForms:
@@ -785,7 +826,7 @@ class WordSet:
         word = self._words(lang)
         assert(type(word) is str)
         assert(index is 0) # not handling multiple candidates yet (num_words > 1)
-        return word
+        return word         # VerbSets resolves this by surrendering fine-grained control and just picking a random pair
             
     def _words(self, lang):
         #raise UNIMPLEMENTED_EXCEPTION
@@ -855,12 +896,28 @@ class PronounSet(WordSet):
         return 'pronounset'        
         
 class VerbSet(WordSet):
+    def __init__(self, data):
+        WordSet.__init__(self, data)
+        self.__random_words = {}
+        
     def verb(self, lang):
-        verb = self._data()[lang]
-        assert(type(verb) is str)
-        return verb
+        verb_data = self._data()[lang]
+        
+        # TODO: backport this technology to WordSet
+        if type(verb_data) is str:
+            result = verb_data
+        elif type(verb_data) is list:
+            assert(all(type(item) is str for item in verb_data))
+            if lang not in self.__random_words:
+                self.__random_words[lang] = pick_random(verb_data)            
+            result = self.__random_words[lang]            
+        else:
+            assert(type(verb_data) is dict) # YAML
+            raise Exception('per-lang verb data should be string or list of strings')
+            
+        return result
      
-    # TODO: unify this
+    # TODO: unify this? but verb categories' structure is completely different.
     #def _wordset_key(self):
     #    return 'verbset'
             

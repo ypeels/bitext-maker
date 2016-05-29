@@ -32,8 +32,8 @@ action:
 
 action.creation:
   template: transitive
-  tags:
-    S: [entity]
+  #tags:
+  #  S: [entity]
   verbsets:
   - en: create
     zh: 创造
@@ -46,12 +46,7 @@ action.creation:
   - en: produce # TODO: combine with "generate"
     zh: 产生 
 
-  
-  
-  # TODO: custom templates for multi-purpose verbs like "do" - ugh, does that require tweaking this data structure?change.start:
-  template: transitive
-  tags:
-    
+  ## TODO: custom templates for multi-purpose verbs like "do" - ugh, does that require tweaking this data structure?change.start:
   
   verbsets:
   - en: change
@@ -94,10 +89,15 @@ cognition.knowledge:
     S: [animal] # hmm, should this really be "person"? or "entity"?
   verbsets:
   - en: understand
-    zh: 了解
-  - en: understand
-    zh: 里解
+    zh: [了解, 理解]
   
+cognition.knowledge.modal:
+  template: modal
+  tags: { S: animal }
+  transformations: { C: [[infinitive.vp], [infinitive.how.vp]] }
+  verbsets:
+  - en: learn
+    zh: 学习 # 学习 VP - hmm, that seems kind of awkward... but 学习 了解 does occur in the corpus...
 
 cognition.knowledge.meta: #&knowledge
   template: meta
@@ -121,6 +121,9 @@ cognition.knowledge.meta: #&knowledge
   
   - en: know
     zh: 知道
+    
+  - en: learn # or does this belong in its own sub-category?
+    zh: 学习
     
   - en: think
     zh: 想

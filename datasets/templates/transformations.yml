@@ -54,6 +54,19 @@ infinitive.vp:
         #tags: { S: objective } no, need to delete S outright
       #zh:
       #  punctuation:
+    
+# TODO: zh doesn't seem compatible with adverbial modifications... 很快 地  怎么 VV...
+infinitive.how.vp:
+  input: Clause
+  output:
+  conversions: { S: linked }
+  additions:
+    langs:
+      en:
+        forms: { V: VB } # unchanged, but has to be rewritten
+        prewords: { V: how to }
+      zh:
+        prewords: { V: [怎么, 怎样] }
       
   
 

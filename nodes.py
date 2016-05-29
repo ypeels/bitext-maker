@@ -589,9 +589,11 @@ class TransformableNode(ModifierNode):
         # this allows transformations for subnodes to be specified in data.
         # not moved to bequeath(), since this should only be called once...
         for symbol in self._symbols():
-            transformation = self._transformations_for_subnode(symbol)#self.__verb_category.transformation_for_symbol(symbol)
-            if transformation:
-                self._get_symbol_subnode(symbol).add_transformation(transformation)
+            transformations = self._transformations_for_subnode(symbol)#self.__verb_category.transformation_for_symbol(symbol)
+            if transformations:
+                assert(type(transformations) is list)
+                for transform in transformations:
+                    self._get_symbol_subnode(symbol).add_transformation(transform)
 
             
         
