@@ -1060,8 +1060,9 @@ class Adjective(LexicalNode):
     def _get_lexical_candidates(self):
         tags = [t for t in (self._get_option('tags') or []) if type(t) is str]
         #assert(len(tags) <= 1)
+       
         if tags:            
-            candidates = data.ADJSET_BANK.find_tagged(tags)
+            candidates = data.ADJSET_BANK.find_tagged_with_any(tags)#find_tagged(tags)
         else:
             candidates = data.ADJSET_BANK.all_unrestricted_adjsets() # adjs are hacked slightly differently - see data.py
             
@@ -1160,6 +1161,11 @@ class Noun(GenericNoun):
             candidates = data.NOUNSET_BANK.find_tagged(semantic_tags)   
         else:
             candidates = data.NOUNSET_BANK.all_nounsets()
+            
+        # hack to prevent noun-noun modifiers that look like VPs
+        # TODO: is there any more principled way to do this?
+        if self.parent().type() == 'ADJP':
+            candidates = [can for can in candidates if 'activity' not in can.tags()]
 
         return candidates
         

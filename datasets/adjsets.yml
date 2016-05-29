@@ -29,6 +29,11 @@
   adjset:
     en: good
     zh: 好
+
+- tags: [target.abstract]
+  adjset:
+    en: high
+    zh: 高
     
 - adjset:
     en: important
@@ -49,6 +54,14 @@
 #  adjset:
 #    en: last 
 #    zh: 最后
+
+# TODO: keep target.X tag "exclusive" even if other tags are added? see AdjectiveSetBank.find_tagged_with_any()
+# - or presume that the treemaker knows what it's doing?
+# - occurs pretty infrequently, since 'inanimate' has to be assigned in randomly_configure_np()
+- tags: [target.inanimate]
+  adjset:
+    en: public
+    zh: 公共
 
 - tags:
   adjset:

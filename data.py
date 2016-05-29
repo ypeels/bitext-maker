@@ -56,25 +56,24 @@ class AdjectiveSetBank(WordSetBank):
         return result
         
     def all_tags(self):
-        return self.__all_tags
+        return self.__all_tags.copy() # gets trashed all OVER the place externally. this was an insidious bug.
         
-    def find_tagged(self, target_tags):
-        #raise Exception('TODO: unimplemented stub') # n.b. the "tags" key is currently optional in adjsets.yml
-        return [adjset for adjset in self.__all_adjsets() #
-                if all(tt in adjset.tags() for tt in target_tags)]# or not adjset.tags()] 
+    #def find_tagged(self, target_tags):
+    #    #raise Exception('TODO: unimplemented stub') # n.b. the "tags" key is currently optional in adjsets.yml
+    #    return [adjset for adjset in self.__all_adjsets() #
+    #            if all(tt in adjset.tags() for tt in target_tags)]# or not adjset.tags()] 
        
     def __all_adjsets(self):
         return [AdjectiveSet(item) for item in self._data()]
       
     # I don't think I should use this - it's way too confusing
-    #def find_tagged_with_any(self, target_tags):
-    #    '''
-    #    Unlike NounSetBank and VerbSetBank, this returns the "union" of all tags instead of the intersection.
-    #    This is because adjectives are generally specified w.r.t. an existing target, which can take many possible modifier types (color, size, etc.)
-    #    '''
-    #    #raise Exception('TODO: unimplemented stub') # n.b. the "tags" key is currently optional in adjsets.yml
-    #    return [adjset for adjset in self.all_adjsets() #AdjectiveSet(item) for item in self._data() 
-    #            if any(tt in adjset.tags() for tt in target_tags) or not adjset.tags()]        
+    def find_tagged_with_any(self, target_tags):
+        '''
+        Unlike NounSetBank and VerbSetBank, this returns the "union" of all tags instead of the intersection.
+        This is because adjectives are generally specified w.r.t. an existing target, which can take many possible modifier types (color, size, etc.)
+        '''
+        return [adjset for adjset in self.__all_adjsets() #AdjectiveSet(item) for item in self._data() 
+                if any(tt in adjset.tags() for tt in target_tags) or not adjset.tags()]        
         
     def _is_dummy(self, datum):
         return all(adj == None for adj in datum['adjset'].values())

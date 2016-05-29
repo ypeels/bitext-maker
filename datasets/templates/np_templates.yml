@@ -36,7 +36,7 @@ pronoun:
 
 
 ## workaround to allow some degree of semantic matching without having to redo a bunch of Node code?
-## no, would need to build in way too much additional node infrastructure
+## no, would need to redo way too much additional node infrastructure in order to work together with existing ADJP's
 #noun.inanimate:
 #  symbols:
 #    N:

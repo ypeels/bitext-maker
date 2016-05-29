@@ -18,15 +18,28 @@ entity: # might be non-living
   living:
   
 physical:  
-  animate:
-    animal:
-  inanimate:
+  physical2:
+  #animate:
+  #  animal: # oops, all branches in a tree should be mutually exclusive...
+  #inanimate:
   material: # hmm, some words can be both object and material, like "cloth"...
   object: # "indivisible" or "countable"
-    animal: 
-    bodypart: # cell
-      organ: # foot, liver
-  place: # location
+    animate:
+      animal: 
+    inanimate:
+      bodypart: # cell
+        organ: # foot, liver
+  location: # place
+  
+# separate tree because "animate" and "inanimate" should be mutually exclusive
+# TODO: combine with that "living" tree...
+# something is VERY broken here...
+physical2: 
+  animate:
+  inanimate:
+    bodypart:
+  
+
     
 abstract:
   ability:
@@ -38,9 +51,17 @@ abstract:
   idea:
   information: 
   #measure: 
+  quantity: # or is this physical...?
   state: # uh, the number of tags seems to be proliferating...
   time:
     duration:
     event:
 
+concept: # "something"? in any case, need this to make abstract and physical mutually exclusive
+  abstract:
+  physical:
   
+
+# this is included to test "canbe" - this tag should be able to be added to any noun, since it places no restrictions.
+# it still remains to check that nouns satisfying all these tags actually exist, though
+unused: 

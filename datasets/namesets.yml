@@ -52,27 +52,27 @@
     
     
     
-- tags: [place]
+- tags: [location]
   nameset:
     en:
     zh:
 
-- tags: [place]
+- tags: [location]
   nameset:
     en: Africa
     zh: 非洲
     
-- tags: [place]
+- tags: [location]
   nameset:
     en: China
     zh: 中国
     
-- tags: [place]
+- tags: [location]
   nameset:
     en: America # looks like "the U.S." is less common
     zh: 美国
     
-- tags: [place]
+- tags: [location]
   nameset:
     en: India
     zh: 印度

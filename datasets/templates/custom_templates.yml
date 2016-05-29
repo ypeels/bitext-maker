@@ -115,7 +115,7 @@ tst2011.1012:
       options: { tags: person }
     P:
       type: name
-      options: { tags: place }
+      options: { tags: location }
   langs:
     en:
       template: S grew up in P

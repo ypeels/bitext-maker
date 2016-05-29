@@ -11,14 +11,14 @@ from utility import LANGUAGES, seed_rng
 
 
 # collected flags for quick toggling during testing
-if utility.PRODUCTION:
-    FIXED_ROLL = FIXED_TEMPLATE = MUTE_OLD_TEST = None
-    NUM_RANDOM_TEST = 1
-else:
-    FIXED_ROLL = FIXED_TEMPLATE = MUTE_OLD_TEST = None
+FIXED_ADJ_TAG = FIXED_NP_TAG = FIXED_ROLL = FIXED_TEMPLATE = None
+#MUTE_OLD_TEST = None
+if not utility.PRODUCTION:
+    #FIXED_NP_TAG = 'inanimate'
+    #FIXED_ADJ_TAG = 'target.' + FIXED_NP_TAG    
     #FIXED_ROLL = 0.75 # 0-0.8 for Clause, 0.8-0.9 for Custom, 0.9-1.0 for C1 C2 - see make_random_sentence()
     #FIXED_TEMPLATE = '把'
-    MUTE_OLD_TEST = True
+    MUTE_OLD_TEST = True # whether or not to display results of old (non-random) test clauses; irrelevant for production
     NUM_RANDOM_TEST = 50
 
     
@@ -409,11 +409,11 @@ def add_random_tag_to_np(np):
     I.e., is "specific_tag" a subset of the existing tags?
     '''    
     specific_tag = utility.pick_random(list(data.NOUNSET_BANK.all_tags()))
+    if FIXED_NP_TAG:
+        specific_tag = FIXED_NP_TAG
     
-    # this is thinking too hard, right? a tag is addable as long as it doesn't result in zero candidates
-    #if all(data.TAXONOMY.isa(specific_tag, t) for t in np.semantic_tags()):
-    #    np.add_options({'tags': [specific_tag]})
-    if data.NOUNSET_BANK.find_tagged(np.semantic_tags() + [specific_tag]):
+    if (    all(data.TAXONOMY.canbe(specific_tag, np_tag) for np_tag in np.semantic_tags()) and # new tag not forbidden by tree
+            data.NOUNSET_BANK.find_tagged(np.semantic_tags() + [specific_tag])):  # adding new tag doesn't kill all candidates
         np.add_options({'tags': [specific_tag]})
     
     
@@ -440,18 +440,16 @@ def randomly_configure_np(np, **kwargs):
     
     # generator only supports objects right now (otherwise determiners get tricky... like "water" or "cloth")
     if template_id == 'noun':
-        np.add_options({'tags': ['object']})
+        np.add_options({'tags': ['object']}) # for stupid english articles...
         
         # pick random, specific tags from the nounbank and add them to np, if possible.
         # we'll make up for lexical variety by making lots and lots of trees, instead of lexically varying one tree many times
-        for i in range(3):
-            if utility.rand() <= 0.6:
-                add_random_tag_to_np(np)
+        if utility.rand() <= 0.8:
+            add_random_tag_to_np(np)
         
         # at most one determiner (syntactic constraint)
         if utility.rand() <= 0.5:
             np.add_modifier(make_random_determiner(**kwargs))
-        
         
         # TODO: disallow multiple identical adjectives (the big and big person)
         for i in range(5): # TODO: zh gets awkward with more than 2 adjectives, esp. single-char...
@@ -500,8 +498,13 @@ def randomly_configure_adjp(adjp, target=None, **kwargs):
         
         # TODO: target-specific blacklists, like removing the "color" tag for any "abstract" targets (optional! colorless green ideas)        
         
-        # limit adjective choices at lexicalization time
-        adjp.add_options([utility.pick_random(list(modifier_tags))])
+        # modifier_tags contains list of POSSIBLE adjective tags, not required ones.
+        # AdjectiveSetBank.find_tagged_with_any() automatically includes any untagged adjectives
+        if FIXED_ADJ_TAG and FIXED_ADJ_TAG in list(modifier_tags): 
+             modifier_tags = {FIXED_ADJ_TAG}
+
+        adjp.add_options({'tags': list(modifier_tags)})
+
 
 
 def make_random_determiner(**kwargs):
