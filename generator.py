@@ -594,7 +594,7 @@ class ZhGenerator(Generator):
         else:
             if node.number() != 'singular' and node.template_id() == 'noun':
                 assert('object' in node._get_option('tags')) # for now, assume countable? 一些时间 != times...
-                assert(not node.has_modifiers()) # would need to check modifiers for "pluralizers" like CD
+                #assert(not node.has_modifiers()) # TODO: check modifiers for "pluralizers" like CD
                 result.append('一些')
         
         # participles - generally handle before adjectives, which could even be single-character...

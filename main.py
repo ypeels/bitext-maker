@@ -460,6 +460,10 @@ def randomly_configure_np(np, **kwargs):
         # at most one determiner (syntactic constraint)
         if utility.rand() <= 0.5:
             np.add_modifier(make_random_determiner(**kwargs))
+            
+        # maybe plural
+        if utility.rand() <= 0.5 and 'singular' not in np._get_option('number'):
+            np.add_options({'number': 'plural'})
         
         # TODO: disallow multiple identical adjectives (the big and big person)
         for i in range(5): # TODO: zh gets awkward with more than 2 adjectives, esp. single-char...
