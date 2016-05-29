@@ -330,11 +330,11 @@ def make_random_sentence():
     if roll <= 0.8:
         clause = nodes.node_factory('Clause')    
         randomly_configure_clause(clause)
-        return clause
+        sentence = clause
     elif 0.8 < roll <= 0.9:
         custom = nodes.node_factory('CustomTemplate')
         randomly_configure_custom(custom)
-        return custom        
+        sentence = custom
     else:
         # C1 C2 - multiple sentences on a line, TED-style
         clause = nodes.node_factory('Clause')    
@@ -349,7 +349,15 @@ def make_random_sentence():
         assert(clause2)
         randomly_configure_clause(clause2)
         
-        return line
+        sentence = line
+        
+    if utility.rand() < 0.1:
+        # randomly expand one node lexically. (maybe do more than one?)
+        random_node = utility.pick_random(sentence.get_all_lexical_nodes())
+        random_node.set_num_samples(10)
+        
+    return sentence
+        
     
 def randomly_configure_node(node, **kwargs):  
     assert(not issubclass(type(node), nodes.LexicalNode))

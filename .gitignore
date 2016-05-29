@@ -1,4 +1,5 @@
 __pycache__/
+datasets/*-test.yml
 doc/*.aux
 doc/*.bbl
 doc/*.blg
@@ -8,6 +9,8 @@ doc/*.out
 doc/*.pdf
 doc/*.gz
 *.bat
+*.en
 *.lnk
 *.txt
+*.zh
 scratch.py
