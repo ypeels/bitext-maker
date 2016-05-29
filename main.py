@@ -354,7 +354,13 @@ def make_random_sentence():
     if utility.rand() < 0.1:
         # randomly expand one node lexically. (maybe do more than one?)
         random_node = utility.pick_random(sentence.get_all_lexical_nodes())
-        random_node.set_num_samples(10)
+
+        # words hack: template forces a literal word
+        if random_node.parent()._get_option('words hack'):
+            assert(type(sentence) is nodes.CustomTemplate)
+            pass # or does assert compile to pass with -O?
+        else:
+            random_node.set_num_samples(10)
         
     return sentence
         
