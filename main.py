@@ -533,7 +533,7 @@ def make_random_adjp(target, **kwargs):
 
 def randomly_configure_adjp(adjp, target=None, **kwargs):
     # first determine the type you want - determiners done separately
-    if utility.rand() <= 0.95: # TODO: semantic matching to make N-N modification less awkward and confusing
+    if utility.rand() <= 0.8: # TODO: semantic matching to make N-N modification less awkward and confusing
         template_id = 'adjective'
     else:
         template_id = 'noun' 
