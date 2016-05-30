@@ -961,8 +961,11 @@ class LexicalNode(Node):
         
             
     def total_num_datasets(self, lang): # TODO: rename this atrocity
-        # each dataset object could contain more than one "dataset" (nameset, etc.), e.g., en: [Bob, Robert]
-        return sum(ds.num_words(lang) for ds in self.__datasets) 
+        # OLD: each dataset object could contain more than one "dataset" (nameset, etc.), e.g., en: [Bob, Robert]
+        #return sum(ds.num_words(lang) for ds in self.__datasets) 
+        # NEW: just sampling ONE member of each dataset, for simplicity
+        return len(self.__datasets)
+        
      
     # pure virtual - must be implemented by derived classes
     def _get_lexical_candidates(self):
@@ -1013,7 +1016,8 @@ class LexicalNode(Node):
             assert(self.total_num_datasets(lang) is 1) # not wasting tons of iterations on the same fixed word, fwiw
             return words_hack[0][lang]
         else:
-            return self._word(lang) # punt to subclass
+            #return self._word(lang) # punt to subclass
+            return self._sample_dataset().word(lang)
        
         
     # private - for internal use by this class only
@@ -1024,11 +1028,6 @@ class LexicalNode(Node):
 
 
 class Adverb(LexicalNode):
-    def _word(self, lang):
-        advset = self._sample_dataset()
-        assert(advset.num_words(lang) is 1)
-        return advset.adverb(lang, 0)
-        
     def _get_lexical_candidates(self):
         tags = [t for t in (self._get_option('tags') or []) if type(t) is str]
         assert(len(tags) <= 1)
@@ -1051,11 +1050,6 @@ class Adverb(LexicalNode):
 # TODO: consolidate shared code with Determiner?
 # TODO: semantic filtering
 class Adjective(LexicalNode):
-    def _word(self, lang):
-        adjset = self._sample_dataset()
-        assert(adjset.num_words(lang) is 1)
-        return adjset.adjective(lang, 0)
-        
     def compatible_modifier_types(self):
         return { 'ADVP' }
         
@@ -1073,11 +1067,6 @@ class Adjective(LexicalNode):
 class Determiner(LexicalNode):
     #def add_modifier(self, _):
     #    raise Exception('do not modify Determiner nodes - are you trying PDT? how about hooking on a second DT?')
-        
-    def _word(self, lang):
-        detset = self._sample_dataset()
-        assert(detset.num_words(lang) is 1)
-        return detset.determiner(lang, 0)
         
     def _get_lexical_candidates(self):
         tags = [t for t in (self._get_option('tags') or []) if type(t) is str]
@@ -1118,13 +1107,6 @@ class Name(GenericNoun):
     def person(self): # a name is always third person
         return 3
         
-    def _word(self, lang):
-        nameset = self._sample_dataset() #get_dataset_by_index(0) #node.get_nameset_by_index(0)
-        
-        assert(nameset.num_words(lang) == 1)
-        name = nameset.name(lang, 0)
-        return name
-        
     def _get_lexical_candidates(self):
         assert(self._get_option('tags') is not None)
         semantic_tags = [tag for tag in self._get_option('tags') if type(tag) is str]
@@ -1145,11 +1127,6 @@ class Noun(GenericNoun):
         
     def person(self):
         return 3
-        
-    def _word(self, lang):
-        nounset = self._sample_dataset()
-        assert(nounset.num_words(lang) == 1)
-        return nounset.noun(lang, 0)
         
     def set_plural(self): # just not available in Name, although could call add_options directly, or on parent node...
         self.add_options({'number': ['plural']})
@@ -1191,7 +1168,7 @@ class Pronoun(GenericNoun):
         assert(not self.has_antecedent())
         self.add_dependency(node)
 
-    def _word(self, lang):
+    def word(self, lang):
         if self.has_antecedent():
             # have to figure out correct pronset from antecedent
             antecedent = self.__antecedent()
@@ -1211,9 +1188,10 @@ class Pronoun(GenericNoun):
             else:
                 pronset = data.PRONSET_BANK.find_tagged_third_person('nonhuman')[0]    # it
             
+            result = pronset.word(lang)
         else:
-            pronset = self._sample_dataset()
-        return pronset.pronoun(lang, 0)
+            result = GenericNoun.word(self, lang)
+        return result
         
         
     # overriding GenericNoun
@@ -1319,17 +1297,9 @@ class Verb(LexicalNode):
                 
         return 'present'
         
-    def _word(self, lang):    
-        verbset = self._sample_dataset()
-        return verbset.verb(lang)
-        
     def _get_lexical_candidates(self):
         # TODO: filter further by, say, semantic tags 
         return self.__category.all_verbsets()
-        
-    # DELETE ME: debugging interfaces
-    #def _category(self):
-    #    return self.__category
         
 
         

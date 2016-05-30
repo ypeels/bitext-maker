@@ -805,122 +805,83 @@ class WordSet:
     '''Multilingual synsets (e.g., nounsets.yml)'''
     def __init__(self, data):
         self.__data = data
+        self.__words = {}
         
     def __repr__(self): # TODO: get lists of NameSets to print info using __str__ instead of __repr__?
         return "WordSet({})".format(self.__data.__repr__())
 
-    def num_words(self, lang):
-        '''This function returns >1 if the WordSet for a language contains a LIST of candidates (e.g., { en: [man, person] ...}'''
-        words = self._words(lang)
-        if type(words) is str:
-            return 1
-        else:
-            return len(words)
+    # currently unused and irrelevant - for a synset with multiple candidates, __get_word just picks one (count on outermost loop sampling many trees)
+    #def num_words(self, lang):
+    #    '''This function returns >1 if the WordSet for a language contains a LIST of candidates (e.g., { en: [man, person] ...}'''
+    #    words = self._words(lang)
+    #    if type(words) is str:
+    #        return 1
+    #    else:
+    #        return len(words)
             
     def tags(self):
         # don't have to worry about multiple synsets here, since semantic tags apply to all words in the synset
-        tags = self._data().get('tags', [])
-        return tags
-        
+        tags = self._data().get('tags')
+        if tags:
+            return wrap_as_list(tags)
+        else:
+            return [] # if you try to return wrap(data.get('tags', [])), you can wind up with [[]]        
             
-    def word(self, lang, index):
-        word = self._words(lang)
-        assert(type(word) is str)
-        assert(index is 0) # not handling multiple candidates yet (num_words > 1)
-        return word         # VerbSets resolves this by surrendering fine-grained control and just picking a random pair
-            
-    def _words(self, lang):
-        #raise UNIMPLEMENTED_EXCEPTION
-        return self._data()[self._wordset_key()][lang] or []
+    def word(self, lang):
+        if lang not in self.__words:
+            word_data = self._get_word_data(lang)
+            if type(word_data) is str:
+                self.__words[lang] = word_data
+            elif type(word_data) is list: # if wordset has multiple entries [man, person, ...], just pick one at random for WordSet's lifetime
+                assert(all(type(item) is str for item in word_data))
+                self.__words[lang] = pick_random(word_data)            
+            else:
+                assert(type(word_data) is dict) # YAML
+                raise Exception('per-lang verb data should be string or list of strings')
+
+        assert(type(self.__words[lang]) is str)
+        return self.__words[lang]
         
     # ugh, expose to derived classes...
     def _data(self):
         return self.__data
         
 class AdjectiveSet(WordSet):
-    def adjective(self, lang, index):
-        return WordSet.word(self, lang, index)
-        
-    def tags(self):
-        tags = self._data().get('tags')
-        if tags:
-            return wrap_as_list(tags)
-        else:
-            return [] # if you try to return wrap(data.get('tags')), you can wind up with [None]
-        
-    def _wordset_key(self):
-        return 'adjset'
-        
-        
+    def _get_word_data(self, lang): # give subclasses something more transparently concrete to do
+        return self._data()['adjset'][lang] or []    # TODO: handle langs for which data entry hasn't been done yet        
 
 class AdverbSet(WordSet):
-    def adverb(self, lang, index):
-        return WordSet.word(self, lang, index)
-        
     def compatible_lexical_targets(self):
         return self._data()['targets']
         
     # TODO: refactor other WordSets to allow additional fields like this? actually, just rewriting this low-level primitive seemed to work?
-    def _wordset_key(self):
-        return 'advset'
+    def _get_word_data(self, lang):
+        return self._data()['advset'][lang] or []
         
 class DeterminerSet(WordSet):
-    def determiner(self, lang, index):
-        return WordSet.word(self, lang, index)
-    
-    def _wordset_key(self):
-        return 'detset'
+    def _get_word_data(self, lang):
+        return self._data()['detset'][lang] or []
         
 class NameSet(WordSet):
-    def name(self, lang, index):
-        return self.word(lang, index)
-        
-    def _wordset_key(self):
-        return 'nameset'
+    def _get_word_data(self, lang):
+        return self._data()['nameset'][lang] or []
         
 class NounSet(WordSet):
-    def noun(self, lang, index):
-        return self.word(lang, index)
-        
-    def _wordset_key(self):
-        return 'nounset'
+    def _get_word_data(self, lang):
+        return self._data()['nounset'][lang] or []
         
 class PronounSet(WordSet):
     '''Unlike NounSet, etc., this is the entire list item - duck typing + reach a little deeper'''
     def person(self):
         return self._data()['person']
-        
-    def pronoun(self, lang, index): # still delegate to WordSet - to leverage any error-checking there
-        return self.word(lang, index)
-        
-    def _wordset_key(self):
-        return 'pronounset'        
+       
+    def _get_word_data(self, lang):
+        return self._data()['pronounset'][lang] or []       
         
 class VerbSet(WordSet):
-    def __init__(self, data):
-        WordSet.__init__(self, data)
-        self.__random_words = {}
-        
-    def verb(self, lang):
-        verb_data = self._data()[lang]
-        
-        # TODO: backport this technology to WordSet
-        if type(verb_data) is str:
-            result = verb_data
-        elif type(verb_data) is list:
-            assert(all(type(item) is str for item in verb_data))
-            if lang not in self.__random_words:
-                self.__random_words[lang] = pick_random(verb_data)            
-            result = self.__random_words[lang]            
-        else:
-            assert(type(verb_data) is dict) # YAML
-            raise Exception('per-lang verb data should be string or list of strings')
-            
-        return result
-     
-    # TODO: unify this? but verb categories' structure is completely different.
-    #def _wordset_key(self):
-    #    return 'verbset'
+    # verb categories' structure is different 
+    def _get_word_data(self, lang):            
+        return self._data()[lang]
             
             
 ### module-level variables (intended to be read-only after initialization) ###
