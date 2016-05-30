@@ -155,7 +155,7 @@ class NounSetBank(WordSetBank):
         '''
         return [NounSet(item) for item in self._data()
             #for tag in item['tags'] if all(TAXONOMY.isa(tag, tt) for tt in target_tags)] # listcomps are really prone to subtle logic errors
-            if all( any(TAXONOMY.isa(tag, tt) for tag in item.get('tags', [])) for tt in target_tags ) or not item.get('tags')]
+            if all( any(TAXONOMY.isa(tag, tt) for tag in (item.get('tags') or [])) for tt in target_tags ) or not item.get('tags')]
             
     # overrides (concrete implementations)
     def _all_datasets(self):

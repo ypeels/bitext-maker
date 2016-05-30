@@ -499,9 +499,14 @@ class EnGenerator(Generator):
     def __pluralize_noun(self, noun_base):
         noun_forms = self._noun_form_bank.get(noun_base)
         if noun_forms and noun_forms.get('NNS'):
-            return noun_forms.get('NNS')
+            result = noun_forms.get('NNS')
         else:
-            return noun_base + 's'
+            if noun_base.endswith('y'):
+                result = noun_base[:-1] + 'ies'
+            else:
+                result = noun_base + 's'
+            
+        return result
             
             
     # name modification is actually kind of annoying

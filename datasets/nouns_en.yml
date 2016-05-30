@@ -4,29 +4,60 @@
 
 # penn treebank tags
 # NN: noun, singular (or mass)
-# NNS: noun, plural (default: NN+s)
+# NNS: noun, plural (default: NN+s or NN+ies - see EnGenerator.__pluralize_noun())
 
 # TODO: noun templates, which you need to generate non-compositional semantic tags like "last night #past"
   # funny noun phrases could go here
 
+animal:
+aspect:
+behavior:
+body: 
+book:
 brain:
+building:
+cell:
+chance:
+change:
 child: { NNS: children }  
-country: { NNS: countries }  
+city:
+computer:
+country: 
+course:
+culture:
 data: { NNS: data } # technically, datum/data... but it's used so commonly as singular... or is it being used as a quantity?
+day:
+design:
+earth:
+economy:
+education:
+environment:
+example:
+experiment:
+friend:
+game:
+government:
+history:
+idea:
 information: 
 life: { NNS: lives }  
 man: { NNS: men }  
+meaning:
+money:
+  NNS: #monies # hmm, usually uncountable?
+month:
+music:
+  NNS: # musics # usually uncountable
 part:
 person: { NNS: people } # TODO: "persons", as in "persons of interest"  
 place: # it's tempting to delete blank entries, but they confirm that somebody has done and checked the data input
 problem:
-research: { NNS: research } # or researches?
+research: { NNS: research } # or researches? or typically uncountable?
 right:
 society:
-story: { NNS: stories }
+story: 
 system:
-technology: 
-  NNS: technologies
+technology:
 thing:  
 time:
 today:
