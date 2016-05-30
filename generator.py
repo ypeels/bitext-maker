@@ -567,8 +567,8 @@ class ZhGenerator(Generator):
                     assert(all(type(item) is str for item in measure_words_from_file))
                     candidates = measure_words_from_file
                 else:
-                    assert(type(measure_words_from_file) is dict) # I suppose it could be a number or a bool...
-                    raise Exception('M: expected str or list (YAML)')
+                    assert(type(measure_words_from_file) in [dict, type(None)]) # I suppose it could be a number or a bool...
+                    raise Exception('M: expected str or list (YAML)', noun_form.get('pinyin'))
                     
                 if utility.rand() <= 0.9:
                     measure_word = utility.pick_random(measure_words_from_file) # allows multiple M's per word

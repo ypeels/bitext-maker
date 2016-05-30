@@ -1,8 +1,11 @@
 - tags: []
   nounset:
-    en:
-    zh:
+    en: 
+    zh: 
 
+# although corpus harvesting is somewhat faster with nouns (since they are generally one-to-one) compared with adjectives, 
+# data entry is MUCH slower, because you have to give much more thought to tagging... but not NEARLY as much as verbs, I suppose
+  # PLUS there is more morphological data entry than JJ - need to do zh data entry too
 
 # semantic tags that should apply to all languages
 # sorted by English alphabetical order for now - because at least that's not subject to change...
@@ -13,17 +16,59 @@
 # TODO: quick script that outputs tag statistics. this can eventually grow into a syntax checker, too
   # can i leverage NounBank, etc.?
 
+- tags: [animal]
+  nounset:
+    en: animal
+    zh: 动物
+- tags: [action]
+  nounset:
+    en: behavior
+    zh: 行为
+- tags: [[animate], [bodypart]] # well, it IS irreplaceable... but you can't say "the body in his body"...
+  nounset:
+    en: body
+    zh: 身体
+- tags: [physical, object]
+  nounset:
+    en: book
+    zh: 书
 - tags: [organ, inanimate]
   nounset:
     en: brain
     zh: 大脑
-  
+- tags: [location]
+  nounset:
+    en: building
+    zh: 建筑
+- tags: [bodypart.replaceable]
+  nounset:
+    en: cell
+    zh: 细胞
+- tags: [activity]
+  nounset:
+    en: change
+    zh: 变化
 - tags: [person]
   nounset:
     en: child
     zh: 孩子 # TODO: plural 孩子们... maybe throw into nouns_zh.yml?
-
-- tags: [organization, location]
+- tags: [location]
+  nounset:
+    en: city
+    zh: 城市
+- tags: [[study], [abstract, object]]
+  nounset:
+    en: culture
+    zh: 文化
+- tags: [duration]
+  nounset:
+    en: day
+    zh: 天
+- tags: [electronic]
+  nounset:
+    en: computer
+    zh: 电脑
+- tags: [[organization], [location]]
   nounset:
     en: country
     zh: 国家
@@ -34,7 +79,50 @@
   nounset:
     en: data
     zh: 数据
-    
+- tags: [abstract, object]
+  nounset:
+    en: design
+    zh: 设计
+- tags: [location]
+  nounset:
+    en: earth
+    zh: 地球
+- tags: [[organization], [abstract]] # "economy of scale" is not an organization...
+  nounset:
+    en: economy
+    zh: 经济
+- tags: [activity]
+  nounset:
+    en: education
+    zh: 教育
+- tags: [abstract, object]
+  nounset:
+    en: example
+    zh: 例子
+- tags: [[physical], [location]]
+  nounset:
+    en: environment
+    zh: 环境
+- tags: [person]
+  nounset:
+    en: friend
+    zh: 朋友
+- tags: [[activity], [inanimate]] # could be the actual physical game
+  nounset:
+    en: game
+    zh: 游戏
+- tags: [organization]
+  nounset:
+    en: government
+    zh: 政府
+- tags: [study]
+  nounset:
+    en: history
+    zh: 历史
+- tags: [abstract]
+  nounset:
+    en: idea
+    zh: 想法
 - tags: [information, quantity]
   nounset:
     en: information
@@ -43,8 +131,23 @@
 - tags: [activity]
   nounset:
     en: life
-    zh: [生活, 日常 生活]
- 
+    zh: [生活, 日常 生活] # a common collocation? kind of cheating...
+- tags: [quantity]
+  nounset:
+    en: money
+    zh: 钱
+- tags: [duration]
+  nounset:
+    en: month
+    zh: 月
+#- tags: [quantity] #[[study], [activity], [sensory]] # it's a "quantity" too, though...
+#  nounset:
+#    en: music
+#    zh: 音乐
+- tags: [abstract, object, event]
+  nounset:
+    en: [opportunity, chance]
+    zh: 机会
 # zh problem: reads like a measure word when used to modify another noun...
 # also seems to act kind of like a quantifier... disable for now.
 #- tags: [measure]
@@ -56,32 +159,70 @@
   nounset:
     en: person
     zh: 人
-    
+- tags: [object, inanimate]
+  nounset:
+    en: picture
+    zh: 照片
 - tags: [location]
   nounset:
     en: place
     zh: 地方
-
+- tags: [abstract, object]
+  nounset:
+    en: [point, point, point, point, point, point, point, meaning]
+    zh: [意义, 意思]
+- tags: [abstract, object]
+  nounset:
+    en: power
+    zh: 能力
 - tags: [problem, object] # TODO: by "object" I really mean "indivisible" or "countable"...
   nounset:
     en: problem # TODO: question
     zh: 问题
-    
+- tags: [activity]
+  nounset:
+    en: [process, course]
+    zh: 过程
+- tags: [activity]
+  nounset:
+    en: project
+    zh: 项目
+- tags: [abstract, object]
+  nounset:
+    en: reason
+    zh: 原因
 - tags: [activity]
   nounset:
     en: research
     zh: 研究
-    
+- tags: [location, organization]
+  nounset:
+    en: school
+    zh: 学校
+- tags: [abstract.object] # TODO: "side" could mean "party"?
+  nounset:
+    en: [side, aspect]
+    zh: 方面
 - tags: [organization] # hmm, this is like a name, but you usually talk about "the economy"...
   nounset:
     en: society
     zh: 社会
-    
+- tags: [inanimate, location] # or do "space", "area", etc. deserve their own tag?
+  nounset:
+    en: space
+    zh: 空间
 - tags: [communication]
   nounset:
     en: story
     zh: 故事
-    
+- tags: [activity]
+  nounset:
+    en: [study, study, experiment]
+    zh: [实验, 实验, 实验, 试验]
+- tags: [person]
+  nounset:
+    en: student
+    zh: 学生
 - tags: [object] # TODO: a system can also be something abstract...
   nounset:
     en: system
@@ -102,12 +243,15 @@
     en: time
     zh: 时间 # TODO: 时候
     
-# disabled because "today-child" reads almost like a time adverbial in zh...
-#- tags: [time]
-#  nounset:
-#    en: today
-#    zh: 今天
-    
+# crudely disabled "time" as noun modifier in generator
+- tags: [time]
+  nounset:
+    en: today
+    zh: 今天
+- tags: [location]
+  nounset:
+    en: universe
+    zh: 宇宙
 - tags: [object, organization, location]
   nounset:
     en: world
@@ -117,7 +261,10 @@
   nounset:
     en: work
     zh: 工作
-
+- tags: [duration]
+  nounset:
+    en: year
+    zh: 年
 
 
     

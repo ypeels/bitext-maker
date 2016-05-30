@@ -33,10 +33,19 @@
     zh: 它
     
 - person: 3
-  tags: [inanimate] # TODO: handle multiple tags with more than just "all" 
+  tags: [inanimate]
   pronounset:
     en: it
     zh: 它
+    
+# need a persistent separate entry for antecedents (relatively feasible for pronouns, which are closed-class)
+# TODO: does this result in pronoun-antecedent disagreement anywhere?
+- person: 3
+  tags: [entity, nonhuman] 
+  pronounset:
+    en: it
+    zh: 它
+
     
 #- person: 3
 #  pronounset:

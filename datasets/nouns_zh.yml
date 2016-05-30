@@ -4,68 +4,107 @@
   # Q: is there any word that CAN'T use 个? well, you could just flag it if it ever comes up...
   # A: words that are not countable (but then couldn't they use 种?)
 
+变化: bian4 hua4
 部分: bu4 fen
-  
+城市: 
+  pinyin: cheng2 shi4
+  M: 座
 大脑: da4 nao3
   
 地方: 
   pinyin: di4 fang
   #M: 块 # kind of secondary...
-  
+地球: di4 qiu2
+电脑:
+  pinyin: dian4 nao3
+  M: 台
 东西:  
   pinyin: dong1 xi1
   M: 件  
-  
+动物:
+  pinyin: dong4 wu4
+  M: 只
+方面: fang1 mian4
 工作:
   pinyin: gong1 zuo4
   M: [个, 个, 个, 个, 个, 个, 个, 份， 项] # kind of uncommon...
-
 故事: gu4 shi4
-
-国家:
-  pinyin: guo2 jia1
-  
-孩子:
-  pinyin: hai2 zi
-  
+国家: guo2 jia1
+过程: guo4 cheng2
+孩子: hai2 zi
+环境: huan2 jing4
+机会: ji1 hui4
 技术:
   pinyin: ji4 shu4
   M: 种
-  
+建筑: jian4 zhu4
+教育: jiao4 yu4
 今天:
   pinyin: jin1 tian1
   M:
-
+经济: jing1 ji4
+空间: kong1 jian1
+历史: li4 shi3 # M: 门, 段...
+例子: li4 zi
+能力: neng2 li4
+年: nian2
+朋友: 
+  pinyin: peng2 you3
+  M: 位
+钱: 
+  pinyin: qian2
+  M: 笔
 人:
   pinyin: ren2
-  M: 位 
- 
+  M: 位  
 人们: # TODO: IWSLT probably uses 人们 as the standard plural for 人... nounset with people/人们 and tag plural?
   pinyin: ren2 men
   tags: plural   # hmm
   # TODO: M2 for pluralization? like 一群狼? or is this anglicizing things too far?
-
+日常 生活: ri4 chang2 sheng1 huo2
 社会: she4 hui4
-  
-生活: 
-  pinyin: sheng1 huo2
-  
+设计: she4 ji4
+身体: shen1 ti3
+生活: sheng1 huo2  
 时间:
   pinyin: shi2 jian1
   M: 段
-  
-世界:
-  pinyin: shi4 jie4
-
+实验: shi2 yan4 # can use 次...
+世界: shi4 jie4
+试验: shi4 yan4 # can use 次...
+书:
+  pinyin: shu1
+  M: [本, 本, 本, 本, 本, 个] # also 册, but that's gotta be rare
 数据: shu4 ju4
-  
+天: tian1 # it IS its own measure word?? well, MDBG lists 个 for 年, so...
+文化:
+  pinyin: wen2 hua4
+  M: 种
 问题:
   pinyin: wen4 ti2
-
+细胞: xi4 bao1
 系统:
   pinyin: xi4 tong3
-  
+想法: xiang3 fa3 
+项目: xiang4 mu4
 信息: xin4 xi1
-
+行为: xing2 wei2
+学生: xue2 sheng
+学校: 
+  pinyin: xue2 xiao4
+  M: 所
 研究: # M: 项
   pinyin: yan2 jiu4
+意思: yi4 si4
+意义: yi4 yi4
+#音乐: yin1 yue4 # can take 张, 曲, and 段, but this is context-specific...
+游戏: 
+  pinyin: you2 xi4
+  M: 场
+原因: yuan2 yin1
+月: yue4 # M: 轮
+宇宙: yu3 zhou4 # M not in MDBG...
+照片:
+  pinyin: zhao4 pian4
+  M: [张, 幅]
+政府: zheng4 fu3

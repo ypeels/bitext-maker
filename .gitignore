@@ -1,4 +1,5 @@
 __pycache__/
+datasets/*-old.yml
 datasets/*-test.yml
 doc/*.aux
 doc/*.bbl

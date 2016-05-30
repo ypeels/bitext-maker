@@ -5,64 +5,85 @@
     # but then you'd have to make 2 passes through the file to mark all animals as indivisible - use isa()
     # oh wait, you can just check the genealogy for all REGISTERED ancestors, not just for yourself (see code)
 
-living:
-  animal:
-    nonhuman:
-    person:
-      man:
-      woman:
-      
+# oh boy, tree order matters...?#
+# I used this tag to mean "countable" in generator, and it's hard-coded everywhere...
+    
+# it looks like my (horrible) multi-tree scheme works, but only if all items live in only TWO TREES at most?
+#- living:
+#    animal:
+
+- object:
+    physical.object:
+    abstract.object:      
   
-entity: # might be non-living
-  organization:
-  living:
+- entity: # might be non-living
+    living:
+    location:
+    organization:
+    
   
-physical:  
-  physical2:
-  #animate:
-  #  animal: # oops, all branches in a tree should be mutually exclusive...
-  #inanimate:
-  material: # hmm, some words can be both object and material, like "cloth"...
-  object: # "indivisible" or "countable"
-    animate:
-      animal: 
-    inanimate:
-      bodypart: # cell
-        organ: # foot, liver
+
   
+- physical:  
+    #physical2:
+    #animate:
+    #  animal: # oops, all branches in a tree should be mutually exclusive...
+    #inanimate:
+    material: # hmm, some words can be both object and material, like "cloth"...
+    physical.object: # "indivisible" or "countable"
+      animate:
+        animal: 
+          nonhuman:
+          person:
+            man:
+            woman:
+      inanimate:
+        bodypart: 
+          bodypart.replaceable: # because you can't say "his cell"
+          organ: # foot, liver
+        #event:
+        electronic:
+        location: # countable
+        sensory: # sound, music, sight, ...
   
 # separate tree because "animate" and "inanimate" should be mutually exclusive
 # TODO: combine with that "living" tree...
 # something is VERY broken here...
-physical2: 
-  animate:
-  inanimate:
-    bodypart:
-    location: # place
+#physical2: 
+#  animate:
+#  inanimate:
+#    bodypart:
+#    location: # place
 
     
-abstract:
-  ability:
-  action:
-    activity:
-  communication:
-    verbal:
-    written:  
-  idea:
-  information: 
-  #measure: 
-  problem:
-  quantity: # or is this physical...?
-  state: # uh, the number of tags seems to be proliferating...
-  time:
-    duration:
-    event:
+- abstract:
+    ability:
+    abstract.object: # countable
+      action:
+        activity:
+      communication:
+        verbal:
+        written:  
+      idea:
+      problem:
+      time.object: # countable, like minutes or years
+        duration:
+        event:
+    information: 
+    #measure:   
+    quantity: # or is this physical...?
+    state: # uh, the number of tags seems to be proliferating...
+    study: # history, math, ...
+    time: # non-countable time
 
-concept: # "something"? in any case, need this to make abstract and physical mutually exclusive
-  abstract:
-  physical:
+- concept: # "something"? in any case, need this to make abstract and physical mutually exclusive
+    abstract:
+    physical:
+  
+  
+
   
 
 # this is included to test "canbe" - this tag should be able to be added to any noun, since it places no restrictions.
 # it still remains to check that nouns satisfying all these tags actually exist, though
-unused: 
+- unused: 

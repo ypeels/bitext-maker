@@ -44,11 +44,25 @@ class WordSetBank(Bank):
             if self._is_dummy(__data[i]):
                 __data.pop(i)
 
-        self.__all_tags = None # set
+        self.__all_tags = set() # set
                 
     def all_tags(self):
-        if self.__all_tags is None: # lazy initialization to avoid choking on unimplemented _all_datasets()
-            self.__all_tags = set.union(*[set(item.tags()) for item in self._all_datasets() if item.tags()])
+        if not self.__all_tags: # lazy initialization to avoid choking on unimplemented _all_datasets()
+            for item in self._all_datasets():
+                tag_data = item.tags()
+                if tag_data:
+                    assert(type(tag_data) is list)
+                    if all(type(t) is str for t in tag_data):
+                        tag_lists = [tag_data]
+                    else:
+                        tag_lists = tag_data
+                        
+                    assert(all(type(tag_list) is list for tag_list in tag_lists))
+                    assert(all(type(tag) is str for tag_list in tag_lists for tag in tag_list))
+                    
+                    for tag_list in tag_lists:
+                        self.__all_tags.update(set(tag_list))
+
         return self.__all_tags.copy() # gets trashed all OVER the place downstream. this was an insidious bug.
                 
     #def _all_datasets(self): # duck typing will raise a more informative exception (tells you WHICH subclass needs implementing)
@@ -145,7 +159,7 @@ class NameSetBank(WordSetBank):
             
 class NounSetBank(WordSetBank):
     def all_nounsets(self):
-        result = self.find_tagged([]) #[NounSet(item) for item in self._data()]
+        result = [NounSet(item) for item in self._data()] #self.find_tagged([]) #
         assert(len(result) > 0)
         return result
         
@@ -153,10 +167,11 @@ class NounSetBank(WordSetBank):
         '''
         Returns all noun synsets satisfying ALL target tags.
         '''
-        return [NounSet(item) for item in self._data()
-            #for tag in item['tags'] if all(TAXONOMY.isa(tag, tt) for tt in target_tags)] # listcomps are really prone to subtle logic errors
-            if all( any(TAXONOMY.isa(tag, tt) for tag in (item.get('tags') or [])) for tt in target_tags ) or not item.get('tags')]
-            
+        #return [NounSet(item) for item in self._data()
+        #    #for tag in item['tags'] if all(TAXONOMY.isa(tag, tt) for tt in target_tags)] # listcomps are really prone to subtle logic errors
+        #    if all( any(TAXONOMY.isa(tag, tt) for tag in (item.get('tags') or [])) for tt in target_tags ) or not item.get('tags')]
+        return [nounset for nounset in self.all_nounsets() 
+            if all( any(TAXONOMY.isa(tag, tt) for tag in nounset.tags()) for tt in target_tags ) or not nounset.tags()]
     # overrides (concrete implementations)
     def _all_datasets(self):
         return self.all_nounsets()
@@ -171,7 +186,7 @@ class PronounSetBank(WordSetBank):
     #    assert(len(result) > 0)
     #    return result
     def all_pronsets(self): # PronounSet wraps the whole list item, not just the 'pronounset' subkey
-        return self.find_tagged([]) #[PronounSet(item) for item in self._data()]
+        return [PronounSet(item) for item in self._data()] #.find_tagged([]) #
         # TODO: backport this intraclass DRYing to other WordSetBanks
     
     # TODO: queryable function that just takes metadata and returns the right pronset - for referential pronouns
@@ -180,13 +195,16 @@ class PronounSetBank(WordSetBank):
         return [PronounSet(item) for item in self._data() if item['person'] is person]
     
     def find_tagged(self, target_tags):
-        return [PronounSet(item) for item in self._data() 
-            for tag in item.get('tags', []) if all(TAXONOMY.isa(tag, tt) for tt in target_tags)]
+        #return [PronounSet(item) for item in self._data() 
+        #    for tag in item.get('tags', []) if all(TAXONOMY.isa(tag, tt) for tt in target_tags)]
+        return [pronset for pronset in self.all_pronsets()
+            for tag in pronset.tags() if all(TAXONOMY.isa(tag, tt) for tt in target_tags)]
             
     def find_tagged_third_person(self, target_tag):
-        return [PronounSet(item) for item in self._data()  
-            for tag in item['tags'] if TAXONOMY.isa(tag, target_tag) and item['person'] is 3]
-    
+        #return [PronounSet(item) for item in self._data()  
+        #    for tag in item['tags'] if TAXONOMY.isa(tag, target_tag) and item['person'] is 3]
+        return [pronset for pronset in self.all_pronsets() 
+            for tag in pronset.tags() if TAXONOMY.isa(tag, target_tag) and pronset.person() is 3]
             
     def _is_dummy(self, datum):
         return all(adj == None for adj in datum['pronounset'].values()) 
@@ -812,6 +830,7 @@ class WordSet:
     def __init__(self, data):
         self.__data = data
         self.__words = {}
+        self.__tags = None # list once initialized
         
     def __repr__(self): # TODO: get lists of NameSets to print info using __str__ instead of __repr__?
         return "WordSet({})".format(self.__data.__repr__())
@@ -827,11 +846,27 @@ class WordSet:
             
     def tags(self):
         # don't have to worry about multiple synsets here, since semantic tags apply to all words in the synset
-        tags = self._data().get('tags')
-        if tags:
-            return wrap_as_list(tags)
-        else:
-            return [] # if you try to return wrap(data.get('tags', [])), you can wind up with [[]]        
+        if self.__tags is None:
+            tag_data = self._data().get('tags')
+            if tag_data:
+                if type(tag_data) is str:
+                    self.__tags = [tag_data]
+                elif type(tag_data) is list:
+                    if all(type(item) is str for item in tag_data):
+                        self.__tags = tag_data # single-list
+                    elif all(type(item) is list for item in tag_data):
+                        self.__tags = pick_random(tag_data) # list of lists
+                    else:
+                        assert(all(type(item) is dict) for item in tag_data)
+                        raise Exception('malformed tag list', tags)        
+                else:
+                    assert(type(tags) is dict) # YAML
+                    raise Exception('malformed tags', tags)
+            else:
+                self.__tags = [] # if you try to return wrap(data.get('tags', [])), you can wind up with [[]]        
+                
+        assert(all(type(tag) is str for tag in self.__tags))
+        return self.__tags
             
     def word(self, lang):
         if lang not in self.__words:

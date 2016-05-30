@@ -14,8 +14,12 @@ class Taxonomy:
     '''
     def __init__(self, filename):
         self.__data = collections.defaultdict(set)
-        tree = yaml_reader.read_file(filename)
-        self.__index_tree(tree, set())
+        #tree = yaml_reader.read_file(filename)
+        #self.__index_tree(tree, set())
+        
+        tree_list = yaml_reader.read_file(filename)
+        for tree in tree_list:
+            self.__index_tree(tree, set())
         
     # not thread safe - writes to self.__data - but you wouldn't want to multithread this...
     def __index_tree(self, tree, parents):        
@@ -84,6 +88,9 @@ def test():
             self.assertTrue(t.isa('man', 'man'))
             self.assertFalse(t.isa('man', 'woman'))
             self.assertTrue(t.isa('man', 'animate'))
+            self.assertTrue(t.isa('man', 'physical.object'))
+            self.assertTrue(t.isa('physical.object', 'object'))
+            self.assertTrue(t.isa('man', 'object'))
             
         def test__common_ancestors(self):
             self.assertTrue('physical' in self.__t._common_ancestors('organ', 'animal'))
@@ -100,6 +107,7 @@ def test():
             self.assertTrue(self.__t.canbe('object', 'organ'))
             self.assertFalse(self.__t.canbe('event', 'physical'))
             self.assertFalse(self.__t.canbe('organ', 'abstract'))
+            
             
       
     suite = unittest.TestLoader().loadTestsFromTestCase(TestCase)

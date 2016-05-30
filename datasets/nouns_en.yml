@@ -27,6 +27,7 @@ course:
 culture:
 data: { NNS: data } # technically, datum/data... but it's used so commonly as singular... or is it being used as a quantity?
 day:
+  NNS: days
 design:
 earth:
 economy:
@@ -46,23 +47,37 @@ meaning:
 money:
   NNS: #monies # hmm, usually uncountable?
 month:
-music:
-  NNS: # musics # usually uncountable
+#music:
+#  NNS: # musics # usually uncountable - n.b. can kind of detect this with zh classifiers too
+opportunity:
 part:
 person: { NNS: people } # TODO: "persons", as in "persons of interest"  
+picture:
 place: # it's tempting to delete blank entries, but they confirm that somebody has done and checked the data input
+point:
+power:
 problem:
+process:
+project:
 research: { NNS: research } # or researches? or typically uncountable?
+reason:
 right:
+school:
+side:
 society:
+space:
 story: 
+student:
+study:
 system:
 technology:
 thing:  
 time:
 today:
   NNS:
+universe:
 work:
 world:
+year:
   
 # any words whose morphology changes with meaning can be marked with extra tags
