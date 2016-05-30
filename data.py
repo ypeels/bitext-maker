@@ -232,6 +232,9 @@ class WordFormBank(Bank):
             return self.DATA_FACTORY(wf)
         else:
             return None
+            
+    def has_word(self, word):
+        return word in self._data()
         
 # TODO: need these to implement comparatives/superlatives for en
 class AdjectiveFormBank(WordFormBank):

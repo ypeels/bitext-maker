@@ -501,6 +501,9 @@ class EnGenerator(Generator):
         if noun_forms and noun_forms.get('NNS'):
             result = noun_forms.get('NNS')
         else:
+            if utility.CHECK_DATABASE:
+                assert(self._noun_form_bank.has_word(noun_base)) # original concept was blank entry to verify regularity
+            
             if noun_base.endswith('y'):
                 result = noun_base[:-1] + 'ies'
             elif noun_base.endswith('s'):
@@ -553,9 +556,19 @@ class ZhGenerator(Generator):
         if target.number() == 'singular':
             noun = self._get_noun_base(target)
             noun_form = self._noun_form_bank.get(noun)
-            
-            # TODO: allow measure word omission (e.g. 这 世界 - only allowed for some words?)
-            measure_words_from_file = noun_form.get('M', '个')
+
+            # workaround to allow skipping some less important data entry for now
+            if utility.CHECK_DATABASE:
+                assert(noun_form) # would call None.get() if noun is missing from nouns_zh.yml
+                measure_words_from_file = noun_form.get('M', '个') 
+            else:
+                if noun_form: 
+                    measure_words_from_file = noun_form.get('M', '个')
+                else:
+                    assert(noun_form is None)
+                    measure_words_from_file = '个'
+
+            # TODO: allow measure word omission (e.g. 这 世界 - only allowed for some words?)            
             if measure_words_from_file == '个':
                 measure_word = '个'
             else:

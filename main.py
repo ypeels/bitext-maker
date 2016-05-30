@@ -21,7 +21,7 @@ else:
     #FIXED_ROLL = 0.75 # 0-0.8 for Clause, 0.8-0.9 for Custom, 0.9-1.0 for C1 C2 - see make_random_sentence()
     #FIXED_TEMPLATE = '把'
     SKIP_OLD_TEST = True # whether or run old test clauses; irrelevant for production
-    NUM_RANDOM_TEST = 500
+    NUM_RANDOM_TEST = 50
 
     
 

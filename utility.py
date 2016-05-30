@@ -3,6 +3,7 @@ if sys.version_info < (3, 0):
     raise Exception('This project requires Python 3 - mainly for better Unicode support')
     
 # "global" read-only variables
+CHECK_DATABASE = False # skip some data entry for now
 DATA_DIR = 'datasets/'
 LANGUAGES = ['en', 'zh']
 PRODUCTION = True
