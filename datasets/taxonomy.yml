@@ -19,6 +19,10 @@
 - entity: # might be non-living
     living:
     location:
+      city:
+      continent:
+      country:
+      state: # or should this be province?
     organization:
     
   
@@ -44,6 +48,8 @@
         #event:
         electronic:
         location: # countable
+        mechanical:
+          transportation:
         sensory: # sound, music, sight, ...
   
 # separate tree because "animate" and "inanimate" should be mutually exclusive

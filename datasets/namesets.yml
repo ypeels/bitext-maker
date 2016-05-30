@@ -1,13 +1,16 @@
+- tags: []
+  nameset: 
+    en:
+    zh: 
+# dummy entry for copy/pasting
+    
 # ok, these can be placed in a single multilingual file - no polysemy?
   # Actually, if you had to decline a name like in Latin, maybe it would be better to separate it
     # no, monolingual morphology would be specified in names_la.yml, etc.
   # gender is needed even for Chinese, though, since you need to distinguish 他/她
 
-# dummy entry for copy/pasting
-- tags: []
-  nameset: 
-    en:
-    zh:
+
+
 
 # hmm, so this is basically a gazetteer?
 # TODO: noun tag hierarchy, so this can just be tagged with "woman"
@@ -42,25 +45,30 @@
     
 - tags: [location]
   nameset:
-    en:
-    zh:
+    en: 
+    zh: 
 
-- tags: [location]
+- tags: [location, continent]
   nameset:
     en: Africa
     zh: 非洲
-    
-- tags: [location]
+- tags: [location, country]
+  nameset:
+    en: [America, the United States of America] # looks like "the U.S." is less common
+    zh: 美国
+- tags: [location, country]
   nameset:
     en: China
-    zh: 中国
-    
-- tags: [location]
+    zh: 中国    
+- tags: [location, continent]
   nameset:
-    en: America # looks like "the U.S." is less common
-    zh: 美国
-    
-- tags: [location]
+    en: Europe
+    zh: 欧洲
+- tags: [location, country]
   nameset:
     en: India
     zh: 印度
+- tags: [[location, city], [location, state]]
+  nameset:
+    en: New York
+    zh: 纽约
