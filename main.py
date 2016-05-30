@@ -1,11 +1,11 @@
+import argparse
+import datetime
 import os
+import random
 
 import data # may take a while, depending on data set size
-
-import datetime
 import generator
 import nodes
-import random
 import utility
 from utility import LANGUAGES, seed_rng
 
@@ -21,7 +21,7 @@ else:
     #FIXED_ROLL = 0.75 # 0-0.8 for Clause, 0.8-0.9 for Custom, 0.9-1.0 for C1 C2 - see make_random_sentence()
     #FIXED_TEMPLATE = '把'
     SKIP_OLD_TEST = True # whether or run old test clauses; irrelevant for production
-    NUM_RANDOM_TEST = 50
+    NUM_RANDOM_TEST = 500
 
     
 
@@ -451,7 +451,7 @@ def add_random_tag_to_np(np):
     specific_tag = utility.pick_random(list(data.NOUNSET_BANK.all_tags()))
     if FIXED_NP_TAG:
         specific_tag = FIXED_NP_TAG
-    
+
     if (    all(data.TAXONOMY.canbe(specific_tag, np_tag) for np_tag in np.semantic_tags()) and # new tag not forbidden by tree
             data.NOUNSET_BANK.find_tagged(np.semantic_tags() + [specific_tag])):  # adding new tag doesn't kill all candidates
         np.add_options({'tags': [specific_tag]})
@@ -770,8 +770,9 @@ def run_test():
         o.close()
         
         
-def run_production():
-    output_prefix = datetime.datetime.isoformat(datetime.datetime.now()).replace('T', '-').replace(':', '')[:-7]
+def run_production(output_prefix):
+    if not output_prefix:
+        output_prefix = datetime.datetime.isoformat(datetime.datetime.now()).replace('T', '-').replace(':', '')[:-7]
     outputs = { lang: open('{}-generated.{}'.format(output_prefix, lang), 'w', encoding='utf8') for lang in LANGUAGES }
     for i in range(0, NUM_SENTENCES): # for large corpus, you want to "stream" the trees instead of storing them all
         # TODO: pick, say, just one random lexical node (make sure it's Noun/Verb/Adj) and blow it up - guarantee some "parallel" sentences
@@ -784,6 +785,10 @@ def run_production():
     
     
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--output') # can only specify default value 
+    args = parser.parse_args()
+
     #seed_rng() # for reproducibility? meh, doesn't work since I loop over dict keys, which is not deterministic
 
     # hmm, should I really be using singletons for this?
@@ -793,11 +798,11 @@ if __name__ == '__main__':
     assert(set(generator.generators.keys()) == set(LANGUAGES))
 
     if utility.PRODUCTION:
-        run_production()
+        run_production(args.output)
     else:
         run_test()
     
-
+    
 
 
 
