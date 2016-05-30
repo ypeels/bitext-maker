@@ -6,6 +6,11 @@ from data import NOUNSET_BANK, NOUN_FORMS
 import collections
 import utility
 
+def wrap_as_list(datum):
+    if type(datum) is list:
+        return datum
+    else:
+        return [datum]
 
 if __name__ == '__main__':
     nounset__data = NOUNSET_BANK._data()
@@ -21,9 +26,15 @@ if __name__ == '__main__':
             tag_counts[tag] += 1
             
         for lang in utility.LANGUAGES:
-            word = nounset['nounset'][lang]
-            if word not in finished_word_forms[lang]: #.get(word):
-                missing_word_forms[lang].append(word)
+            try:
+                word_data = nounset['nounset'][lang]
+            except KeyError:
+                print(nounset)
+                raise
+                
+            for word in wrap_as_list(word_data):
+                if word not in finished_word_forms[lang]: #.get(word):
+                    missing_word_forms[lang].append(word)
             
     # record missing monolingual morphological forms 
     with open('missing_nouns.txt', 'w', encoding='utf8') as output:
