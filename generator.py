@@ -12,6 +12,7 @@ PAST_TENSE_WHITELIST = {
     'action', # TODO: action* seems fine
     'action.creation',
     'change.appear.showup',
+    'change.change',
     'change.start',     
     'cognition.solve', 
     'communication.verbal.meta', 
