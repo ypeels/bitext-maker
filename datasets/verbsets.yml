@@ -36,6 +36,7 @@ action.attempt.modal: # wordnet has this under verb.social...
   - en: try # could add "attempt", but it's BARELY in the corpus
     zh: 尝试    
 
+# the biggest category by FAR. TED talkers really like talking about creation
 action.creation:
   template: transitive
   #tags:
@@ -43,18 +44,23 @@ action.creation:
   verbsets:
   - en: build
     zh: 建立
-  - en: change
-    zh: 改变
-  - en: create
-    zh: 创造
+  - en: [create, make]
+    zh: [做, 创造, 制造]
   - en: design
     zh: 设计
-  - en: generate
+  - en: develop
+    zh: 发展
+  - en: [generate, produce]
     zh: 产生
-  - en: make
-    zh: 做
-  - en: produce # TODO: combine with "generate"
-    zh: 产生 
+
+  
+change.change:
+  template: transitive
+  # wait, doesn't this belong in its own category?
+  verbsets:
+  - en: change
+    zh: 改变
+
 
   ## TODO: custom templates for multi-purpose verbs like "do" - ugh, does that require tweaking this data structure?change.start:
 
@@ -111,7 +117,7 @@ cognition.knowledge.meta: #&knowledge
       en:
         prewords: { C: [that, ''] }
       zh:
-        prewords: { C: [的 是, ''] }  
+        prewords: { C: [的 是, ''] }  # or should this be a POSTWORD of V?
     
   verbsets:
   # TODO： imagine eating an apple - is "imagine" modalish, or is "eating" a gerund?
@@ -325,7 +331,30 @@ motion.return.to:
     zh: 回到
         
     
-perception.vision: 
+
+perception.hearing: &perception_hearing
+  template: transitive
+  tags: { S: animal }
+  verbsets:
+  - en: hear
+    zh: 听到
+    
+perception.hearing.meta:
+  <<: *perception_hearing
+  template: meta
+  # TODO: hear him VP - not used because the "that" preword makes nesting more readable
+  additions:
+    langs:
+      en:
+        prewords: { C: [that, ''] }
+      zh:
+        prewords: { C: [的 是, ''] }
+        
+  verbsets:
+  - en: hear
+    zh: 听说 # 听到 doesn't feel right for "I hear that C"
+    
+perception.vision: &perception_vision
   template: transitive
   
   tags:
@@ -333,7 +362,7 @@ perception.vision:
     
   verbsets:
   - en: see
-    zh: 看到 # TODO: looks weird in infinitives: Chuck likes to see Alice / Chuck 喜欢 看到 Alice
+    zh: 看到 # TODO: 看? 看到 looks weird in modals: Chuck likes to see Alice / Chuck 喜欢 看到 Alice
     
 possession:
   # TODO: PP-style modifications, before all verbs in the set - probably with an example
@@ -376,7 +405,7 @@ possession.obtain:
     S: [entity]
   verbsets:
   - en: [get, obtain] # obtain is really not that common, but "got" just looks funny sometimes...
-    zh: [得到, 获得]
+    zh: [得到, 获得, 接受]
 #  - en: find # TODO: doesn't really work in present tense
 #    zh: 找到
 

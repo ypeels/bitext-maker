@@ -100,6 +100,12 @@ create:
   VBN: created
   VBP: create
   VBZ: creates
+develop:
+  VBD: developed
+  VBG: developing
+  VBN: developed
+  VBP: develop
+  VBZ: develops
 decide:
   VBD: decided
   VBG: deciding
@@ -137,6 +143,12 @@ get:
   VBN: gotten
   VBP: get
   VBZ: gets
+hear:
+  VBD: heard
+  VBG: hearing
+  VBN: heard
+  VBP: hear
+  VBZ: hears
 help:
   VBD: helped
   VBG: helping

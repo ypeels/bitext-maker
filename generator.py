@@ -17,6 +17,7 @@ PAST_TENSE_WHITELIST = {
     'communication.verbal.meta', 
     'motion.bring', 
     'motion.enter.into',
+    'perception.hearing',
     'perception.vision', 
     'possession.give',
     'possession.obtain',

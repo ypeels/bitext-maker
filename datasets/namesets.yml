@@ -1,5 +1,6 @@
 # ok, these can be placed in a single multilingual file - no polysemy?
   # Actually, if you had to decline a name like in Latin, maybe it would be better to separate it
+    # no, monolingual morphology would be specified in names_la.yml, etc.
   # gender is needed even for Chinese, though, since you need to distinguish 他/她
 
 # dummy entry for copy/pasting
