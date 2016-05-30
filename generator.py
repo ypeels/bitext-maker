@@ -1,11 +1,10 @@
 '''
 Monolingual generators that finally convert data to sentences
 '''
-from utility import LANGUAGES
-
 import data
 import main # for sentence_case for capitalization hack...
 import nodes 
+import utility
 
 
 # this does NOT look scalable!
@@ -529,9 +528,27 @@ class ZhGenerator(Generator):
             noun = self._get_noun_base(target)
             noun_form = self._noun_form_bank.get(noun)
             
-            # TODO: allow multiple measure words, like using 个 instead of 件 from time to time
             # TODO: allow measure word omission (e.g. 这 世界 - only allowed for some words?)
-            measure_word = noun_form.get('M', '个')
+            measure_words_from_file = noun_form.get('M', '个')
+            if measure_words_from_file == '个':
+                measure_word = '个'
+            else:
+                # this should occur here and not in NounSet, because it's zh-specific, and I'm trying to keep all language-specific code in Generators
+                # but unfortunately, it's also data-specific code...
+                if type(measure_words_from_file) is str:
+                    candidates = [measure_words_from_file]
+                elif type(measure_words_from_file) is list:
+                    assert(all(type(item) is str for item in measure_words_from_file))
+                    candidates = measure_words_from_file
+                else:
+                    assert(type(measure_words_from_file) is dict) # I suppose it could be a number or a bool...
+                    raise Exception('M: expected str or list (YAML)')
+                    
+                if utility.rand() <= 0.9:
+                    measure_word = utility.pick_random(measure_words_from_file) # allows multiple M's per word
+                else:
+                    measure_word = '个'
+            
             assert(type(measure_word) is str) 
             words += ' ' + measure_word
             
@@ -658,7 +675,7 @@ class ZhGenerator(Generator):
     
 def generator_factory(lang):
     '''Generates a SINGLETON generator that lives in this module'''
-    assert(lang in LANGUAGES)
+    assert(lang in utility.LANGUAGES)
     if lang == 'en':
         return EnGenerator()
     elif lang == 'zh':
@@ -671,7 +688,7 @@ def generator_factory(lang):
 
 # module-level singletons
 analyzer = Analyzer()
-generators = { lang: generator_factory(lang) for lang in LANGUAGES }
+generators = { lang: generator_factory(lang) for lang in utility.LANGUAGES }
     
     
 if __name__ == '__main__':

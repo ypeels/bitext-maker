@@ -785,6 +785,7 @@ class NounForms(WordForms):
         try:
             result = self._get(key, default) # hmm, all this does is expose the base class's raw accessor...
         except AttributeError:
+            assert(type(self._WordForms__data) is str)
             result = default # allow keys with scalars, like 人: ren2
         return result            
         
