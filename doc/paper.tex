@@ -75,6 +75,10 @@ Seems somewhat foolhardy to marginalize the domain experts
 Significantly more engineering (man-hours?) seems to go into the machine-learning component.  (Well, granted, there are human translators who are spending many man-hours generating sentence pairs. But they're not intended for MT.)
 Traditionally, corpus construction has been considered prohibitively expensive, ``scavenged'' from other sources like parliamentary proceedings or lecture subtitles.
 But must this be so? Vast untapped resource of students or whatever.
+
+AHA, what you've really done is traded in-house linguists who coded rules for outsourced linguists who churn out data.
+Is that really optimal?
+Better off bringing corpus writers back in-house, where possible.
  
 Such synthetic parallel corpora can also be viewed as benchmark tasks (need to cite Facebook bAbI).
 This is actually probably more important than you'd think, because looking at IWSLT15, some of the human translations are VERY loose.
@@ -88,6 +92,9 @@ No, my Return of the Linguist had more to do with how RBMT systems have fallen o
 
 My main point seems to be that nobody makes high quality and quantity parallel corpora JUST for machine translation, and it seems like that's sorely needed for both training and benchmarking.
 Even the fanciest new machine learning model is dead in the water if it doesn't have enough data.
+
+disproportionate amount of attention being paid to the machine learning
+not enough attention being paid to the corpora themselves
 
 Return of the linguist: it is relatively easy to come up with examples that industrial-grade systems fail. (hmm,)
 he was shown the car
@@ -122,12 +129,18 @@ In the Moses toolchain, the {\small \tt mkcls} component \mycitep{och:98} perfor
 With some effort, you can use these bins during steps other than alignment, although this is not done by default.
 ...
 Moreover, as they are upstream of GIZA++, these bins are constructed at the lexical level, not the phrase level, whereas the templates described below can make substitutions at the level of larger constituents and phrases.
+Furthermore, it is run at training time and cannot help with unknown words at test time (is this true??)
+The only real cure for unknown words is moar data
 
 
 some neural network MT paper?
 
 aha, yoshua bengio's "curse of dimensionality" - becomes a blessing?  
 Unlike many machine learning tasks (image recognition, finance), NLP data are purely artificial/manmade.  New paradigm?  Not enough attention has been paid IMO to semi-automated corpus generation.  Well, typical approaches are paid, like Mechanical Turk... but there is a vast untapped source of data in the form of student problem sets, in the spirit of reCAPTCHA (citation!?)
+NLP is unique among machine learning tasks in that humans are not only consumers, but also producers of data - the alpha and the omega, the beginning and the end.
+MT is further unique among NLP in that both input and output representations are widely accepted (modulo dialectical variations) - the source and target languages themselves.
+People on the street would agree to the representations.
+
 
 Translation is perhaps the only NLP task for which millions of people already undergo years of training
 
