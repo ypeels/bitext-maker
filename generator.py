@@ -272,11 +272,29 @@ class Generator:
         '''Removes modifiers with matching template ID (changes list in place) and returns them'''
         assert(type(modifiers) is list)
         assert(all(issubclass(type(m), nodes.ModifierNode) for m in modifiers))
-        popped = [m for m in modifiers if m.template_id() == id_to_pop]
-        for p in popped:
+        
+        pop_list = [m for m in modifiers if m.template_id() == id_to_pop]
+        
+        # prevent redundant adjectives for now, which read differently in zh. note that this doesn't fix the tree - it just suppresses the output
+        # note that duplicated nouns are suppressed by _can_modify_with_noun above.
+        # TODO: handle duplicated adjectives at tree-time somehow - when adjsets are chosen, you'd have to inspect them nonlocally.
+            # zh duplication should be handled with single-node + a flag or something
+        if id_to_pop == 'adjective':
+        
+            # pop_list = nodes with first occurrence of each adj string
+            old_pop_list = pop_list
+            words = [node.generated_text(self.LANG) for node in pop_list]
+            pop_list = [old_pop_list[i] for i in [words.index(w) for w in set(words)]]
+            
+            # discard all occurrences after the first - do not return them to caller for generation
+            for p in old_pop_list:
+                if p not in pop_list:
+                    modifiers.remove(p)
+        
+        for p in pop_list:
             modifiers.remove(p)
             assert(modifiers.count(p) is 0)
-        return popped
+        return pop_list
         
         
     
@@ -430,8 +448,7 @@ class EnGenerator(Generator):
         adjs = self._pop_modifiers(modifiers, 'adjective')
         if adjs:
             # TODO: adjective ordering
-            # remove duplicate adjectives. TODO: fix the tree as well, instead of just suppressing output
-            adj_strings = list(set(a.generated_text(self.LANG) for a in adjs)) # back-converted to list for use by conjunction
+            adj_strings = [a.generated_text(self.LANG) for a in adjs]
             result += self.__conjunction(adj_strings) 
             
         # nouns (clown car)
@@ -644,11 +661,8 @@ class ZhGenerator(Generator):
             # single-character adj's go next to the target, and if multiple, with 和 intervening...
             adj_strings = [a.generated_text(self.LANG) for a in adjs]
             
-            # TODO: handle duplicated adjectives correctly - would require changing tree
-            # prevent redundant adjectives for now, which read differently in zh
-            # note that this doesn't fix the tree - it just suppresses the output
-            single_char_adjs = list(set(s for s in adj_strings if len(s) is 1))
-            multi_char_adjs = list(set(s for s in adj_strings if s not in single_char_adjs))
+            single_char_adjs = [s for s in adj_strings if len(s) is 1]
+            multi_char_adjs = [s for s in adj_strings if s not in single_char_adjs]
             
             for adj_str in multi_char_adjs:
                 result += [adj_str, '的']

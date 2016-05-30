@@ -504,7 +504,7 @@ def randomly_configure_np(np, **kwargs):
             np.add_modifier(determiner)
                 
         
-        # TODO: disallow multiple identical adjectives (the big and big person)
+        # TODO: disallow multiple identical adjectives (the big and big person) in the TREE - currently done at the generator level...
         adjp_count = 0
         for i in range(5): # TODO: zh gets awkward with more than 2 adjectives, esp. single-char...
             if utility.rand() < 0.2: 
