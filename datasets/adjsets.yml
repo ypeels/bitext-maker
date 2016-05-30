@@ -1,30 +1,47 @@
 
+    
 - tags:
   adjset:
     en: 
-    zh:
+    zh: 
     
 - tags:
   adjset:
-    en: basic
-    zh: 基本
-    
+    en: actual
+    zh: 现实
+- tags:
+  adjset:
+    en: artificial # TODO: manmade?
+    zh: 人工
+- tags: # TODO: share a tag with "normal"
+  adjset:
+    en: average
+    zh: 平均
 - tags: [quality]
   adjset:
-    en: best
-    zh: 最好
-    
+    en: bad
+    zh: [坏] #, 不 好] # avoid 不好 for now, since it can look adverbial
+- tags: [complexity]
+  adjset:
+    en: basic
+    zh: 基本
+- tags: [appearance]
+  adjset:
+    en: beautiful
+    zh: [漂亮, 美丽]
 - tags: [size]
   adjset:
     en: big
     zh: 大
-
-- tags: [size]
+- tags: [color, appearance]
   adjset:
-    en: biggest
-    zh: 最大  # TODO: use JJS system instead... but it's segmented together in zh, so...
- 
+    en: blue
+    zh: 蓝色
 - tags:
+  adjset:
+    en: certain
+    zh: 一定
+- tags: [appearance, clarity]
   adjset:
     en: clear
     zh: 清楚
@@ -34,23 +51,40 @@
   adjset:           # this doesn't look like it will scale with languages...
     en: common
     zh: 共同
-    
 - tags:
+  adjset:
+    en: cool
+    zh: 酷
+- tags: [complexity, difficulty]
   adjset:
     en: complex 
     zh: 复杂
-    
+- tags:
+  adjset:
+    en: dangerous
+    zh: 危险
+- tags: [difficulty, target.inanimate]
+  adjset:
+    en: easy
+    zh: 容易
 - tags: [target.inanimate]
   adjset:
     en: effective 
     zh: 有效
-    
+- tags: [quality]
+  adjset:
+    en: fine
+    zh: 美好
+- tags:
+  adjset:
+    en: free
+    zh: 免费
 - tags: [quality]
   adjset:
     en: good
     zh: 好
     
-- tags: [color]
+- tags: [appearance, color]
   adjset:
     en: green
     zh: 绿色
@@ -58,19 +92,17 @@
 - tags:
   adjset:
     en: happy
-    zh: 高兴
-    
+    zh: [高兴, 快乐]
 - tags:
-  adjset: # TODO: combine with 高兴
-    en: happy
-    zh: 快乐
-
+  adjset:
+    en: healthy
+    zh: 健康
 - tags: [target.abstract]
   adjset:
     en: high
     zh: 高
     
-- tags: 
+- tags: [priority]
   adjset:
     en: important
     zh: 重要
@@ -79,13 +111,24 @@
   adjset:
     en: interesting 
     zh: 有趣
-    
+# no, this is determinerish in both zh and en - "the last big cookie"
+#- tags:
+#  adjset:
+#    en: last 
+#    zh: 最后
 - tags: [length] # applies to space as well as time
   adjset:
     en: long
     zh: 长
-    
-- tags: [target.inanimate] # I think?
+- tags: [target.abstract] # same as high
+  adjset:
+    en: low
+    zh: 低
+- tags:
+  adjset:
+    en: lucky
+    zh: 幸运
+- tags: [priority, target.inanimate] # I think?
   adjset:
     en: major
     zh: 主要
@@ -103,14 +146,19 @@
 - tags:
   adjset:
     en: normal
-    zh: 普通
-    
-# no, this is determinerish in both zh and en - "the last big cookie"
-#- tags:
-#  adjset:
-#    en: last 
-#    zh: 最后
-
+    zh: [普通, 正常]
+- tags: # [clarity] # let's not sacrifice this adjective's generality just yet
+  adjset:
+    en: obvious
+    zh: 明显
+- tags:
+  adjset:
+    en: original
+    zh: 原始
+- tags:
+  adjset:
+    en: [particular, specific, certain]
+    zh: [特别, 特定]
 # TODO: keep target.X tag "exclusive" even if other tags are added? see AdjectiveSetBank.find_tagged_with_any()
 # - or presume that the treemaker knows what it's doing?
 # - occurs pretty infrequently, since 'inanimate' has to be assigned in randomly_configure_np()
@@ -118,18 +166,28 @@
   adjset:
     en: public
     zh: 公共
-
+- tags: [quality]
+  adjset:
+    en: perfect
+    zh: 完美
+- tags:
+  adjset:
+    en: [powerful, strong]
+    zh: [强大, 强]
 - tags:
   adjset:
     en: real 
     zh: 真正
-    
+- tags: [appearance, color]
+  adjset:
+    en: red
+    zh: 红色
 - tags:
   adjset:
     en: similar
     zh: 类似
     
-- tags:
+- tags: [complexity, difficulty]
   adjset:
     en: simple 
     zh: 简单
@@ -138,27 +196,54 @@
   adjset:
     en: small
     zh: 小
-    
+- tags:
+  adjset:
+    en: safe
+    zh: 安全
+- tags: priority
+  adjset:
+    en: serious
+    zh: 严重
 - tags:
   adjset:
     en: smart
     zh: 聪明
-    
+- tags:
+  adjset:
+    en: special
+    zh: 特殊
+- tags: # share some tag with "normal"?
+  adjset:
+    en: [strange, weird, peculiar]
+    zh: 奇怪
 - tags: [target.inanimate]
   adjset:
     en: successful 
     zh: 成功
-    
+- tags: [quality]
+  adjset:
+    en: terrible
+    zh: 糟糕
+- tags: [size]
+  adjset:
+    en: tiny
+    zh: 小小
 - tags: # inanimate?
   adjset:
     en: traditional 
     zh: 传统 
-    
 - tags:
-  adjset: # TODO: combine with "normal"
-    en: typical
-    zh: 正常
-    
+  adjset:
+    en: useful 
+    zh: 有用
+- tags:
+  adjset:
+    en: virtual
+    zh: 虚拟
+- tags:
+  adjset:
+    en: wrong
+    zh: [错误, 不 对]
 - tags: [target.animate]
   adjset:
     en: young
@@ -166,3 +251,16 @@
     
 # TODO: a tag or something for adjectives that cannot (typically) be intensified, like "male"? 
   # and the en lack of JJR/JJS doesn't really help, since some words just take "more" and "most"
+
+# TODO: use JJS system instead... but it's segmented together in zh, so...
+- tags: [size]
+  adjset:
+    en: biggest
+    zh: 最大  
+
+- tags: [quality]
+  adjset:
+    en: best
+    zh: 最好
+
+  

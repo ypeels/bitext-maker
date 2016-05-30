@@ -1,15 +1,36 @@
 # explicitly empty JJR or JJS key: comparative/superlative form is (typically) forbidden, like "male"
 # no JJR/JJS key, or marked as regular
-
+#__dummy__:
+#  JJR: 
+#  JJS: 
+  
+actual:
+artificial:
+average:
 basic:
+bad:
+  JJR: worse
+  JJS: worst
+beautiful:
 big:
   JJR: bigger
   JJS: biggest
+blue:
+  JJR: bluer
+  JJS: bluest
+certain:
 clear:
   JJR: clearer
   JJS: clearest
 common:
 complex:
+cool:
+  JJR: cooler 
+  JJS: coolest
+dangerous:
+easy:
+  JJR: easier
+  JJS: easiest
 effective:
 good:
   JJR: better

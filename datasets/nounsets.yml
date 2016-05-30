@@ -43,7 +43,7 @@
 - tags: [activity]
   nounset:
     en: life
-    zh: 生活
+    zh: [生活, 日常 生活]
  
 # zh problem: reads like a measure word when used to modify another noun...
 # also seems to act kind of like a quantifier... disable for now.

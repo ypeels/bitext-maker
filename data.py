@@ -215,7 +215,13 @@ class WordFormBank(Bank):
         
 # TODO: need these to implement comparatives/superlatives for en
 class AdjectiveFormBank(WordFormBank):
-    pass     
+    def __init__(self, filename):
+        WordFormBank.__init__(self, filename)
+        
+        for key in list(self._data()):
+            if key == '__dummy__':
+                self._data().pop(key)
+    
 class AdverbFormBank(WordFormBank):
     pass
     
@@ -833,6 +839,7 @@ class WordSet:
             if type(word_data) is str:
                 self.__words[lang] = word_data
             elif type(word_data) is list: # if wordset has multiple entries [man, person, ...], just pick one at random for WordSet's lifetime
+                assert(word_data)
                 assert(all(type(item) is str for item in word_data))
                 self.__words[lang] = pick_random(word_data)            
             else:
