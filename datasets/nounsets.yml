@@ -20,6 +20,10 @@
   nounset:
     en: animal
     zh: 动物
+- tags: [location]
+  nounset:
+    en: area
+    zh: 地区
 - tags: [action]
   nounset:
     en: behavior
@@ -28,7 +32,7 @@
   nounset:
     en: body
     zh: 身体
-- tags: [physical, object]
+- tags: [physical.object]
   nounset:
     en: book
     zh: 书
@@ -56,7 +60,7 @@
   nounset:
     en: city
     zh: 城市
-- tags: [[study], [abstract, object]]
+- tags: [[study], [abstract.object]]
   nounset:
     en: culture
     zh: 文化
@@ -79,7 +83,7 @@
   nounset:
     en: data
     zh: 数据
-- tags: [abstract, object]
+- tags: [abstract.object]
   nounset:
     en: design
     zh: 设计
@@ -95,7 +99,7 @@
   nounset:
     en: education
     zh: 教育
-- tags: [abstract, object]
+- tags: [abstract.object]
   nounset:
     en: example
     zh: 例子
@@ -103,6 +107,14 @@
   nounset:
     en: environment
     zh: 环境
+- tags: [abstract.object]
+  nounset:
+    en: fact
+    zh: 事实
+- tags: [material]
+  nounset:
+    en: food
+    zh: 食物
 - tags: [person]
   nounset:
     en: friend
@@ -111,6 +123,10 @@
   nounset:
     en: game
     zh: 游戏
+- tags: [bodypart.replaceable]
+  nounset:
+    en: gene
+    zh: 基因
 - tags: [organization]
   nounset:
     en: government
@@ -127,11 +143,18 @@
   nounset:
     en: information
     zh: 信息
-    
+- tags: [abstract, communication]
+  nounset:
+    en: language
+    zh: 语言
 - tags: [activity]
   nounset:
     en: life
     zh: [生活, 日常 生活] # a common collocation? kind of cheating...
+- tags: [location] # organization?
+  nounset:
+    en: market
+    zh: 市场
 - tags: [quantity]
   nounset:
     en: money
@@ -144,7 +167,7 @@
 #  nounset:
 #    en: music
 #    zh: 音乐
-- tags: [abstract, object, event]
+- tags: [abstract.object, event]
   nounset:
     en: [opportunity, chance]
     zh: 机会
@@ -167,11 +190,11 @@
   nounset:
     en: place
     zh: 地方
-- tags: [abstract, object]
+- tags: [abstract.object]
   nounset:
     en: [point, point, point, point, point, point, point, meaning]
     zh: [意义, 意思]
-- tags: [abstract, object]
+- tags: [abstract.object]
   nounset:
     en: power
     zh: 能力
@@ -187,7 +210,7 @@
   nounset:
     en: project
     zh: 项目
-- tags: [abstract, object]
+- tags: [abstract.object]
   nounset:
     en: reason
     zh: 原因

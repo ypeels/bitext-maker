@@ -39,7 +39,7 @@
             woman:
       inanimate:
         bodypart: 
-          bodypart.replaceable: # because you can't say "his cell"
+          bodypart.replaceable: # because you can't say "his cell"... but this name is TERRIBLE
           organ: # foot, liver
         #event:
         electronic:

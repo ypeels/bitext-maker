@@ -15,6 +15,7 @@
   pinyin: di4 fang
   #M: 块 # kind of secondary...
 地球: di4 qiu2
+地区: di4 qu1
 电脑:
   pinyin: dian4 nao3
   M: 台
@@ -34,9 +35,8 @@
 孩子: hai2 zi
 环境: huan2 jing4
 机会: ji1 hui4
-技术:
-  pinyin: ji4 shu4
-  M: 种
+基因: ji1 yin1
+技术: ji4 shu4 # M: 种 - but that changes the semantics...
 建筑: jian4 zhu4
 教育: jiao4 yu4
 今天:
@@ -69,8 +69,11 @@
 时间:
   pinyin: shi2 jian1
   M: 段
+食物: shi2 wu4 # M: 种
 实验: shi2 yan4 # can use 次...
+市场: shi4 chang3
 世界: shi4 jie4
+事实: shi4 shi2
 试验: shi4 yan4 # can use 次...
 书:
   pinyin: shu1
@@ -101,6 +104,7 @@
 游戏: 
   pinyin: you2 xi4
   M: 场
+语言: yu3 yan2 # also 门, 种
 原因: yuan2 yin1
 月: yue4 # M: 轮
 宇宙: yu3 zhou4 # M not in MDBG...

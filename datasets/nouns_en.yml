@@ -10,6 +10,7 @@
   # funny noun phrases could go here
 
 animal:
+area:
 aspect:
 behavior:
 body: 
@@ -35,14 +36,19 @@ education:
 environment:
 example:
 experiment:
+fact:
+food:
 friend:
 game:
+gene:
 government:
 history:
 idea:
 information: 
+language:
 life: { NNS: lives }  
 man: { NNS: men }  
+market:
 meaning:
 money:
   NNS: #monies # hmm, usually uncountable?
