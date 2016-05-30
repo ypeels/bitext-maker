@@ -151,8 +151,10 @@ class NameSetBank(WordSetBank):
     def find_tagged(self, target_tags):
         # TODO: handle single-tag case where it's not even a list?
         # TODO: share code with NounSetBank? is it worth sacrificing clarity just to DRY out 2 lines?
-        return [NameSet(item) for item in self._data() 
-            for tag in item['tags'] if all(TAXONOMY.isa(tag, tt) for tt in target_tags)]
+        #return [NameSet(item) for item in self._data() 
+        #    for tag in item['tags'] if all(TAXONOMY.isa(tag, tt) for tt in target_tags)]
+        return [item for item in self.all_namesets() 
+            for tag in item.tags() if all(TAXONOMY.isa(tag, tt) for tt in target_tags)]
             
     def _is_dummy(self, datum):
         return all(adj == None for adj in datum['nameset'].values()) 
