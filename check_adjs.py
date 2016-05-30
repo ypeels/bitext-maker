@@ -57,6 +57,10 @@ if __name__ == '__main__':
     for tag, count in utility.nested_sort(tag_counts.items()):
         print('{:>9} {}'.format(count, tag))
 
+    print('\n"Boolean" adjs in en that have explicitly forbidden JJR and JJS')
+    for en_word, word_data in sorted(adjform__data['en'].items()):
+        if word_data and any(form in word_data and word_data[form] is None  for form in ['JJR', 'JJS']):
+            print(en_word)
     
     if untagged_word_forms['en']:
         print('\nUntagged words (en) - consult WordNet?')
@@ -65,9 +69,10 @@ if __name__ == '__main__':
                     
     with open('missing_adjs.txt', 'w', encoding='utf8') as output:
         for lang, missing_list in missing_word_forms.items():
-             missing_str = '\n\nWords missing from adjs_{}.yml\n'.format(lang) + '\n'.join(sorted(missing_list))
-             output.write(missing_str)
-             print(missing_str)
+            missing_str = '\n\nWords missing from adjs_{}.yml\n'.format(lang) + '\n'.join(sorted(missing_list))
+            output.write(missing_str)
+            print(missing_str)
+
 
 
             

@@ -1,10 +1,12 @@
 # explicitly empty JJR or JJS key: comparative/superlative form is (typically) forbidden, like "male"
 # no JJR/JJS key, or marked as regular
-#__dummy__:
-#  JJR: 
-#  JJS: 
+__dummy__:
+  JJR: 
+  JJS: 
   
 actual:
+  JJR: # "boolean" adjective - cannot be intensified
+  JJS: 
 artificial:
 average:
 basic:
@@ -32,6 +34,10 @@ easy:
   JJR: easier
   JJS: easiest
 effective:
+fine:
+  JJR: finer
+  JJS: finest
+free: # freer and freest? nah...?
 good:
   JJR: better
   JJS: best
@@ -41,6 +47,9 @@ green:
 happy:
   JJR: happier
   JJS: happiest
+healthy:
+  JJR: healthier
+  JJS: healthiest
 high:
   JJR: higher
   JJS: highest
@@ -49,27 +58,65 @@ interesting:
 long:
   JJR: longer
   JJS: longest
+low:
+  JJR: lower
+  JJS: lowest
+lucky:
+  JJR: luckier
+  JJS: luckiest
 major:
 modern:
 new:
   JJR: newer
   JJS: newest
 normal:
+obvious:
+original:
+particular:
+peculiar:
+perfect:
+powerful:
 public:
 real:
+  JJR: # "more real" is forbidden...right?
+  JJS: 
+red:
+  JJR: redder
+  JJS: reddest
+safe:
+  JJR: safer
+  JJS: safest
+serious:
 similar:
 simple:
   JJR: simpler
-  JJS: simplest
-  
+  JJS: simplest  
 small: 
   JJR: smaller
   JJS: smallest
 smart:
   JJR: smarter
   JJS: smartest
+special:
+specific:
+strange:
+  JJR: stranger
+  JJS: strangest
+strong:
+  JJR: stronger
+  JJS: strongest
 successful:
+terrible:
+tiny:
+  JJR: tinier
+  JJS: tiniest
 traditional:
+useful:
+virtual:
+weird:
+  JJR: weirder
+  JJS: weirdest
+wrong:
 young:
   JJR: younger
   JJS: youngest
