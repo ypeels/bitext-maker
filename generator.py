@@ -503,6 +503,8 @@ class EnGenerator(Generator):
         else:
             if noun_base.endswith('y'):
                 result = noun_base[:-1] + 'ies'
+            elif noun_base.endswith('s'):
+                result = noun_base + 'es'
             else:
                 result = noun_base + 's'
             
