@@ -12,6 +12,7 @@ def wrap_as_list(datum):
     else:
         return [datum]
 
+# TODO: have these checkers use WordSet instead
 if __name__ == '__main__':
     nounset__data = NOUNSET_BANK._data()
     
@@ -22,8 +23,22 @@ if __name__ == '__main__':
     
     
     for nounset in nounset__data:
-        for tag in nounset['tags']:
-            tag_counts[tag] += 1
+        #for tag in nounset['tags']:
+        #    tag_counts[tag] += 1
+        for tag in wrap_as_list(nounset.get('tags')):
+            if tag: 
+                if type(tag) is str:
+                    tag_counts[tag] += 1
+                elif type(tag) is list:
+                    for subtag in tag:
+                        assert(type(subtag) is str)
+                        tag_counts[subtag] += 1
+                else:
+                    raise Exception('malformed tag? expected str or list', tag)
+            elif tag is None:
+                tag_counts[NONE_STR] += 1
+            else:
+                raise Exception('malformed tag? "False" but not None', tag)
             
         for lang in utility.LANGUAGES:
             try:
