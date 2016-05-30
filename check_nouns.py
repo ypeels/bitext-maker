@@ -17,7 +17,7 @@ if __name__ == '__main__':
     nounset__data = NOUNSET_BANK._data()
     
     finished_word_forms = { lang: NOUN_FORMS[lang]._data().keys() for lang in utility.LANGUAGES }
-    missing_word_forms = collections.defaultdict(list)
+    missing_word_forms = collections.defaultdict(set)
     tag_counts = collections.Counter()    
     
     
@@ -49,7 +49,7 @@ if __name__ == '__main__':
                 
             for word in wrap_as_list(word_data):
                 if word not in finished_word_forms[lang]: #.get(word):
-                    missing_word_forms[lang].append(word)
+                    missing_word_forms[lang].add(word)
             
     # record missing monolingual morphological forms 
     with open('missing_nouns.txt', 'w', encoding='utf8') as output:
