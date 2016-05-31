@@ -70,7 +70,7 @@ In particular, we believe this is amenable to crowdsourcing by ``amateur linguis
 
 \section{Motivation} 
 
-As early as Jelinek's (in)famous 1980's quote, ``{\em Every time I fire a linguist, my performance goes up},'' both linguists and linguistics have been increasingly marginalized in natural language processing. 
+As early as Jelinek's (in)famous quote from the 1980's that ``{\em Every time I fire a linguist, my performance goes up},'' both linguists and linguistics have been increasingly marginalized in natural language processing. 
 More recently, for example, \mynewcite{collobert 2011 footnote 8} mention the possibility of ``{\em [ideally]...to learn from letter sequences rather than words},'' illustrating an AI-motivated desire to move away from even the most fundamental of linguistic concepts.
 A specific instance of this overall trend is the gradual shift of machine translation (MT) away from classical linguistic rule-based approaches \mycitep{hutchins} to contemporary machine learning approaches, which underlie statistical phrase-based systems like Moses \mycitep{moses} and more recent neural network systems \mycitep{sutskever, bengio}.  
 But in the end, even the most cutting-edge machine learning MT system relies crucially on multilingual parallel corpora, typically taken from external sources like multilingual parliamentary proceedings. 
@@ -94,6 +94,8 @@ What we propose is to bring these jobs back ``in-house'', in the updated context
 \subsection{Case Study}
 \label{case_study}
 
+% TODO: don't need to go into this much detail, do you? This would be the first section to trim, if it runs OVER length
+% To find an example of suboptimally translated parallel corpora in the literature, one need not look far.
 As a concrete example to illustrate the need for higher-quality parallel corpora, we briefly consider the official Chinese to English baseline translation of the {\small \tt tst2010} data set\footnote{https://wit3.fbk.eu/score.php?release=2014-01} from the IWSLT shared task studied in Section \ref{experiments}.
 As a very crude way of assessing translation quality, we used the official evaluation software, MultEval \mycitep{multeval} to compute scores for each translated line individually.
 Upon manual examination, it was found that the lines with the worst individual TER scores \mycitep{ter}, some as high as 300\%, almost all corresponded to significant translation errors in the Chinese side of the gold corpus.
@@ -102,18 +104,47 @@ Not only misaligned sentences, but also apparent data entry errors,
 
 Unreasonable for a human to duplicate, much less MT systems.
 
-One would expect such outliers to be relatively well-tolerated in training sets
-But the distressing part is that the {\small \tt tst2010} data set has been used as the official development/tuning set for the past several IWSLT evaluation campaigns.
+% TODO: table with change; also list best and worst 
+% caption should mention that the difference between 
+    % ALTHOUGH you would expect that it would improve all models, it's not clear whether 
+Removing TED talk number 767 (over 200 lines), as well as 15 hand-picked lines with bad TER scores, 
+
+First, note that the scores improve, which is consistent with the observation that 
+
+good machine translations of bad Chinese sentences.
+
+
+This results in a significant TER score change that is almost as large as the score difference between the highest and lowest ranking system from the evaluation campaign.  
+BLEU scores \mycitep{bleu}, on the other hand, did not change much.
+
+
+
+One would expect such errors to be relatively well-tolerated in large training corpora
+But one bad 200-line talk constitutes a significant fraction of {\small \tt tst2010}, which is only 1500 lines total.
+More distressing is the fact is that the {\small \tt tst2010} data set has been used as the official development/tuning set for the past several IWSLT evaluation campaigns.
 It is unclear what effect such noisy corpora would have on other systems, 
 especially when used for tuning
-This results in a significant TER score change that is almost as large as the score difference between the highest and lowest ranking system from the evaluation campaign.  
-BLEU scores, on the other hand, did not change much.
 
-Removing TED talk number 767 (over 200 lines), as well as 15 hand-picked lines with bad TER scores, 
+
+
+
 
 
 % TODO: table and reference
-
+\begin{table}[]
+\centering
+\label{table:tst2010}
+\begin{tabular}{|l|l|l|}
+\hline
+ & BLEU & TER  \\ \hline
+Full {\small \tt tst2010} & 11.2 & 77.0  \\ \hline
+Purged {\small \tt tst2010} & 11.8 & 71.3  \\ \hline
+%\hline
+%{\small \tt tst2014} &  &   \\ \hline
+% &  &   \\ \hline
+\end{tabular}
+\caption{By comparison, the difference between the baseline TER score and (not shown) } % TODO: caption
+\end{table}
 
 
 
@@ -189,10 +220,13 @@ unlike all the different competing methods, it seems that a ``universal translat
 
 
 
+Translation is perhaps the only NLP task for which millions of people already undergo years of training
 
 
-
-
+Unlike many machine learning tasks (image recognition, finance), NLP data are purely artificial/manmade.  New paradigm?  Not enough attention has been paid IMO to semi-automated corpus generation.  Well, typical approaches are paid, like Mechanical Turk... but there is a vast untapped source of data in the form of student problem sets, in the spirit of reCAPTCHA (citation!?)
+NLP is unique among machine learning tasks in that humans are not only consumers, but also producers of data - the alpha and the omega, the beginning and the end.
+MT is further unique among NLP in that both input and output representations are widely accepted (modulo dialectical variations) - the source and target languages themselves.
+People on the street would agree to the representations.
 
 
 
@@ -228,16 +262,13 @@ Furthermore, it is run at training time and cannot help with unknown words at te
 The only real cure for unknown words is moar data
 
 
-some neural network MT paper?
-
-aha, yoshua bengio's "curse of dimensionality" - becomes a blessing?  
-Unlike many machine learning tasks (image recognition, finance), NLP data are purely artificial/manmade.  New paradigm?  Not enough attention has been paid IMO to semi-automated corpus generation.  Well, typical approaches are paid, like Mechanical Turk... but there is a vast untapped source of data in the form of student problem sets, in the spirit of reCAPTCHA (citation!?)
-NLP is unique among machine learning tasks in that humans are not only consumers, but also producers of data - the alpha and the omega, the beginning and the end.
-MT is further unique among NLP in that both input and output representations are widely accepted (modulo dialectical variations) - the source and target languages themselves.
-People on the street would agree to the representations.
 
 
-Translation is perhaps the only NLP task for which millions of people already undergo years of training
+
+
+
+
+
 
 other approaches to synthetic corpora, which are essentially bootstrapped from other MT systems
 
@@ -347,6 +378,14 @@ Of course, I need to redo (ALL?) these jobs with final segmenter choice
 
 Evaluated using the IWSLT 2015 progress data set (tst2014) to allow comparison with both 2015 and 2014 systems.
 
+training curves (just to prove my controls aren't wrong)
+my synthetic corpora don't help. 
+but in-domain corpus helps significantly more than out-of-domain. (this is a commonly reported result)
+
+Bottom line
+My corpora don't really seem to help, but neither do out-of-domain corpora.
+
+this will easily take up a whole column, because it includes 2 tables...
 
 \section{Proposed Future Work}
 
