@@ -41,7 +41,7 @@
     
     
     
-    
+   
     
 - tags: [location]
   nameset:
@@ -72,3 +72,7 @@
   nameset:
     en: New York
     zh: 纽约
+- tags: [location]
+  nameset: 
+    en: the Three Gorges
+    zh: 三峡

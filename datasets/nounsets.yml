@@ -15,7 +15,6 @@
   
 # TODO: quick script that outputs tag statistics. this can eventually grow into a syntax checker, too
   # can i leverage NounBank, etc.?
-
 - tags: [animal]
   nounset:
     en: animal
@@ -44,6 +43,10 @@
   nounset:
     en: building
     zh: 建筑
+- tags: [person]#, rank] # TODO: titles/ranks
+  nounset:
+    en: captain
+    zh: 上尉
 - tags: [bodypart.replaceable]
   nounset:
     en: cell
@@ -56,7 +59,7 @@
   nounset:
     en: child
     zh: 孩子 # TODO: plural 孩子们... maybe throw into nouns_zh.yml?
-- tags: [location]
+- tags: [location, city]
   nounset:
     en: city
     zh: 城市
@@ -72,7 +75,7 @@
   nounset:
     en: computer
     zh: 电脑
-- tags: [[organization], [location]]
+- tags: [[organization], [location, country]]
   nounset:
     en: country
     zh: 国家
@@ -260,7 +263,7 @@
   nounset:
     en: technology
     zh: 技术
-    
+
 - tags: [duration] # or should it just be "time"?
   nounset: 
     en: time
@@ -271,6 +274,10 @@
   nounset:
     en: today
     zh: 今天
+- tags: []
+  nounset:
+    en: tricycle-wheelchair # that's that it is in the training set...
+    zh: 三轮车
 - tags: [location]
   nounset:
     en: universe
@@ -292,3 +299,545 @@
 
     
 # I guess the workflow should be to add words to synsets here, THEN add their language-specific morphology?
+
+
+
+
+# TODO: alphabetize these. (if there's a lot of them, it'd be easier to reinsert the old entries here
+# - if only YAML could preserve comments... then this could be automated
+- tags: [plant]
+  nounset:
+    en: acacia tree # ugh, sometimes they used "acacia timber"
+    zh: 合欢树 # UGH, this really belongs as an adjective, because now I have to add a measure word for every type of tree...
+- tags: [physical.object, seed]
+  nounset:
+    en: acorn
+    zh: [橡实, 橡实, 橡实, 橡子]
+- tags: [communication]
+  nounset:
+    en: accusation
+    zh: 指控 #罪名 # meh that's more of a law enforcement term, right?
+- tags: [disease]
+  nounset:
+    en: ADHD
+    zh: 多动症
+- tags: [chemical]
+  nounset:
+    en: [adrenaline, adrenaline, adrenaline, adrenalin] # stupid alternate spelling
+    zh: 肾上腺素
+- tags: [entity]
+  nounset:
+    en: adversary
+    zh: 对手
+- tags: [group]
+  nounset:
+    en: aggregation
+    zh: 凝聚
+- tags: [chemical]
+  nounset:
+    en: alanine
+    zh: 丙氨酸
+- tags: [bird]
+  nounset:
+    en: albatross
+    zh: 信天翁
+- tags: [seed]
+  nounset:
+    en: almond
+    zh: 杏仁
+- tags: [electronic]
+  nounset:
+    en: amplifier
+    zh: 扩音器
+- tags: [audio]
+  nounset:
+    en: anthem
+    zh: 国歌
+- tags: [abstract.object]
+  nounset:
+    en: antithesis
+    zh: 对偶
+- tags: [mechanical]
+  nounset:
+    en: anvil
+    zh: 铁砧
+- tags: [mechanical] # component?
+  nounset:
+    en: aperture
+    zh: 光圈
+- tags: [communication]
+  nounset:
+    en: apology
+    zh: [道歉, 歉意]
+- tags: [material] # apparels sounds wrong
+  nounset:
+    en: apparel
+    zh: 服饰
+- tags: [waterbody]
+  nounset:
+    en: aquifer
+    zh: 含水层
+- tags: [person]
+  nounset:
+    en: archaeologist
+    zh: 考古学家
+- tags: [book]
+  nounset:
+    en: atlas
+    zh: 地图集
+- tags: [inanimate, architectural]
+  nounset:
+    en: atrium
+    zh: 天井
+- tags: [book]
+  nounset:
+    en: autobiography
+    zh: 自传
+- tags: [inanimate] # clothing?
+  nounset:
+    en: bandage
+    zh: 绷带
+- tags: [edible] # are grains seeds?
+  nounset:
+    en: barley
+    zh: 大麦
+- tags: [inanimate]
+  nounset:
+    en: bead
+    zh: 珠子
+- tags: [person]
+  nounset:
+    en: beekeeper
+    zh: 养蜂人
+- tags: []
+  nounset:
+    en: bottlenose dolphin
+    zh: 宽吻海豚
+- tags: [geographical]
+  nounset:
+    en: boulder
+    zh: [巨石, 巨石, 巨石, 磐石]
+- tags: [language.written]
+  nounset:
+    en: Braille
+    zh: 盲文 
+- tags: [injury]
+  nounset:
+    en: bruise
+    zh: 淤青
+- tags: [person]
+  nounset:
+    en: businessperson
+    zh: 生意人
+- tags: [person]
+  nounset:
+    en: Californian
+    zh: 加州 人
+- tags: [written]
+  nounset:
+    en: [caption, captioning, subtitle]
+    zh: 字幕
+- tags: [chemical]
+  nounset:
+    en: carcinogen
+    zh: 致癌物
+- tags: [organ] # not really an organ medically, but a person only has one of them
+  nounset:
+    en: carotid artery
+    zh: 颈动脉
+- tags: [study]
+  nounset:
+    en: carpentry
+    zh: 木工
+- tags: [location, building]
+  nounset:
+    en: casino
+    zh: 赌场
+- tags: [edible]
+  nounset:
+    en: cassava root # uh, not sure about plural... "cassavas"?
+    zh: 木薯
+#- tags: [plumbing]
+#  nounset:
+#    en: catheter # uh oh, there's a 4-count of "duct" too
+#    zh: 导管 
+- tags: [location]
+  nounset:
+    en: cemetery
+    zh: 坟场
+- tags: [furniture] # hmm, writing surface?
+  nounset:
+    en: [chalkboard, blackboard, blackboard]
+    zh: 黑板
+- tags: [fuel]
+  nounset:
+    en: charcoal
+    zh: 木炭
+- tags: [architectural]
+  nounset:
+    en: chimney
+    zh: 烟囱
+- tags: [chemical]
+  nounset:
+    en: chlorophyll
+    zh: 叶绿素
+- tags: [activity]
+  nounset:
+    en: [chore, errand]
+    zh: 差事
+- tags: [geographical]
+  nounset:
+    en: coastline
+    zh: 海岸线
+- tags: [organ]
+  nounset:
+    en: cochlea
+    zh: 耳蜗
+- tags: [inanimate]
+  nounset:
+    en: cocoon
+    zh: [茧, 蚕茧]
+- tags: [group]
+  nounset:
+    en: cohort
+    zh: 群组
+- tags: [event]
+  nounset:
+    en: commotion
+    zh: 轰动
+- tags: [disease]
+  nounset:
+    en: constipation
+    zh: 便秘
+- tags: [bodypart]
+  nounset:
+    en: corpse
+    zh: 尸体 # this was WAY more common than the en... but how else would you translate it?
+- tags: [activity]
+  nounset:
+    en: couchsurfing
+    zh: 沙发客
+- tags: [inanimate, office]
+  nounset:
+    en: crayon
+    zh: 蜡笔
+- tags: [astronomical]
+  nounset:
+    en: crescent
+    zh: 新月
+- tags: []
+  nounset:
+    en: criterion
+    zh: 基准
+- tags: [chemical]
+  nounset:
+    en: DDT
+    zh: 滴滴涕
+- tags: [communication] # might be verbal, might be written?
+  nounset:
+    en: decree
+    zh: 旨意
+- tags: [person]
+  nounset:
+    en: defender
+    zh: 卫士
+- tags: [electronic]
+  nounset:
+    en: defibrillator
+    zh: 除颤器
+- tags: [attribute] # this isn't gonna look so good in noun-noun modification...
+  nounset:
+    en: demeanor
+    zh: 风度
+- tags: [person]
+  nounset:
+    en: demonstrator
+    zh: 示威者
+- tags: [study]
+  nounset:
+    en: dentistry
+    zh: 牙科
+- tags: [person]
+  nounset:
+    en: detective
+    zh: 侦探
+- tags: [activity]
+  nounset:
+    en: detention
+    zh: [拘押, 拘押, 拘押, 羁押]
+- tags: [process]
+  nounset:
+    en: dialysis
+    zh: 透析
+- tags: [written]
+  nounset:
+    en: diploma
+    zh: 文凭
+- tags: [process]
+  nounset:
+    en: disintegration
+    zh: 瓦解
+- tags: [activity]
+  nounset:
+    en: dissemination
+    zh: 发布
+- tags: [inanimate] # furniture? architectural? seems like neither...
+  nounset:
+    en: doorknob
+    zh: 门把手
+- tags: [media]
+  nounset:
+    en: download
+    zh: 下载
+- tags: [bug]
+  nounset:
+    en: dragonfly # 4 en to 39 zh... are they mostly plural or something?
+    zh: 蜻蜓
+- tags: [furniture]
+  nounset:
+    en: drawer
+    zh: 抽屉 
+- tags: [person]
+  nounset:
+    en: 梦想家
+    zh: dreamer
+- tags: [place]
+  nounset:
+    en: dungeon
+    zh: 地牢
+- tags: [written] # because you "read" it...
+  nounset:
+    en: [ECG, ECG, electrocardiogram]
+    zh: 心电图
+- tags: [art]
+  nounset:
+    en: emblem
+    zh: [徽章, 徽标]
+- tags: [electronic]
+  nounset:
+    en: emitter
+    zh: 发射器
+- tags: [abstract.object]
+  nounset:
+    en: endowment
+    zh: 资质
+- tags: [group]
+  nounset:
+    en: ensemble
+    zh: 集合体
+- tags: [beverage]
+  nounset:
+    en: espresso
+    zh: 浓缩
+- tags: [written] # hmm, but you don't read it...
+  nounset:
+    en: etching
+    zh: 蚀刻
+- tags: [chemical]
+  nounset:
+    en: ethane
+    zh: 乙烷
+- tags: [verbal]
+  nounset:
+    en: exclamation
+    zh: 叫喊声
+- tags: [material.food]
+  nounset:
+    en: fast-food
+    zh: 快餐
+- tags: [organ]
+  nounset:
+    en: femur
+    zh: 股骨
+- tags: [organ]
+  nounset:
+    en: fingertip
+    zh: [指尖, 指尖, 指尖, 手指尖, 手指头]
+- tags: [activity]
+  nounset:
+    en: firefight
+    zh: [枪战, 交火]
+- tags: [computing]
+  nounset:
+    en: firewall
+    zh: 防火墙
+- tags: [injury]
+  nounset:
+    en: fistula
+    zh: 瘘管
+- tags: [organ]
+  nounset:
+    en: forearm
+    zh: 前臂
+- tags: [disease]
+  nounset:
+    en: frostbite
+    zh: 冻疮
+#- tags: [activity]
+#  nounset:
+#    en: gambling
+#    zh: 赌博 # afraid this would look too much like a verb...
+- tags: [bodypart.replaceable]
+  nounset:
+    en: ganglion
+    zh: 神经节
+- tags: [person]
+  nounset:
+    en: gatekeeper
+    zh: 守门人
+- tags: [attribute]
+  nounset:
+    en: genotype
+    zh: 基因型
+- tags: [vegetable] # uh, or is it more often used as a container?
+  nounset:
+    en: gourd
+    zh: 葫芦
+- tags: [attribute]
+  nounset:
+    en: grandeur
+    zh: 气势
+- tags: [person]
+  nounset:
+    en: great-grandfather
+    zh: 曾祖父
+- tags: [weapon]
+  nounset:
+    en: grenade
+    zh: 手榴弹
+- tags: [waterbody]
+  nounset:
+    en: groundwater
+    zh: 地下水
+- tags: [rule]
+  nounset:
+    en: guideline
+    zh: 方针
+- tags: [communication] # written? although I suppose it could be verbal only? ugh
+  nounset:
+    en: haiku
+    zh: 俳句
+- tags: [harmfulness]
+  nounset:
+    en: harmfulness
+    zh: 危害性
+- tags: [object] # uh, could be figurative too? should I add meteorological?
+  nounset:
+    en: headwind
+    zh: 逆风
+- tags: [disease] # ugh, but it's largely figurative...
+  nounset:
+    en: heartache
+    zh: 心痛
+- tags: [attribute]
+  nounset:
+    en: helplessness
+    zh: 无助感
+- tags: [measure] # do these need to be marked with plural, like "inches"?
+  nounset:
+    en: Hertz
+    zh: 赫兹
+- tags: [communication]
+  nounset:
+    en: horoscope
+    zh: 运势
+- tags: [attribute]
+  nounset:
+    en: immorality
+    zh: 乱伦
+- tags: [attribute] # is this right? don't you have "an inclination"?
+  nounset:
+    en: inclination
+    zh: 意向
+- tags: [abstract]
+  nounset:
+    en: inconsistency
+    zh: 误区
+- tags: [activity]
+  nounset:
+    en: incubation
+    zh: 孵化
+- tags: [injury]
+  nounset:
+    en: infarction
+    zh: 梗塞
+- tags: [injury]
+  nounset:
+    en: myocardial infarction
+    zh: 心肌梗塞
+- tags: [disease]
+  nounset:
+    en: infertility
+    zh: 不孕
+- tags: [person]
+  nounset:
+    en: interviewee
+    zh: 受访者
+- tags: [person]
+  nounset:
+    en: [intruder, invader]
+    zh: [入侵者, 入侵者, 入侵者, 入侵者, 入侵者, 侵入者]
+#- tags: [disease]
+#  nounset: # looks too much like a verb.
+#    en: itch
+#    zh: 痒
+- tags: [inanimate]
+  nounset:
+    en: jigsaw puzzle
+    zh: 拼图
+- tags: [event] # TODO: moment?
+  nounset:
+    en: juncture
+    zh: 关头
+- tags: [location]
+  nounset:
+    en: junkyard
+    zh: 垃圾场
+- tags: [fuel]
+  nounset:
+    en: kerosene
+    zh: 煤油
+- tags: [inanimate] # TODO: lighting
+  nounset:
+    en: kerosene lamp
+    zh: 煤油灯
+- tags: [mechanical] # well, technically, burning-related, not moving parts...
+  nounset:
+    en: kiln
+    zh: 窑
+- tags: [animal, nonhuman] # TODO: crustacean? meh
+  nounset:
+    en: krill
+    zh: 磷虾
+- tags: []
+  nounset:
+    en: 
+    zh: 
+- tags: []
+  nounset:
+    en: 
+    zh: 
+- tags: []
+  nounset:
+    en: 
+    zh: 
+- tags: []
+  nounset:
+    en: 
+    zh: 
+- tags: []
+  nounset:
+    en: 
+    zh: 
+- tags: []
+  nounset:
+    en: 
+    zh: 
+- tags: []
+  nounset:
+    en: 
+    zh: 
+- tags: []
+  nounset:
+    en: 
+    zh: 

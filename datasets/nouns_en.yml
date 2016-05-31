@@ -10,8 +10,12 @@
   # funny noun phrases could go here
 
 animal:
+antithesis:
+  NNS: antitheses
 area:
 aspect:
+barley:
+  NNS: barleys # hmm
 behavior:
 body: 
 book:
@@ -25,6 +29,8 @@ city:
 computer:
 country: 
 course:
+criterion:
+  NNS: criteria
 culture:
 data: { NNS: data } # technically, datum/data... but it's used so commonly as singular... or is it being used as a quantity?
 day:
@@ -37,14 +43,22 @@ environment:
 example:
 experiment:
 fact:
+fistula:
+  NNS: fistulae
 food:
 friend:
 game:
+ganglion:
+  NNS: ganglia
 gene:
 government:
+Hertz:
+  NNS: Hertz # unlike inches, decibels, volts, etc.
 history:
 idea:
 information: 
+krill:
+  NNS: krill
 language:
 life: { NNS: lives }  
 man: { NNS: men }  
@@ -81,6 +95,7 @@ thing:
 time:
 today:
   NNS:
+tricycle-wheelchair:
 universe:
 work:
 world:

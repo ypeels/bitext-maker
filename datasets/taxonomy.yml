@@ -12,7 +12,7 @@
 #- living:
 #    animal:
 
-- object:
+- object: # not to worry - non-objects show up as noun-modifiers
     physical.object:
     abstract.object:      
   
@@ -33,25 +33,51 @@
     #animate:
     #  animal: # oops, all branches in a tree should be mutually exclusive...
     #inanimate:
+    chemical:
+    disease: # can't these be pluralized, like "cancers"?
     material: # hmm, some words can be both object and material, like "cloth"...
+      material.food:
+      fuel:
     physical.object: # "indivisible" or "countable"
       animate:
         animal: 
           nonhuman:
+            bird:
+            bug:
           person:
             man:
             woman:
-      inanimate:
+      inanimate: # for the distinction of being able to use "movement" verbs, etc. - plant is considered inanimate
+        architectural:
+        astronomical:
         bodypart: 
           bodypart.replaceable: # because you can't say "his cell"... but this name is TERRIBLE
+          injury:
           organ: # foot, liver
-        #event:
-        electronic:
+        computing:
+        edible: # sigh, should have called this "food"
+          beverage:
+          seed:
+          vegetable:
+        furniture:
+        geographical:
+          waterbody:
+        living:
+          plant:
         location: # countable
+          building:
         mechanical:
+          electronic:
           transportation:
-        sensory: # sound, music, sight, ...
-  
+        office: # pen, paper, ...
+        plumbing:
+        sensory: # sound, music, sight, ... # TODO: combine with audio/video?
+        weapon:
+
+- physical.object:
+    group: # will this the other tree up??
+
+        
 # separate tree because "animate" and "inanimate" should be mutually exclusive
 # TODO: combine with that "living" tree...
 # something is VERY broken here...
@@ -67,17 +93,26 @@
     abstract.object: # countable
       action:
         activity:
+      art:
       communication:
         verbal:
         written:  
       idea:
+      media: # hmm, not physical?
+        audio:
+        video: 
       problem:
       time.object: # countable, like minutes or years
         duration:
         event:
+    attribute: # demeanor, happiness, ...
     information: 
-    #measure:   
+    language:
+      language.written: # Braille
+    measure:   
+    process: # dialysis    
     quantity: # or is this physical...?
+    rule:
     state: # uh, the number of tags seems to be proliferating...
     study: # history, math, ...
     time: # non-countable time

@@ -422,7 +422,7 @@ social.help.meta:
   template: meta
   transformations: { C: finite.clause } # TODO: "help" is idiosyncratic? other "assistance" verbs take infinitive vps?
   
-social.help.modal:
-  <<: *social_help
-  template: modal
-  transformations: { C: finite.vp } # TODO: you can actually "help to VB"... but this seems less common in TED
+#social.help.modal: # disabled for stinkers like "It helps have fine years"
+#  <<: *social_help
+#  template: modal
+#  transformations: { C: finite.vp } # TODO: you can actually "help to VB"... but this seems less common in TED

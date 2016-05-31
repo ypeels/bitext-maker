@@ -33,6 +33,9 @@
 国家: guo2 jia1
 过程: guo4 cheng2
 孩子: hai2 zi
+合欢树: 
+  pinyin: he2 huan1 shu4
+  M: 棵
 环境: huan2 jing4
 机会: ji1 hui4
 基因: ji1 yin1
@@ -62,6 +65,10 @@
   tags: plural   # hmm
   # TODO: M2 for pluralization? like 一群狼? or is this anglicizing things too far?
 日常 生活: ri4 chang2 sheng1 huo2
+三轮车: 
+  pinyin: san1 lun2 che1
+  M: 辆
+上尉: shang4 wei4
 社会: she4 hui4
 设计: she4 ji4
 身体: shen1 ti3
@@ -90,6 +97,8 @@
   pinyin: xi4 tong3
 想法: xiang3 fa3 
 项目: xiang4 mu4
+橡实: xiang4 shi2
+#橡子: xiang4 zi
 信息: xin4 xi1
 行为: xing2 wei2
 学生: xue2 sheng
@@ -112,3 +121,5 @@
   pinyin: zhao4 pian4
   M: [张, 幅]
 政府: zheng4 fu3
+指控: zhi3 kong4
+
