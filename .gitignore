@@ -14,4 +14,5 @@ doc/*.gz
 *.lnk
 *.txt
 *.zh
+nohup*
 scratch.py
