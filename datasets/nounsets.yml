@@ -601,7 +601,7 @@
   nounset:
     en: 梦想家
     zh: dreamer
-- tags: [place]
+- tags: [location]
   nounset:
     en: dungeon
     zh: 地牢
@@ -717,7 +717,7 @@
   nounset:
     en: haiku
     zh: 俳句
-- tags: [harmfulness]
+- tags: [attribute]
   nounset:
     en: harmfulness
     zh: 危害性

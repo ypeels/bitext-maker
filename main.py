@@ -776,7 +776,13 @@ def run_production(output_prefix):
     outputs = { lang: open('{}-generated.{}'.format(output_prefix, lang), 'w', encoding='utf8') for lang in LANGUAGES }
     for i in range(0, NUM_SENTENCES): # for large corpus, you want to "stream" the trees instead of storing them all
         # TODO: pick, say, just one random lexical node (make sure it's Noun/Verb/Adj) and blow it up - guarantee some "parallel" sentences
-        generate_all(make_random_sentence(), outputs)
+        try:
+            generate_all(make_random_sentence(), outputs)
+        except Exception as e:
+            if utility.PRODUCTION: # these will probably be LONG, ~1 million sentence jobs. don't want to interrupt those with RARE exceptions
+                print(i, 'Ignoring Exception during generate_all:', e)
+            else:
+                raise
         if (i+1) % int(NUM_SENTENCES / 100) is 0:
             print('{} / {}'.format(i+1, NUM_SENTENCES))
             
