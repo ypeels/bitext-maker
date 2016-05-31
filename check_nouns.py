@@ -6,6 +6,8 @@ from data import NOUNSET_BANK, NOUN_FORMS
 import collections
 import utility
 
+NONE_STR = '<None>'
+
 def wrap_as_list(datum):
     if type(datum) is list:
         return datum
