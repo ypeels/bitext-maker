@@ -54,61 +54,49 @@ An increased focus on
 
 is proposed.
 
+A particular system for doing this is presented.
+It allows syntactic complexity via rules.
+It also allows high-quality examples via templates, with minor syntactic modifications via rules.
+
 Preliminary results do not show much improvement.
 This is because we need to scale up?
+
 Future work is proposed.
+In particular, we believe this is amenable to crowdsourcing by ``amateur linguists''.
 
 \end{abstract}
 
 
 
-
-
-
-
-\section{Motivation} % Previously called ``Introduction''
-
+\section{Motivation} 
 
 As early as Jelinek's (in)famous 1980's quote, ``{\em Every time I fire a linguist, my performance goes up},'' both linguists and linguistics have been increasingly marginalized in natural language processing. 
-More recently, for example, \mynewcite{collobert 2011 footnote 8} mention the possibility of ``{\em [ideally]...to learn from letter sequences rather than words},'' illustrating an AI-motivated desire to move away from even fundamental linguistic concepts.
-A specific case of this trend is the gradual shift away from classical linguistic rule-based machine translation (MT) \mycitep{hutchins} to  contemporary machine learning approaches, such as staistical phrase-based systems like Moses \mycitep{moses} and more recent deep learning approaches \mycitep{sutskever, bengio}.
+More recently, for example, \mynewcite{collobert 2011 footnote 8} mention the possibility of ``{\em [ideally]...to learn from letter sequences rather than words},'' illustrating an AI-motivated desire to move away from even the most fundamental of linguistic concepts.
+A specific instance of this overall trend is the gradual shift of machine translation (MT) away from classical linguistic rule-based approaches \mycitep{hutchins} to contemporary machine learning approaches, which underlie statistical phrase-based systems like Moses \mycitep{moses} and more recent neural network systems \mycitep{sutskever, bengio}.  
+But in the end, even the most cutting-edge machine learning MT system relies crucially on multilingual parallel corpora, typically taken from external sources like multilingual parliamentary proceedings. 
+This results in what we perceive to be a disproportionate amount of effort being dedicated to the machine learning component of machine translation, with the ever-important input corpora being treated almost as an afterthought.\footnote{
+    Of course, these parallel corpora represent hundreds of translator-hours of work. 
+    However, these translations are generally optimized for human consumption, not machine learning, with no regard for such niceties as sentence alignment.
+    This is illustrated briefly in Section \ref{case_study}.
+    }
 
-In the end, though, machine learning is learning from data, and even the most bleeding-edge MT system relies crucially on multilingual parallel corpora.  In this paper, we propose recalling linguists from their increasing exile from MT to handle what they know best: language. 
-Specifically, we believe that machine translation could benefit from high-quality, ``designer'' parallel corpora that have been hand-crafted by linguists. This could take the form of amplified training sets in the short run, and perhaps a ``universal translation memory'' in the long run.
+In this paper, we propose bringing linguists back from a premature exile to craft high-quality, ``designer'' parallel corpora for machine translation.
+Such a division of labor would let linguists be linguists, allowing them to focus on corpus quality, size, and coverage, with MT system development proceeding in parallel.  
+In a sense, the use of external corpora has ``outsourced'' the rule-based MT linguist's job to third-party translators, who implicitly encode linguistic information in parallel corpora.  
+What we propose is to bring these jobs back ``in-house'', in the updated context of corpus-based MT.
 
-
-
-
-This division of labor would let linguists be linguists, with MT system development proceeding in parallel, consuming the linguists' work downstream.
-
-UGH I have nothing really concrete to show here... this is like an opinion paper at this point...
-Although I guess I do have this stupid system I worked on, and I'll push it to the web, and they can laugh at how pathetic it is.
-
-Significantly more developer-months go into the MT system.\footnote{Of course, hundreds of translator-hours }
-
-niceties like sentence alignment  
-(Well, granted, there are human translators who are spending many man-hours generating sentence pairs. But they're not intended for MT.)
-There have also been attempts to 
-
-My main point seems to be that nobody makes high quality and quantity parallel corpora JUST for machine translation, and it seems like that's sorely needed for both training and benchmarking.
-Even the fanciest new machine learning model is dead in the water if it doesn't have enough data.
-
-disproportionate amount of attention being paid to the machine learning
-not enough attention being paid to the corpora themselves
-
-I think this first part of the introduction should be short, and then some subsections below?
-
-Traditionally, corpus construction has been considered prohibitively expensive, ``scavenged'' from other sources like parliamentary proceedings or lecture subtitles.
-But must this be so? Vast untapped resource of students or whatever.
+% TODO: i haven't talked yet about 
+% oh is that the ``upsides'' section?
 
 
-No, my Return of the Linguist had more to do with how RBMT systems have fallen out of favor in research
-banishment has been premature? weren't using the linguist in the right way?
+\subsection{Case Study}
+\label{case_study}
+
+As a concrete example, we briefly consider the official baseline results from the Chinese to English IWSLT shared task studied in Section \ref{experiments}.
 
 
-\section{Single-Line Scoring}
 
-The machine translation task we consider in this paper is the IWSLT shared task 
+
 
 A brief analysis of corpus quality
 
@@ -119,7 +107,7 @@ Some of the lines are duplicated. Examining
 Just mention for now that there is an entire lecture that is bad
 Also hand-purged several other sentences
 
-TODO: table of scores after purging
+TODO: table of scores after purging. This is pretty crucial
 
 This results in a significant TER score change that is almost as large as the score difference between the highest and lowest ranking system from the evaluation campaign.  
 Interestingly, BLEU scores stayed relatively robust.
@@ -130,11 +118,19 @@ In a shared evaluation task with many language pairs, the most practical way for
 
 It also demonstrates the tremendous imbalance between linguistic effort and machine learning effort/investment
 
+More distressing is the fact that this data set has been used as the official development/tuning set for the past several IWSLT evaluation campaigns.
+
+It is unclear what effect such noisy corpora would have on other systems, 
+especially when used for tuning
 
 
 \subsection{Upsides, Potential Applications}
 
 
+My main point seems to be that nobody makes high quality and quantity parallel corpora JUST for machine translation, and it seems like that's sorely needed for both training and benchmarking.
+
+Traditionally, corpus construction has been considered prohibitively expensive, ``scavenged'' from other sources like parliamentary proceedings or lecture subtitles.
+But we argue here that it need not be so expensive.
 
 Such synthetic parallel corpora can also be viewed as benchmark tasks (need to cite Facebook bAbI).
 This is actually probably more important than you'd think, because looking at IWSLT15, some of the human translations are VERY loose.
@@ -145,7 +141,9 @@ So there's another element of noise in the data, and it's one that no amount of 
 %In the language of agile software development, test-driven MT system development, in which linguists pose sentence pairs, and MT developers work to translate them
 
 
-Focusing on corpus generation would allow linguists to focus their attention on significant linguistic phenomena
+
+
+This could take the form of amplified training sets in the short run, and perhaps a ``universal translation memory'' in the long run.
 
 methods every few years; linguistic theories, representations every decade or so; parallel corpora live forever
 
@@ -254,7 +252,7 @@ This is (probably? ref??) unlike other NLG work in that our emphasis is on surfa
 
 used for corpus analysis stanford POS tagger (incomplete bibtex entry?) \mycitep{postagger:2003}
 
-\subsection{Simplistic Linguistics}
+%\subsection{Simplistic Linguistics}
 We adopt the exceedingly simplistic view of language as nouns, verbs, and descriptions (modifications) thereof.
 
 two sources of complexity
@@ -263,34 +261,48 @@ two sources of complexity
 
 The fact that verbs can serve as nouns (gerundives) and modifiers (participles and modals) is a significant source of added complexity. (footnote?)
 
-
-I guess I should use placeholder graphics for now, since deadlines for camera-ready are quite a bit later.
-EMNLP: 6/3 submission, 7/29 notification, 9/23 camera-ready
-AMTA: 6/27 submission, 8/8 notification, 9/12 camera-ready
-
 Testing section reference: \ref{sec:related} - this requires changing secnumdepth=2 in AAAI
 
-\section{Experimental Methods}
+%\subsection{Implementation Details}
+Python
+YAML for data: very well suited. full Unicode support, and you don't even need to type quotation marks to enclose strings
+Crude though it may be, we plan on eventually open-sourcing both the generator and its accompanying data
+
+
+
+
+
+\section{Preliminary Experiments}
+\label{experiments}
+
+\subsection{Methods}
+As mentioned in 
+The IWSLT 2015 version of the WIT$^3$ corpus, which consists of multilingual subtitles of TED talks, covering a wide variety of subjects. 
+
+As prepared lectures, they fall somewhere between the conversational language of movie subtitles and the formal written language of UN resolutions.
+The latter are freely available online from the OPUS project \mycitep{opus} 
+
+We consider the Chinese to English machine translation task, using the 
 
 Out of domain corpus
 
 citations needed
-IWSLT - point out that this corpus is freely available
-OPUS zh\_zh
-MultiUN
-Moses
+IWSLT \mycitep{wit3} - point out that this corpus is freely available
+OPUS zh\_zh \mycitep{opensubtitles} MultiUN\mycitep{multiun} 
+Moses \mycitep{moses}
+KenLM \mycitep{kenlm}, which we found to be faster and stabler at decoding time.
 
 parameters used
 
-The corpus, which is freely available, consists of multilingual subtitles of TED talks, which are prepared lectures on a wide variety of subjects.
+The corpus, which is freely available, consists 
 
-IWSLT: TED talks are a series of lectures, which makes them something intermediate between the conversational language of movie subtitles and the formal written language of UN resolutions.
+IWSLT: TED talks are a series of lectures, which makes them 
 
 
 
 heuristically purged zh\_zh, which is a very noisy corpus
 
-\section{Results}
+\subsection{Results}
 
 2016-02-20 learning curves adding only 130,000 in-domain lines improves scores by like 2.0 BLEU points
 
@@ -310,20 +322,22 @@ Evaluated using the IWSLT 2015 progress data set (tst2014) to allow comparison w
 I.e., shit I REALLY doubt I have time for...
 
 
+perhaps using example-based MT techniques \mycitep{ebmtbook} and crowdsourcing to generate them at scale.
 
 For this paper, the lexical database was drawn from the IWSLT training set to maximize bottom-line performance.
 [i.e., i don't have TIME to do a general-purpose database]
 This is indeed one potential use of this system, for training set amplification.
 The envisioned ultimate target domain is (cleaned) everyday speech (maybe movie or TV subtitles?) , for which syntactic and lexical diversity is expected to be relatively low, and unknown words would be particularly suitable for crowdsourcing.
 
-crowdsourcing for ``amateur linguists''
+expert-sourcing by linguists, using the computer to lever up - computer assisted translation, in a sense; maybe computer-amplified
+crowdsourcing by ``amateur linguists''
 
-AHA, what you've really done is traded in-house linguists who coded rules for outsourced linguists who churn out data.
-Is that really optimal?
-Better off bringing corpus writers back in-house, where possible.
+But must this be so? Vast untapped resource of students or whatever.
 
 estimate about 1 noun per minute (my pathetic work speed)
 
+locally weighted linear regression? online learning?
+but corpus generation at test time is probably just as noisy as any discriminative method
 
 Instead of the next paragraph, should probably just point out how rudimentary the current ``grammar'' is. 
 Future development may be facilitated by adapting existing work from RBMT or NLG. 
@@ -341,6 +355,10 @@ Increasing lexical variation by expanding the lexicon, especially for uncommon w
 Increasing syntactic variation in a high-quality way by harvesting more templates, in the old EBMT tradition
 Work along these lines is currently underway.
 
+
+
+% TODO: Wit^3 is not fully capitalized in stupid bibliography
+% TODO: wtf, ``chinese'' is not capitalized in stupid bibliography
 
 
 \amtaonly{
