@@ -80,48 +80,79 @@ This results in what we perceive to be a disproportionate amount of effort being
     This is illustrated briefly in Section \ref{case_study}.
     }
 
-In this paper, we propose bringing linguists back from a premature exile to craft high-quality, ``designer'' parallel corpora for machine translation.
-Such a division of labor would let linguists be linguists, allowing them to focus on corpus quality, size, and coverage, with MT system development proceeding in parallel.  
+
+In this paper, we propose bringing linguists back from a premature exile to craft high-quality, ``designer'' synthetic parallel corpora for machine translation.
+Such a division of labor would let linguists be linguists, with MT system development proceeding in parallel.  
 In a sense, the use of external corpora has ``outsourced'' the rule-based MT linguist's job to third-party translators, who implicitly encode linguistic information in parallel corpora.  
 What we propose is to bring these jobs back ``in-house'', in the updated context of corpus-based MT.
 
-% TODO: i haven't talked yet about 
+% TODO: i haven't talked yet about the unreasonable effectiveness of in-domain data...
 % oh is that the ``upsides'' section?
 
 
+% this is some stupid little side note I just noticed a couple weeks ago, but it is expanding to a huge size, because it's like the only concrete ``positive'' result I have...
 \subsection{Case Study}
 \label{case_study}
 
-As a concrete example, we briefly consider the official baseline results from the Chinese to English IWSLT shared task studied in Section \ref{experiments}.
+As a concrete example to illustrate the need for higher-quality parallel corpora, we briefly consider the official Chinese to English baseline translation of the {\small \tt tst2010} data set\footnote{https://wit3.fbk.eu/score.php?release=2014-01} from the IWSLT shared task studied in Section \ref{experiments}.
+As a very crude way of assessing translation quality, we used the official evaluation software, MultEval \mycitep{multeval} to compute scores for each translated line individually.
+Upon manual examination, it was found that the lines with the worst individual TER scores \mycitep{ter}, some as high as 300\%, almost all corresponded to significant translation errors in the Chinese side of the gold corpus.
+
+Not only misaligned sentences, but also apparent data entry errors, 
+
+Unreasonable for a human to duplicate, much less MT systems.
+
+One would expect such outliers to be relatively well-tolerated in training sets
+But the distressing part is that the {\small \tt tst2010} data set has been used as the official development/tuning set for the past several IWSLT evaluation campaigns.
+It is unclear what effect such noisy corpora would have on other systems, 
+especially when used for tuning
+This results in a significant TER score change that is almost as large as the score difference between the highest and lowest ranking system from the evaluation campaign.  
+BLEU scores, on the other hand, did not change much.
+
+Removing TED talk number 767 (over 200 lines), as well as 15 hand-picked lines with bad TER scores, 
+
+
+% TODO: table and reference
 
 
 
 
 
-A brief analysis of corpus quality
 
-\mycitep{multeval}
+% TODO: display an example bad-sentence pair? 
 
-Do I want to display an example bad-sentence pair? 
-Some of the lines are duplicated. Examining 
+
+
+
+
+
+
+
+
+
+Examining 
+
+
 Just mention for now that there is an entire lecture that is bad
 Also hand-purged several other sentences
 
 TODO: table of scores after purging. This is pretty crucial
 
-This results in a significant TER score change that is almost as large as the score difference between the highest and lowest ranking system from the evaluation campaign.  
-Interestingly, BLEU scores stayed relatively robust.
+
+
+
 
 It is a testament to how indisidious these errors can be that they persisted this long (tst2010 was distributed as recently as IWSLT2015
-This underscores the need for human post-editing, at the very least, for test sets.
-In a shared evaluation task with many language pairs, the most practical way for this is probably crowdsourcing.
+
+Not even an international conference is immune to such issues
 
 It also demonstrates the tremendous imbalance between linguistic effort and machine learning effort/investment
 
-More distressing is the fact that this data set has been used as the official development/tuning set for the past several IWSLT evaluation campaigns.
 
-It is unclear what effect such noisy corpora would have on other systems, 
-especially when used for tuning
+
+
+Higher corpus quality is desirable.
+Larger in-domain corpus quantity is desirable too - see learning curve controls below?
 
 
 \subsection{Upsides, Potential Applications}
@@ -154,20 +185,9 @@ RBMT - countless developer-years of expertise
 unlike all the different competing methods, it seems that a ``universal translation memory'' would be inherently collaborative (methods are competitive by nature, whereas data can be collaborative)
 
 
-%, and with the two meeting at the golden railroad spike of the parallel corpus. Apparently I've liked this stupid thing for 10+ years
-% on capturing the most statistically prevalent linguistic phenomena, while insulating them from the strengths and weaknesses of various MT implementations. (wait, is that a good thing? don't you need some feedback as to what KIND of corpus the MT system needs?)
-%With the ALPAC report's pessimistic outlook on MT arguably responsible for sparking decades of fundamental linguistics research in the tradition of Chomsky, it is only fitting that we now bring linguistics back?
-%RNN encoder-decoders are not the first corpus-based MT methodology (EBMT then SMT then this), and it is unlikely in this era of Big Data that they will be the last.
-% For instance, EBMT suffers from relatively poor generalization and SMT has problems with nonlocality.
-% (RNN built on relatively shaky ground, since word vectors don't QUITE make sense for function words?)
-% Seems somewhat foolhardy to marginalize the domain experts (no, lots of deep learning advances have been made by IGNORING expert-created representations)
-% One might conjecture that the fundamental problem in natural language processing is one of data representation
-%Return of the linguist: it is relatively easy to come up with examples that industrial-grade systems fail. (hmm,)
-%he was shown the car \zh{他 给 展示 了 车}?
+% moreover, you're at the mercy of your third-party translators - if you want more data, you gotta wait.
 
 
-
- 
 
 
 
@@ -179,15 +199,24 @@ unlike all the different competing methods, it seems that a ``universal translat
 \section{Related Work}
 \label{sec:related}
 
-Nice tip: ONE LINE PER SENTENCE.
+The basic 
+
+The idea underlying generation system was essentially proposed 
+This aspect of our work is perhaps closest in spirit to the equivalence classes used by \mynewcite{brown:99} to reduce the data requirements of an EBMT system \mycitep{ebmtbook}.
+
+system described below is to have linguists write a template and then levering up with the computer to add lexical and syntactic variation.  
+As a simple example, 
+{\small \tt The NP jumped over the moon}
+
+
+
+
 
 Unlike more AI-oriented or natural language understanding approaches, we are solely concerned here with the generation of surface forms
 
-At some point, I will almost definitely be citing Moses \mycitep{moses}
 
-the latest version of the Stanford Segmenter \mycitep{segmenter:2005,segmenter:2008}
 
-This aspect of our work is perhaps closest in spirit to the equivalence classes used by \mynewcite{brown:99} to reduce the data requirements of an EBMT system \mycitep{ebmtbook}.
+
 
 In the Moses toolchain, the {\small \tt mkcls} component \mycitep{och:98} performs this process in reverse, binning words into automatically-generated equivalence classes to alleviate data sparsity issues.
 % USUALLY alignment only, CAN be applied to translation... http://www.statmt.org/moses/?n=Advanced.Models#ntoc6
@@ -286,6 +315,8 @@ We consider the Chinese to English machine translation task, using the
 
 Out of domain corpus
 
+the latest version of the Stanford Segmenter \mycitep{segmenter:2005,segmenter:2008}
+
 citations needed
 IWSLT \mycitep{wit3} - point out that this corpus is freely available
 OPUS zh\_zh \mycitep{opensubtitles} MultiUN\mycitep{multiun} 
@@ -332,6 +363,9 @@ The envisioned ultimate target domain is (cleaned) everyday speech (maybe movie 
 expert-sourcing by linguists, using the computer to lever up - computer assisted translation, in a sense; maybe computer-amplified
 crowdsourcing by ``amateur linguists''
 
+Crowdsourcing also has its place in post-editing, at the very least, for test sets.
+In a shared evaluation task with many language pairs, the most practical way for this is probably crowdsourcing.
+
 But must this be so? Vast untapped resource of students or whatever.
 
 estimate about 1 noun per minute (my pathetic work speed)
@@ -354,6 +388,10 @@ In the short term
 Increasing lexical variation by expanding the lexicon, especially for uncommon words in the training corpus, to alleviate data sparsity.
 Increasing syntactic variation in a high-quality way by harvesting more templates, in the old EBMT tradition
 Work along these lines is currently underway.
+
+
+%RNN encoder-decoders are not the first corpus-based MT methodology (EBMT then SMT then this), and it is unlikely in this era of Big Data that they will be the last.
+
 
 
 
