@@ -50,7 +50,7 @@
 
 
 \begin{abstract}
-An increased focus on 
+An increased focus on a
 
 is proposed.
 
@@ -70,11 +70,11 @@ In particular, we believe this is amenable to crowdsourcing by ``amateur linguis
 
 \section{Motivation} 
 
-As early as Jelinek's (in)famous quote from the 1980's that ``{\em Every time I fire a linguist, my performance goes up},'' both linguists and linguistics have been increasingly marginalized in natural language processing. 
+As early as Jelinek's (in)famous quote during the 1980's that ``{\em Every time I fire a linguist, my performance goes up},'' both linguists and linguistics have been increasingly marginalized in natural language processing. 
 More recently, for example, \mynewcite{collobert:2011} mention the possibility of ``{\em [ideally]...to learn from letter sequences rather than words},'' illustrating an AI-motivated desire to move away from even the most fundamental of linguistic concepts.
 A specific instance of this overall trend is the gradual shift of machine translation (MT) away from classical linguistic rule-based approaches \mycitep{hutchins:2005} to contemporary machine learning approaches, which underlie statistical phrase-based systems like Moses \mycitep{moses} and more recent neural network systems \mycitep{sutskever:2014,bengio:2014}.  
 But in the end, even the most cutting-edge machine learning MT system relies crucially on multilingual parallel corpora, typically taken from external sources like multilingual parliamentary proceedings. 
-This results in what we perceive to be a disproportionate amount of effort being dedicated to the machine learning component of machine translation, with the ever-important input corpora being treated almost as an afterthought.\footnote{
+This results in what we perceive to be a disproportionate amount of effort being dedicated to the machine learning component of machine translation, with input corpora being treated almost as an afterthought.\footnote{
     Of course, these parallel corpora represent hundreds of translator-hours of work. 
     However, these translations are generally optimized for human consumption, not machine learning, with no regard for such niceties as sentence alignment.
     This is illustrated briefly in Section \ref{case_study}.
@@ -96,41 +96,39 @@ What we propose is to bring these jobs back ``in-house'', in the updated context
 
 % TODO: don't need to go into this much detail, do you? This would be the first section to trim, if it runs OVER length
 % To find an example of suboptimally translated parallel corpora in the literature, one need not look far.
-As a concrete example to illustrate the need for higher-quality parallel corpora, we briefly consider the official Chinese to English baseline translation of the {\small \tt tst2010} data set\footnote{https://wit3.fbk.eu/score.php?release=2014-01} from the IWSLT shared task studied in Section \ref{experiments}.
-As a very crude way of assessing translation quality, we used the official evaluation software, MultEval \mycitep{multeval} to compute scores for each translated line individually.
-Upon manual examination, it was found that the lines with the worst individual TER scores \mycitep{ter}, some as high as 300\%, almost all corresponded to significant translation errors in the Chinese side of the gold corpus.
 
-Not only misaligned sentences, but also apparent data entry errors, 
+As an example of suboptimal parallel corpora being used for machine translation, consider the official Chinese to English baseline translation of the {\small \tt tst2010} data set\footnote{https://wit3.fbk.eu/score.php?release=2014-01} from the TED talks corpus, described in greater detail in Section \ref{experiments}.
+As a very crude way of assessing translation quality, we used the official evaluation software MultEval \mycitep{multeval} to compute scores for each translated line individually.
+Upon manual inspection, the worst scoring individual lines (with TER scores over 150\%) were almost all found to correspond to poor human translations on the Chinese side of the gold corpus.\footnote{
+    High TER scores indicated misaligned sentences as well as clerical errors.  In particular, the lecture with {\small \tt talkid} 767 had dozens of erroneous lines, in some of the worst cases having the same Chinese sentence copy/pasted three times on the same line. 
+    The baseline Moses system tries valiantly, but it ultimately scores poorly for trying to produce a good machine translation of a poor human translation.
+    Alternatively, one can interpret these errors as an additional source of noise in the human encoding of English into Chinese.
+}
+Such translations might suffice for viewing translated videos monolingually, but they are far from ideal for training a machine translation system.
 
-Unreasonable for a human to duplicate, much less MT systems.
+One might expect such errors to be relatively well-tolerated in large training corpora. 
+Nevertheless, this is particularly unsettling because the {\small \tt tst2010} data set has been used as the official development/tuning set for the past several IWSLT evaluation campaigns. 
+It is also unclear what effect such noisy test corpora have on MT system evaluation and comparison.
+
+In any case, the fact that these errors have persisted this long ({\small \tt tst2010} has been distributed with only minor changes for every IWSLT Chinese-English evaluation campaign since 2012) is a testament to how insidious these errors can be, even for a leading international conference. 
+At the very least, this suggests a need for more careful post-editing of bitexts, particularly for development and test corpora.
+More ideal, though, would be the creation of parallel corpora for the express purpose of training, tuning, and evaluating data-driven MT systems.
+
+
+
+% TODO: display an example bad-sentence pair? If I don't, then what was the point of getting zh fonts working?? sigh
+
+% I guess don't be concrete - don't say it... because then, you have to be more concrete about it...
+	% I can elaborate if reviewers ask... but for now, let's just be concise...
 
 % TODO: table with change; also list best and worst 
 % caption should mention that the difference between 
-    % ALTHOUGH you would expect that it would improve all models, it's not clear whether 
+    % ALTHOUGH you would expect that it would improve all models, it's not clear whether...err? hard to be precise here.
 %Removing TED talk number 767 (over 200 lines), as well as 15 hand-picked lines with bad TER scores, 
-
 %First, note that the scores improve, which is consistent with the observation that 
 % something to keep in mind in case reviewers ask
-
-
-good machine translations of bad Chinese sentences.
-
-
-
-
-
-
-One would expect such errors to be relatively well-tolerated in large training corpora
-But one bad 200-line talk constitutes a significant fraction of {\small \tt tst2010}, which is only 1500 lines total.
-More distressing is the fact is that the {\small \tt tst2010} data set has been used as the official development/tuning set for the past several IWSLT evaluation campaigns.
-It is unclear what effect such noisy corpora would have on other systems, 
-especially when used for tuning
-
-
-
 %This results in a significant TER score change that is almost as large as the score difference between the highest and lowest ranking system from the evaluation campaign.  
 %BLEU scores \mycitep{bleu}, on the other hand, did not change much.
-
 % no, omit this, because DUH, if you change the test set, the scores will change. (it's like changing your ruler.)
 % TODO: table and reference
 %\begin{table}[]
@@ -147,48 +145,20 @@ especially when used for tuning
 %\end{tabular}
 %\caption{By comparison, the difference between the baseline TER score and (not shown) } % TODO: caption
 %\end{table}
+% TODO: table of scores after purging. This is pretty crucial? why?
+	% i think i THOUGHT this was crucial because i had to back up my claims concretely...
+	% but the claim from the data is tenuous at best - of course the scores change if the test set changes! so WHAT?
+	% BESIDES, I tried training and tuning with purged corpora, and the difference was minimal. it's quite possible that people just don't CARE
 
 
 
 
 
-% TODO: display an example bad-sentence pair? 
+\subsection{Upsides, Potential Applications - RETITLE}
 
-
-
-
-
-
-
-
-
-
-Examining 
-
-
-Just mention for now that there is an entire lecture that is bad
-Also hand-purged several other sentences
-
-TODO: table of scores after purging. This is pretty crucial
-
-
-
-
-
-It is a testament to how indisidious these errors can be that they persisted this long (tst2010 was distributed as recently as IWSLT2015
-
-Not even an international conference is immune to such issues
-
-It also demonstrates the tremendous imbalance between linguistic effort and machine learning effort/investment
-
-
-
-
-Higher corpus quality is desirable.
+Okay, so Higher corpus quality is desirable.
 Larger in-domain corpus quantity is desirable too - see learning curve controls below?
 
-
-\subsection{Upsides, Potential Applications}
 
 
 My main point seems to be that nobody makes high quality and quantity parallel corpora JUST for machine translation, and it seems like that's sorely needed for both training and benchmarking.
@@ -196,7 +166,7 @@ My main point seems to be that nobody makes high quality and quantity parallel c
 Traditionally, corpus construction has been considered prohibitively expensive, ``scavenged'' from other sources like parliamentary proceedings or lecture subtitles.
 But we argue here that it need not be so expensive.
 
-Such synthetic parallel corpora can also be viewed as benchmark tasks (need to cite Facebook bAbI).
+Such synthetic parallel corpora can also be viewed as benchmark tasks (need to cite \mycitep{Facebook bAbI}).
 This is actually probably more important than you'd think, because looking at IWSLT15, some of the human translations are VERY loose.
 So there's another element of noise in the data, and it's one that no amount of downstream machine learning can get rid of.
 (Although people have tried corpus evaluation...)
@@ -269,21 +239,12 @@ The only real cure for unknown words is moar data
 
 
 
-
-
-
 other approaches to synthetic corpora, which are essentially bootstrapped from other MT systems
 
 Hardly a new idea ... but the emphasis here is on the resulting corpus
 
 
 
-
-
-maybe the latest Hutchins overview or nutshell?
-
-
-chomsky: transformations, colorless green ideas
 
 
 size doesn't always matter - those massive OpenSubtitles corpora don't help
@@ -310,12 +271,17 @@ We adopt the pragmatic, ``defeatist'' attitude of modeling only straightforward 
 This is (probably? ref??) unlike other NLG work in that our emphasis is on surface forms, not the underlying data representation.
 
 
-\section{Model}
+\section{Our Primitive Multilingual Generator}
 
 used for corpus analysis stanford POS tagger (incomplete bibtex entry?) \mycitep{postagger:2003}
 
 %\subsection{Simplistic Linguistics}
 We adopt the exceedingly simplistic view of language as nouns, verbs, and descriptions (modifications) thereof.
+
+We focus on declarative indicative present active sentences in the hopes that they can be transformed into other forms in the long run.
+Similarly, although we enforce some semantic constraints, our system generally produces nonsensical sentences in the spirit of ``Colorless green ideas sleep furiously''.
+chomsky: transformations, colorless green ideas? 
+
 
 two sources of complexity
 - lexical (semantic?)
@@ -340,11 +306,14 @@ Crude though it may be, we plan on eventually open-sourcing both the generator a
 \subsection{Methods}
 As mentioned in 
 The IWSLT 2015 version of the WIT$^3$ corpus, which consists of multilingual subtitles of TED talks, covering a wide variety of subjects. 
+considered briefly in Section \ref{case_study}
 
 As prepared lectures, they fall somewhere between the conversational language of movie subtitles and the formal written language of UN resolutions.
-The latter are freely available online from the OPUS project \mycitep{opus} 
+The latter are freely available online from the OPUS project \mycitep{opus:2012} as the OpenSubtitles\footnote{http://www.opensubtitles.org/} 2016 \mycitep{opensubtitles:2016} and the MultiUN \mycitep{multiun} corpora, respectively.
 
 We consider the Chinese to English machine translation task, using the 
+
+first 
 
 Out of domain corpus
 
@@ -352,11 +321,13 @@ the latest version of the Stanford Segmenter \mycitep{segmenter:2005,segmenter:2
 
 citations needed
 IWSLT \mycitep{wit3} - point out that this corpus is freely available
-OPUS zh\_zh \mycitep{opensubtitles} MultiUN\mycitep{multiun} 
+OPUS 
+zh\_zh corpus from the OpenSubtitles 2016 corpus , with lines cleaned using some ad hoc heuristics
+MultiUN 
 Moses \mycitep{moses}
-KenLM \mycitep{kenlm}, which we found to be faster and stabler at decoding time.
 
-parameters used
+We configured Moses as described in \mycitep{wit3}, with the exception of changing the target monolingual language model toolkit to KenLM \mycitep{kenlm}, which we found to be faster and stabler than IRSTLM \mycitep{irstlm} at decoding time.
+For the remaining unspecified model settings, we used the {\small \tt grow-diag} alignment heuristic recommended by \mynewcite{segmenter:2008} and the {\small \tt mslr-fe} configuration for lexicalized reordering.
 
 The corpus, which is freely available, consists 
 
@@ -423,7 +394,7 @@ More thorough treatment of articles.
 (More) treatment of prepositional phrases.
 Conjunctions.
 Interrogatives and imperatives.
-Pronouns - implemented as names here...? wait, but what about I/me? ugh
+
 
 In the short term
 Increasing lexical variation by expanding the lexicon, especially for uncommon words in the training corpus, to alleviate data sparsity.
