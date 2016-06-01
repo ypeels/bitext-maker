@@ -70,7 +70,7 @@ In particular, we believe this is amenable to crowdsourcing by ``amateur linguis
 
 \section{Motivation} 
 
-As early as Jelinek's (in)famous quote during the 1980's that ``{\em Every time I fire a linguist, my performance goes up},'' both linguists and linguistics have been increasingly marginalized in natural language processing. 
+As early as Jelinek's (in)famous quote during the 1980's that ``{\em Every time I fire a linguist, my performance goes up},'' both linguists and linguistics have been increasingly marginalized in natural language processing (NLP). 
 More recently, for example, \mynewcite{collobert:2011} mention the possibility of ``{\em [ideally]...to learn from letter sequences rather than words},'' illustrating an AI-motivated desire to move away from even the most fundamental of linguistic concepts.
 A specific instance of this overall trend is the gradual shift of machine translation (MT) away from classical linguistic rule-based approaches \mycitep{hutchins:2005} to contemporary machine learning approaches, which underlie statistical phrase-based systems like Moses \mycitep{moses} and more recent neural network systems \mycitep{sutskever:2014,bengio:2014}.  
 But in the end, even the most cutting-edge machine learning MT system relies crucially on multilingual parallel corpora, typically taken from external sources like multilingual parliamentary proceedings. 
@@ -155,6 +155,7 @@ More ideal, though, would be the creation of parallel corpora for the express pu
 
 
 \subsection{Potential Benefits}
+\label{subsec:benefits}
 
 Large, high quality synthetic parallel corpora could be useful as:
 
@@ -166,51 +167,19 @@ Large, high quality synthetic parallel corpora could be useful as:
 \end{itemize}
 % sigh, this set of bullets seems much clearer than all those stupid sentences that came before
 
+We believe that natural language processing in general and machine translation in particular are particularly amenable to artifical data generation. 
+Unlike many machine learning applications (image recognition, finance), NLP data sets are manmade to begin with; humans themselves {\em are} the primary natural producers and consumers of raw written language data.
+Translation is further privileged as perhaps the only NLP task for which millions of people (foreign-language learners) already undergo years of formal training, which has implications for scalability via crowdsourcing (Section \ref{sec:future}).
 
-Larger in-domain corpus quantity is desirable too - see learning curve controls below?
+Other practical considerations shine a favorable light on parallel corpus generation.
+As the inverse problem of translation, multilingual generation is also an easier task in some senses. 
+For example, lexical ambiguity can be largely alleviated,\footnote{
+    Ideally the generator would have {\em a priori} knowledge about whether it is writing a sentence pair about, say,  a (financial) bank or a (river) bank.
+} and segmentation of languages like Chinese \mycitep{segmenter:2005,segmenter:2008} becomes a non-issue.
+Parallel corpora also provide a natural avenue through which to interface contemporary MT systems with the countless linguist-years of expertise that have been invested into rule-based MT systems, as discussed in Section \ref{sec:related}.
+And unlike the various competing MT methods, which are by nature competitive, corpora are inherently collaborative.
 
-
-
-
-lexical ambiguity is naturally alleviated
-
-
-RBMT - countless developer-years of expertise
-
-
-
-
-in the spirit of example-based MT system \mycitep{ebmtbook}
-
-
-% moreover, you're at the mercy of your third-party translators - if you want more data, you gotta wait.
-
-
-
-Translation is perhaps the only NLP task for which millions of people already undergo years of training
-
-
-Unlike many machine learning tasks (image recognition, finance), NLP data are purely artificial/manmade.  New paradigm?  Not enough attention has been paid IMO to semi-automated corpus generation.  Well, typical approaches are paid, like Mechanical Turk... but there is a vast untapped source of data in the form of student problem sets, in the spirit of reCAPTCHA (citation!?)
-NLP is unique among machine learning tasks in that humans are not only consumers, but also producers of data - the alpha and the omega, the beginning and the end.
-MT is further unique among NLP in that both input and output representations are widely accepted (modulo dialectical variations) - the source and target languages themselves.
-People on the street would agree to the representations.
-
-
-% should this go in the ``conclusion''?
-Okay, so our ultimate goal is translation of everyday conversational sentences
-
-This could take the form of amplified training sets in the short run, and perhaps a ``universal translation memory'' in the long run.
-unlike all the different competing methods, it seems that a ``universal translation memory'' would be inherently collaborative (methods are competitive by nature, can't combine naturally, outside of ensemble methods, whereas data provides a natural avenue for large-scale collaboration)
-
-WELL... issues of ambiguity are alleviated, but only somewhat (e.g., for a sentence about a bank, the generator should know whether it's a building). 
-BUT ambiguous attachments can still be generated (e.g., the [animal] with the [animal] with the overbite), and it would still take additional logic for the system to recognize this, much less generate all possible translations...
-Maybe just emphasize the fact that lexical ambiguity is virtually eliminated, although structural or semantic ambiguity is still possible in some cases...
-But it still seems like it'll be fewer cases... The [person] saw the dog with(by means of) the [vision implement]
-
-Can think of this as something intermediate between fully automatic (RBMT, or semi-supervised SMT) and fully hand-crafted (human translation, which is the norm).
-Compositional trees are more automatic-like, but generate more sentence pairs/tuples.
-Complex templates are more hand-crafted, but generate fewer pairs/tuples, and are (presumably) harder to combine compositionally (but are they really!?).
-
+This paper is organized as follows.
 Section \ref{sec:related} discusses previous related work,
 Section \ref{sec:generator} describes our first attempt at implementing a parallel corpus generator,
 Section \ref{sec:experiments} gives preliminary results, 
@@ -221,89 +190,95 @@ and Section \ref{sec:future} proposes future work.
 \section{Related Work}
 \label{sec:related}
 
-The basic 
+The idea of using synthetic parallel corpora in machine translation is hardly new.
+Previous attempts at creating synthetic parallel corpora have used rule-based MT (RBMT) systems \mycitep{hu:2007,dugast:2008,murakami:2009,rubino:2014} but the input to the RBMT systems was again dictated by external corpora in the desire to produce immediate results.
+A longer-term approach that may pay dividends (Section \ref{subsec:benefits}) would be to run RBMT systems on specially chosen sentences for which they are known to produce high-quality translations, or perhaps eventually directly encoding their rules into carefully crafted parallel corpora.
 
-The idea underlying generation system was essentially proposed 
+Our parallel corpus generation system (Section \ref{sec:generator}) is very similar to the recursive equivalence class approach to example-based MT \mycitep{ebmtbook} used by \mynewcite{brown:99}. 
+Our generator also uses a somewhat more varied grammar that also admits the use of participial noun modifiers.
+But more importantly, we believe this line of work was ahead of its time and consider our main contribution to be the reevaluation of its value to the contemporary machine learning approach to MT.  
 
+Equivalence classing is itself an integral part of the default pipeline of Moses \mycitep{moses}, the open-source statistical MT system, with the {\small \tt mkcls} component \mycitep{och:98} binning words into automatically-generated equivalence classes to alleviate data sparsity issues.
 
-system described below is to have linguists write a template and then levering up with the computer to add lexical and syntactic variation.  
-As a simple example, 
-{\small \tt The NP jumped over the moon}
-
-
-
-
-
-Unlike more AI-oriented or natural language understanding approaches, we are solely concerned here with the generation of surface forms
-
-
-
-
-
-In the Moses toolchain, the {\small \tt mkcls} component \mycitep{och:98} performs this process in reverse, binning words into automatically-generated equivalence classes to alleviate data sparsity issues.
-% USUALLY alignment only, CAN be applied to translation... http://www.statmt.org/moses/?n=Advanced.Models#ntoc6
-% uh, so do people already do this??
-With some effort, you can use these bins during steps other than alignment, although this is not done by default.
-...
 Moreover, as they are upstream of GIZA++, these bins are constructed at the lexical level, not the phrase level, whereas the templates described below can make substitutions at the level of larger constituents and phrases.
+
 Furthermore, it is run at training time and cannot help with unknown words at test time (is this true??)
 The only real cure for unknown words is moar data
 
 
+no straightforward way to apply linguistic modifiers to the classes, relying instead on the syntactic variety of the data corpus to capture linguistic effects.
+
+% USUALLY alignment only, CAN be applied to translation... http://www.statmt.org/moses/?n=Advanced.Models#ntoc6
+% uh, so do people already do this??
+With some effort, you can use these bins during steps other than alignment, although this is not done by default.
+...
 
 
 
 
 
-Previous attempts at creating synthetic parallel corpora have used rule-based MT (RBMT) systems \mycitep{hu:2007,dugast:2008,murakami:2009,rubino:2014}
-
-
-but the input to the RBMT systems was again dictated by external corpora -- domain overlap was prioritized over linguistic consideration of what sentences the RBMT system could translate most accurately.
-
-Our approach, 
-
-not designed from the ground up. We consider a more {\em ab initio} approach
-
-This aspect of our work is perhaps closest in spirit to the equivalence classes used by \mynewcite{brown:99} to reduce the data requirements of an EBMT system \mycitep{ebmtbook}.
-
-But we propose allowing more rule-based modifications of these templates
-Also, our goal is to generate a large, wide-coverage, high-quality corpus, not jumping directly to translation from examples as in EBMT systems
-
-
-
-Hardly a new idea ... but the emphasis here is on the resulting corpus
 
 
 
 
 
-size doesn't always matter - those massive OpenSubtitles corpora don't help
-- uh, is the problem quality? should i run some Moses runs with a small portion of MultiUN to see how quality improves?
-
-lots of things are resolved naturally when considering generation instead of discrimination
-- ambiguity (you know what you want to say)
-- segmentation (you know what ``phrases'' you wanted to output)
 
 
 
-The tree structure we adopt is something intermediate between constituency trees and dependency trees, and it was chosen for ease of implementation.
 
-We adopt the pragmatic, ``defeatist'' attitude of modeling only straightforward linguistic phenomena compositionally; if the theory and data structures required to model a phenomenon are sufficiently complicated, everything is probably better off just going directly to a translation via template, instead of trying to concoct a sophisticated theory that has to be consistent with all previously theorized phenomena.
 
-This is (probably? ref??) unlike other NLG work in that our emphasis is on surface forms, not the underlying data representation.
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 \section{A Primitive Multilingual Generator}
-\label{generator}
+\label{sec:generator}
+
+As a simple example, 
+{\small \tt The NP jumped over the moon}
+
+system described below is to have linguists write a template and then levering up with the computer to add lexical and syntactic variation.  
+
+The rudimentary tree structure we adopt is something intermediate between constituency trees and dependency trees, and it was chosen for ease of implementation. 
+Modifiers are constructed as constituent-like, but also maintain dependency links to their target words.
+[ugh should i bother with this?]
+especially if we are just concerned with producing high-quality surface forms, instead of performing complex logical reasoning on the underlying data representation
+
+
+
 
 used for corpus analysis stanford POS tagger (incomplete bibtex entry?) \mycitep{postagger:2003}
+
+Unlike AI-oriented or natural language understanding approaches, our primary goal is to generate parallel corpora of surface forms, offering us a significant amount of flexibility on the method of generation. 
+adopt elements of both rule-based and example-based MT systems
+
+Our first attempt, described in Section \ref{sec:generator}, 
+
+rules: syntactic variety
+
+in the spirit of example-based MT system \mycitep{ebmtbook}
+
+We adopt the pragmatic, ``defeatist'' attitude of modeling only straightforward linguistic phenomena compositionally; if the theory and data structures required to model a phenomenon are sufficiently complicated, everything is probably better off just going directly to a translation via template, instead of trying to concoct a sophisticated theory that has to be consistent with all previously theorized phenomena.
+The tradeoff is that 
+Compositional trees are more automatic-like, but generate more sentence pairs/tuples.
+Complex templates are more hand-crafted, but generate fewer pairs/tuples, and are (presumably) harder to combine compositionally (but are they really!?).
 
 %\subsection{Simplistic Linguistics}
 We adopt the exceedingly simplistic view of language as nouns, verbs, and descriptions (modifications) thereof.
 
 We focus on declarative indicative present active sentences in the hopes that they can be transformed into other forms in the long run.
 Similarly, although we enforce some semantic constraints, our system generally produces nonsensical sentences in the spirit of ``Colorless green ideas sleep furiously''.
-chomsky: transformations, colorless green ideas? 
+based very loosely on the early work of chomsky: transformations, colorless green ideas? 
 
 
 two sources of complexity
@@ -349,6 +324,9 @@ OPUS
 zh\_zh corpus from the OpenSubtitles 2016 corpus , with lines cleaned using some ad hoc heuristics
 MultiUN 
 Moses \mycitep{moses}
+
+Since we are interested in the relative effect an additional synthetic parallel corpus
+we choose a simple baseline system and fix other variables
 
 We configured Moses as described in \mycitep{wit3}, with the exception of changing the target monolingual language model toolkit to KenLM \mycitep{kenlm}, which we found to be faster and stabler than IRSTLM \mycitep{irstlm} at decoding time.
 For the remaining unspecified model settings, we used the {\small \tt grow-diag} alignment heuristic recommended by \mynewcite{segmenter:2008} and the {\small \tt mslr-fe} configuration for lexicalized reordering.
@@ -403,6 +381,10 @@ we believe it is worth an initial investment to create a scalable system
 expert-sourcing by linguists, using the computer to lever up - computer assisted translation, in a sense; maybe computer-amplified
 crowdsourcing by ``amateur linguists''
 
+
+moreover, you're at the mercy of your third-party translators - if you want more data, you gotta wait.
+But with a sufficiently compelling educational app/platform, you wouldn't have to wait OR pay for more data
+
 Crowdsourcing also has its place in post-editing, at the very least, for test sets.
 In a shared evaluation task with many language pairs, the most practical way for this is probably crowdsourcing.
 
@@ -410,6 +392,9 @@ But must this be so? Vast untapped resource of students or whatever.
 an open challenge to the NLP community at large
 with a sufficiently compelling and thus widely used educational app 
 a potentially game-changing source of supervised data for NLP in general
+
+Well, typical approaches are paid, like Mechanical Turk... but there is a vast untapped source of data in the form of student problem sets
+as with the success story of reCAPTCHA \mycitep{recaptcha}, we believe this will scale best when there is a natural harmony between data supply and demand
 
 
 estimate about 1 noun per minute (my pathetic work speed)
