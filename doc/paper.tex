@@ -77,9 +77,8 @@ But in the end, even the most cutting-edge machine learning MT system relies cru
 This results in what we perceive to be a disproportionate amount of effort being dedicated to the machine learning component of machine translation, with input corpora being treated almost as an afterthought.\footnote{
     Of course, these parallel corpora represent hundreds of translator-hours of work. 
     However, these translations are generally optimized for human consumption, not machine learning, with no regard for such niceties as sentence alignment.
-    This is illustrated briefly in Section \ref{case_study}.
+    This is illustrated briefly in Section \ref{subsec:case_study}.
     }
-
 
 In this paper, we propose bringing linguists back from a premature exile to craft high-quality, ``designer'' synthetic parallel corpora for machine translation.
 Such a division of labor would let linguists be linguists, with MT system development proceeding in parallel.  
@@ -90,14 +89,15 @@ What we propose is to bring these jobs back ``in-house'', in the updated context
 % oh is that the ``upsides'' section?
 
 
+% although it is ``concrete'', this section will probably be the first to get cut if I run OVER length (which had previously been unimaginable, but is starting to look more and more likely)
 % this is some stupid little side note I just noticed a couple weeks ago, but it is expanding to a huge size, because it's like the only concrete ``positive'' result I have...
 \subsection{Case Study}
-\label{case_study}
+\label{subsec:case_study}
 
 % TODO: don't need to go into this much detail, do you? This would be the first section to trim, if it runs OVER length
 % To find an example of suboptimally translated parallel corpora in the literature, one need not look far.
 
-As an example of suboptimal parallel corpora being used for machine translation, consider the official Chinese to English baseline translation of the {\small \tt tst2010} data set\footnote{https://wit3.fbk.eu/score.php?release=2014-01} from the TED talks corpus, described in greater detail in Section \ref{experiments}.
+As an example of suboptimal parallel corpora being used for machine translation, consider the official Chinese to English baseline translation of the {\small \tt tst2010} data set\footnote{https://wit3.fbk.eu/score.php?release=2014-01} from the TED talks corpus, described in greater detail in Section \ref{sec:experiments}.
 As a very crude way of assessing translation quality, we used the official evaluation software MultEval \mycitep{multeval} to compute scores for each translated line individually.
 Upon manual inspection, the worst scoring individual lines (with TER scores over 150\%) were almost all found to correspond to poor human translations on the Chinese side of the gold corpus.\footnote{
     High TER scores indicated misaligned sentences as well as clerical errors.  In particular, the lecture with {\small \tt talkid} 767 had dozens of erroneous lines, in some of the worst cases having the same Chinese sentence copy/pasted three times on the same line. 
@@ -154,38 +154,33 @@ More ideal, though, would be the creation of parallel corpora for the express pu
 
 
 
-\subsection{Upsides, Potential Applications - RETITLE}
+\subsection{Potential Benefits}
 
-Okay, so Higher corpus quality is desirable.
+Large, high quality synthetic parallel corpora could be useful as:
+
+\begin{itemize}
+\item Training sets for corpus-based MT systems, particularly for low-resource language pairs
+\item Benchmark tasks for MT evaluation, in the spirit of the Facebook bAbI tasks in question answering \mycitep{bAbI}
+\item Translation memories for computer-aided translation
+\item ``Language archives'': New NLP methods are developed every few years; linguistic theories change every decade or two; parallel corpora live forever (e.g., the Rosetta Stone).
+\end{itemize}
+% sigh, this set of bullets seems much clearer than all those stupid sentences that came before
+
+
 Larger in-domain corpus quantity is desirable too - see learning curve controls below?
 
 
 
-My main point seems to be that nobody makes high quality and quantity parallel corpora JUST for machine translation, and it seems like that's sorely needed for both training and benchmarking.
-
-Traditionally, corpus construction has been considered prohibitively expensive, ``scavenged'' from other sources like parliamentary proceedings or lecture subtitles.
-But we argue here that it need not be so expensive.
-
-Such synthetic parallel corpora can also be viewed as benchmark tasks (need to cite \mycitep{Facebook bAbI}).
-This is actually probably more important than you'd think, because looking at IWSLT15, some of the human translations are VERY loose.
-So there's another element of noise in the data, and it's one that no amount of downstream machine learning can get rid of.
-(Although people have tried corpus evaluation...)
-
-% interesting, but probably confusing to readers?
-%In the language of agile software development, test-driven MT system development, in which linguists pose sentence pairs, and MT developers work to translate them
-
-
-
-
-This could take the form of amplified training sets in the short run, and perhaps a ``universal translation memory'' in the long run.
-
-methods every few years; linguistic theories, representations every decade or so; parallel corpora live forever
 
 lexical ambiguity is naturally alleviated
 
+
 RBMT - countless developer-years of expertise
 
-unlike all the different competing methods, it seems that a ``universal translation memory'' would be inherently collaborative (methods are competitive by nature, whereas data can be collaborative)
+
+
+
+in the spirit of example-based MT system \mycitep{ebmtbook}
 
 
 % moreover, you're at the mercy of your third-party translators - if you want more data, you gotta wait.
@@ -201,6 +196,27 @@ MT is further unique among NLP in that both input and output representations are
 People on the street would agree to the representations.
 
 
+% should this go in the ``conclusion''?
+Okay, so our ultimate goal is translation of everyday conversational sentences
+
+This could take the form of amplified training sets in the short run, and perhaps a ``universal translation memory'' in the long run.
+unlike all the different competing methods, it seems that a ``universal translation memory'' would be inherently collaborative (methods are competitive by nature, can't combine naturally, outside of ensemble methods, whereas data provides a natural avenue for large-scale collaboration)
+
+WELL... issues of ambiguity are alleviated, but only somewhat (e.g., for a sentence about a bank, the generator should know whether it's a building). 
+BUT ambiguous attachments can still be generated (e.g., the [animal] with the [animal] with the overbite), and it would still take additional logic for the system to recognize this, much less generate all possible translations...
+Maybe just emphasize the fact that lexical ambiguity is virtually eliminated, although structural or semantic ambiguity is still possible in some cases...
+But it still seems like it'll be fewer cases... The [person] saw the dog with(by means of) the [vision implement]
+
+Can think of this as something intermediate between fully automatic (RBMT, or semi-supervised SMT) and fully hand-crafted (human translation, which is the norm).
+Compositional trees are more automatic-like, but generate more sentence pairs/tuples.
+Complex templates are more hand-crafted, but generate fewer pairs/tuples, and are (presumably) harder to combine compositionally (but are they really!?).
+
+Section \ref{sec:related} discusses previous related work,
+Section \ref{sec:generator} describes our first attempt at implementing a parallel corpus generator,
+Section \ref{sec:experiments} gives preliminary results, 
+and Section \ref{sec:future} proposes future work.
+
+
 
 \section{Related Work}
 \label{sec:related}
@@ -208,7 +224,7 @@ People on the street would agree to the representations.
 The basic 
 
 The idea underlying generation system was essentially proposed 
-This aspect of our work is perhaps closest in spirit to the equivalence classes used by \mynewcite{brown:99} to reduce the data requirements of an EBMT system \mycitep{ebmtbook}.
+
 
 system described below is to have linguists write a template and then levering up with the computer to add lexical and syntactic variation.  
 As a simple example, 
@@ -239,7 +255,21 @@ The only real cure for unknown words is moar data
 
 
 
-other approaches to synthetic corpora, which are essentially bootstrapped from other MT systems
+Previous attempts at creating synthetic parallel corpora have used rule-based MT (RBMT) systems \mycitep{hu:2007,dugast:2008,murakami:2009,rubino:2014}
+
+
+but the input to the RBMT systems was again dictated by external corpora -- domain overlap was prioritized over linguistic consideration of what sentences the RBMT system could translate most accurately.
+
+Our approach, 
+
+not designed from the ground up. We consider a more {\em ab initio} approach
+
+This aspect of our work is perhaps closest in spirit to the equivalence classes used by \mynewcite{brown:99} to reduce the data requirements of an EBMT system \mycitep{ebmtbook}.
+
+But we propose allowing more rule-based modifications of these templates
+Also, our goal is to generate a large, wide-coverage, high-quality corpus, not jumping directly to translation from examples as in EBMT systems
+
+
 
 Hardly a new idea ... but the emphasis here is on the resulting corpus
 
@@ -254,15 +284,7 @@ lots of things are resolved naturally when considering generation instead of dis
 - ambiguity (you know what you want to say)
 - segmentation (you know what ``phrases'' you wanted to output)
 
-WELL... issues of ambiguity are alleviated, but only somewhat (e.g., for a sentence about a bank, the generator should know whether it's a building). 
-BUT ambiguous attachments can still be generated (e.g., the [animal] with the [animal] with the overbite), and it would still take additional logic for the system to recognize this, much less generate all possible translations...
-Maybe just emphasize the fact that lexical ambiguity is virtually eliminated, although structural or semantic ambiguity is still possible in some cases...
-But it still seems like it'll be fewer cases... The [person] saw the dog with(by means of) the [vision implement]
 
-
-Can think of this as something intermediate between fully automatic (RBMT, or semi-supervised SMT) and fully hand-crafted (human translation, which is the norm).
-Compositional trees are more automatic-like, but generate more sentence pairs/tuples.
-Complex templates are more hand-crafted, but generate fewer pairs/tuples, and are (presumably) harder to combine compositionally (but are they really!?).
 
 The tree structure we adopt is something intermediate between constituency trees and dependency trees, and it was chosen for ease of implementation.
 
@@ -271,7 +293,8 @@ We adopt the pragmatic, ``defeatist'' attitude of modeling only straightforward 
 This is (probably? ref??) unlike other NLG work in that our emphasis is on surface forms, not the underlying data representation.
 
 
-\section{Our Primitive Multilingual Generator}
+\section{A Primitive Multilingual Generator}
+\label{generator}
 
 used for corpus analysis stanford POS tagger (incomplete bibtex entry?) \mycitep{postagger:2003}
 
@@ -293,7 +316,8 @@ Testing section reference: \ref{sec:related} - this requires changing secnumdept
 
 %\subsection{Implementation Details}
 Python
-YAML for data: very well suited. full Unicode support, and you don't even need to type quotation marks to enclose strings
+YAML for data: very well suited. full Unicode support, and you don't even need to type quotation marks to enclose strings.
+with an eye toward scalability
 Crude though it may be, we plan on eventually open-sourcing both the generator and its accompanying data
 
 
@@ -301,12 +325,12 @@ Crude though it may be, we plan on eventually open-sourcing both the generator a
 
 
 \section{Preliminary Experiments}
-\label{experiments}
+\label{sec:experiments}
 
 \subsection{Methods}
 As mentioned in 
 The IWSLT 2015 version of the WIT$^3$ corpus, which consists of multilingual subtitles of TED talks, covering a wide variety of subjects. 
-considered briefly in Section \ref{case_study}
+considered briefly in Section \ref{subsec:case_study}
 
 As prepared lectures, they fall somewhere between the conversational language of movie subtitles and the formal written language of UN resolutions.
 The latter are freely available online from the OPUS project \mycitep{opus:2012} as the OpenSubtitles\footnote{http://www.opensubtitles.org/} 2016 \mycitep{opensubtitles:2016} and the MultiUN \mycitep{multiun} corpora, respectively.
@@ -361,6 +385,7 @@ My corpora don't really seem to help, but neither do out-of-domain corpora.
 this will easily take up a whole column, because it includes 2 tables...
 
 \section{Proposed Future Work}
+\label{sec:future}
 
 I.e., shit I REALLY doubt I have time for...
 
@@ -372,6 +397,9 @@ For this paper, the lexical database was drawn from the IWSLT training set to ma
 This is indeed one potential use of this system, for training set amplification.
 The envisioned ultimate target domain is (cleaned) everyday speech (maybe movie or TV subtitles?) , for which syntactic and lexical diversity is expected to be relatively low, and unknown words would be particularly suitable for crowdsourcing.
 
+parallel corpus construction has been considered prohibitively expensive, hence the use of pre-translated sources like parliamentary proceedings
+we believe it is worth an initial investment to create a scalable system
+
 expert-sourcing by linguists, using the computer to lever up - computer assisted translation, in a sense; maybe computer-amplified
 crowdsourcing by ``amateur linguists''
 
@@ -379,6 +407,10 @@ Crowdsourcing also has its place in post-editing, at the very least, for test se
 In a shared evaluation task with many language pairs, the most practical way for this is probably crowdsourcing.
 
 But must this be so? Vast untapped resource of students or whatever.
+an open challenge to the NLP community at large
+with a sufficiently compelling and thus widely used educational app 
+a potentially game-changing source of supervised data for NLP in general
+
 
 estimate about 1 noun per minute (my pathetic work speed)
 
