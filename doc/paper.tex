@@ -71,8 +71,8 @@ In particular, we believe this is amenable to crowdsourcing by ``amateur linguis
 \section{Motivation} 
 
 As early as Jelinek's (in)famous quote from the 1980's that ``{\em Every time I fire a linguist, my performance goes up},'' both linguists and linguistics have been increasingly marginalized in natural language processing. 
-More recently, for example, \mynewcite{collobert 2011 footnote 8} mention the possibility of ``{\em [ideally]...to learn from letter sequences rather than words},'' illustrating an AI-motivated desire to move away from even the most fundamental of linguistic concepts.
-A specific instance of this overall trend is the gradual shift of machine translation (MT) away from classical linguistic rule-based approaches \mycitep{hutchins} to contemporary machine learning approaches, which underlie statistical phrase-based systems like Moses \mycitep{moses} and more recent neural network systems \mycitep{sutskever, bengio}.  
+More recently, for example, \mynewcite{collobert:2011} mention the possibility of ``{\em [ideally]...to learn from letter sequences rather than words},'' illustrating an AI-motivated desire to move away from even the most fundamental of linguistic concepts.
+A specific instance of this overall trend is the gradual shift of machine translation (MT) away from classical linguistic rule-based approaches \mycitep{hutchins:2005} to contemporary machine learning approaches, which underlie statistical phrase-based systems like Moses \mycitep{moses} and more recent neural network systems \mycitep{sutskever:2014,bengio:2014}.  
 But in the end, even the most cutting-edge machine learning MT system relies crucially on multilingual parallel corpora, typically taken from external sources like multilingual parliamentary proceedings. 
 This results in what we perceive to be a disproportionate amount of effort being dedicated to the machine learning component of machine translation, with the ever-important input corpora being treated almost as an afterthought.\footnote{
     Of course, these parallel corpora represent hundreds of translator-hours of work. 
@@ -107,15 +107,16 @@ Unreasonable for a human to duplicate, much less MT systems.
 % TODO: table with change; also list best and worst 
 % caption should mention that the difference between 
     % ALTHOUGH you would expect that it would improve all models, it's not clear whether 
-Removing TED talk number 767 (over 200 lines), as well as 15 hand-picked lines with bad TER scores, 
+%Removing TED talk number 767 (over 200 lines), as well as 15 hand-picked lines with bad TER scores, 
 
-First, note that the scores improve, which is consistent with the observation that 
+%First, note that the scores improve, which is consistent with the observation that 
+% something to keep in mind in case reviewers ask
+
 
 good machine translations of bad Chinese sentences.
 
 
-This results in a significant TER score change that is almost as large as the score difference between the highest and lowest ranking system from the evaluation campaign.  
-BLEU scores \mycitep{bleu}, on the other hand, did not change much.
+
 
 
 
@@ -127,24 +128,25 @@ especially when used for tuning
 
 
 
+%This results in a significant TER score change that is almost as large as the score difference between the highest and lowest ranking system from the evaluation campaign.  
+%BLEU scores \mycitep{bleu}, on the other hand, did not change much.
 
-
-
+% no, omit this, because DUH, if you change the test set, the scores will change. (it's like changing your ruler.)
 % TODO: table and reference
-\begin{table}[]
-\centering
-\label{table:tst2010}
-\begin{tabular}{|l|l|l|}
-\hline
- & BLEU & TER  \\ \hline
-Full {\small \tt tst2010} & 11.2 & 77.0  \\ \hline
-Purged {\small \tt tst2010} & 11.8 & 71.3  \\ \hline
+%\begin{table}[]
+%\centering
+%\label{table:tst2010}
+%\begin{tabular}{|l|l|l|}
 %\hline
-%{\small \tt tst2014} &  &   \\ \hline
-% &  &   \\ \hline
-\end{tabular}
-\caption{By comparison, the difference between the baseline TER score and (not shown) } % TODO: caption
-\end{table}
+% & BLEU & TER  \\ \hline
+%Full {\small \tt tst2010} & 11.2 & 77.0  \\ \hline
+%Purged {\small \tt tst2010} & 11.8 & 71.3  \\ \hline
+%%\hline
+%%{\small \tt tst2014} &  &   \\ \hline
+%% &  &   \\ \hline
+%\end{tabular}
+%\caption{By comparison, the difference between the baseline TER score and (not shown) } % TODO: caption
+%\end{table}
 
 
 
