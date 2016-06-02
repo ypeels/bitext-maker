@@ -71,7 +71,7 @@ In particular, we believe this is amenable to crowdsourcing by ``amateur linguis
 \section{Motivation} 
 
 As early as Jelinek's (in)famous quote during the 1980's that ``{\em Every time I fire a linguist, my performance goes up},'' both linguists and linguistics have been increasingly marginalized in natural language processing (NLP). 
-More recently, for example, \mynewcite{collobert:2011} mention the possibility of ``{\em [ideally]...to learn from letter sequences rather than words},'' illustrating an AI-motivated desire to move away from even the most fundamental of linguistic concepts.
+More recently, for example, \mynewcite{collobert:2011} mention the possibility ``{\em [ideally]...to learn from letter sequences rather than words},'' illustrating an AI-motivated desire to move away from even the most fundamental of linguistic concepts.
 A specific instance of this overall trend is the gradual shift of machine translation (MT) away from classical linguistic rule-based approaches \mycitep{hutchins:2005} to contemporary machine learning approaches, which underlie statistical phrase-based systems like Moses \mycitep{moses} and more recent neural network systems \mycitep{sutskever:2014,bengio:2014}.  
 But in the end, even the most cutting-edge machine learning MT system relies crucially on multilingual parallel corpora, typically taken from external sources like multilingual parliamentary proceedings. 
 This results in what we perceive to be a disproportionate amount of effort being dedicated to the machine learning component of machine translation, with input corpora being treated almost as an afterthought.\footnote{
@@ -184,7 +184,7 @@ Section \ref{sec:experiments} gives preliminary results,
 and Section \ref{sec:future} proposes future work.
 
 
-% hmm, this wound up being disturbingly short...
+
 \section{Related Work}
 \label{sec:related}
 
@@ -197,7 +197,7 @@ Our generator has more of a rule-based flavor, using a somewhat more varied gram
 But more importantly, we believe this line of work was ahead of its time and consider our main contribution to be bringing attention to its potential value to the contemporary machine learning approach to MT.  
 
 Equivalence classing is in fact an integral part of the standard pipeline of Moses \mycitep{moses}, the open-source statistical MT system. 
-To add ``an `example-based' touch to the statistical approach,'' the {\small \tt mkcls} component \mycitep{och:98} clusters words into automatically-generated equivalence classes to ameliorate data sparsity issues.
+During training, the {\small \tt mkcls} component adds ``{\em an `example-based' touch to the statistical approach}'' by clustering words into automatically-generated equivalence classes to ameliorate data sparsity issues \mycitep{och:98}.
 However, these clusters are trained only at the word level and not for phrases, and the clusters themselves are typically only used during alignment.
 Furthermore, since they are learned in an unsupervised manner from the parallel corpus, they can still benefit from the addition of more high-quality training examples, synthetic or otherwise.
 
@@ -213,91 +213,54 @@ Furthermore, since they are learned in an unsupervised manner from the parallel 
 % side note: if mkcls clusters were so awesome, they'd be used as standard factors... so you'd have to think that they're not
 
 
+% these links are too long for EMNLP. TODO: add them as footnotes for AMTA?
+% http://www.fb10.uni-bremen.de/anglistik/langpro/kpml/genbank/generation-bank.html
+% http://www.fb10.uni-bremen.de/anglistik/langpro/kpml/ genbank/R3b12-English/Docu/ENGLISH-nigel-exerciseset-mismatches-19981209/EX-SET-1.html
+In terms of freely available multilingual natural language generators, the most well-developed one we could find was KPML \mycitep{kpml}.
+But sentence writing is fairly involved because the focus seems to be on having a well-developed linguistic theory to explain the surface forms.
+In contrast, our primary goal is to generate parallel corpora of surface forms, affording us a significant amount of flexibility as to the method of generation. 
 
-\section{A Primitive Multilingual Generator}
+In the next section, we describe our own primitive attempt at a multilingual generator. 
+While we try to model straightforward linguistic phenomena compositionally, in the tradition of example-based MT \mycitep{ebmtbook}, we adopt the pragmatic attitude that sometimes the most effective way to represent a translation phenomenon is simply to write it down.
+Thus, with the long-term goal of scalability, we attempt to construct a system sufficiently flexible to write sentence pairs in large quantities through syntactic variations and also with ``hand-crafted'' quality through example-based templates.
+
+
+\section{A Nascent Multilingual Generator}
 \label{sec:generator}
 
-Unlike AI-oriented or natural language understanding approaches, our primary goal is to generate parallel corpora of surface forms, offering us a significant amount of flexibility as to the method of generation. 
-
-\small 
-\begin{center}
-{\tt S V O .}
-
-%S \zh{把} O V
-
-{\tt S \zh{我把} O V}
-
-%\zh{把} {\tt O V} \zh{}
-%\\
-%S 
-\end{center}
-\normalsize
-
-We adopt a pragmatic attitude of only trying to model straightforward linguistic phenomena compositionally; if the theory and data structures required to model a linguistic phenomenon are sufficiently complicated, 
-
-everything is probably better off just going directly to a translation via template, instead of trying to concoct a sophisticated theory that has to be consistent with all previously theorized phenomena.
-
-At the time of this writing, our system can 
-Literal 
-sentence templates are all 
-
-Our parallel corpus generator starts with 
-
-native speakers, linguists or otherwise
-
-S and O can be expanded 
-
-We can then allow the generator to vary both the syntactic and lexical content of 
 
 
-system described below is to have linguists write a template and then levering up with the computer to add lexical and syntactic variation.  
+As an example of how our synthetic parallel corpus generation system works, consider the following English-Chinese template pair:
 
-The rudimentary tree structure we adopt is something intermediate between constituency trees and dependency trees, and it was chosen for ease of implementation. 
-Modifiers are constructed as constituent-like, but also maintain dependency links to their target words.
-[ugh should i bother with this?]
-especially if we are just concerned with producing high-quality surface forms, instead of performing complex logical reasoning on the underlying data representation
+%\small
+\begin{center} \begin{small} 
+{\tt S V O .} \\
+{\tt S \zh{把} O V \zh{。}}
+\end{small} \end{center} 
+%\normalsize
 
+\noindent Our system then expands the subject {\small \tt S} and object {\small \tt O} as noun phrases, adding adjectival and participial modifiers as desired. 
+Semantic constraints can be imposed from the verb {\small \tt V} as well as externally.
+The generator can then vary the template lexically\footnote{Rewrite rule probabilities were set by hand; a more principled approach would, say, use rewrite probabilities from a generative PCFG parser.} and syntactically, allowing a large number of sentence pairs to be generated from a single template.
+We can also trade quantity for quality by adding more literals to the template, in the spirit of example-based MT.
 
-
-
-used for corpus analysis stanford POS tagger (incomplete bibtex entry?) \mycitep{postagger:2003}
-
-adopt elements of both rule-based and example-based MT systems
-
-Our first attempt, described in Section \ref{sec:generator}, 
-
-rules: syntactic variety
-
-in the spirit of example-based MT system \mycitep{ebmtbook}
-
-
-The tradeoff is that 
-Compositional trees are more automatic-like, but generate more sentence pairs/tuples.
-Complex templates are more hand-crafted, but generate fewer pairs/tuples, and are (presumably) harder to combine compositionally (but are they really!?).
-
+% TODO: looks like this is GOING to run over length. save some of this for AMTA, which is going to run way UNDER length
 %\subsection{Simplistic Linguistics}
-We adopt the exceedingly simplistic view of language as nouns, verbs, and descriptions (modifications) thereof.
-
-We focus on declarative indicative present active sentences in the hopes that they can be transformed into other forms in the long run.
-Similarly, although we enforce some semantic constraints, our system generally produces nonsensical sentences in the spirit of ``Colorless green ideas sleep furiously''.
-based very loosely on the early work of chomsky: transformations, colorless green ideas? 
-
-
-two sources of complexity
-- lexical (semantic?)
-- syntactic 
-
-The fact that verbs can serve as nouns (gerundives) and modifiers (participles and modals) is a significant source of added complexity. (footnote?)
-
-Testing section reference: \ref{sec:related} - this requires changing secnumdepth=2 in AAAI
+We adopt an exceedingly simplistic view of language as nouns, verbs, and their modifications and elaborations.
+Inspired by early work on transformations by \mynewcite{chomsky}, we focus on declarative indicative present active sentences in the hopes that they can be transformed into other forms in the long run. 
+Similarly, although we enforce some semantic constraints, our system generally produces nonsensical sentences like ``{\em Colorless green ideas sleep furiously.}''
+The fact that verb phrases can also serve as nouns (gerundives) and modifiers (participles) appears to be a common source of complexity, and we made it a priority to implement participial modifiers.
+To capture recursive structures like participles, we adopt a rudimentary tree representation that is something intermediate between constituency trees and dependency trees, with constituent-like modifiers that also maintain dependency-like links to their targets.
 
 %\subsection{Implementation Details}
-Python
-YAML for data: very well suited. full Unicode support, and you don't even need to type quotation marks to enclose strings.
-with an eye toward scalability
-Crude though it may be, we plan on eventually open-sourcing both the generator and its accompanying data
+% TODO: mention Python?
+One implementation detail worth mentioning is the choice of YAML for writing sentence templates and lexical data. 
+In particular, YAML has native Unicode support and does not even require quotation marks to enclose strings.
 
+% TODO: should I bother with this? 
+Crude though it may be, we plan on eventually open-sourcing both our generator and its accompanying data
 
+% oh this part really is just flying now, because there's no uncertainty as to what I DID
 
 
 
@@ -305,6 +268,9 @@ Crude though it may be, we plan on eventually open-sourcing both the generator a
 \label{sec:experiments}
 
 \subsection{Methods}
+
+% TODO: filler for AMTA? used for corpus analysis stanford POS tagger (incomplete bibtex entry?) \mycitep{postagger:2003}
+
 As mentioned in 
 The IWSLT 2015 version of the WIT$^3$ corpus, which consists of multilingual subtitles of TED talks, covering a wide variety of subjects. 
 considered briefly in Section \ref{subsec:case_study}
