@@ -51,7 +51,7 @@
 
 \begin{abstract}
 An increased focus on a
-
+S \zh{我把} O V
 is proposed.
 
 A particular system for doing this is presented.
@@ -80,11 +80,10 @@ This results in what we perceive to be a disproportionate amount of effort being
     This is illustrated briefly in Section \ref{subsec:case_study}.
     }
 
-In this paper, we propose bringing linguists back from a premature exile to craft high-quality, ``designer'' synthetic parallel corpora for machine translation.
+One of the major advantages of data-driven MT is that it removes the need for linguists to develop a new set of rules for an MT system to support a new language.
+In a sense, though, the rule-based MT linguist's job has really been  ``outsourced'' to third-party translators, who implicitly encode linguistic information in parallel corpora.
+We believe there is still a significant ``in-house'' role for linguists to play in corpus-based machine translation, and that is to direct the crafting of high-quality, ``designer'' synthetic parallel corpora, leveraging technologies like crowdsourcing to maximize throughput.
 Such a division of labor would let linguists be linguists, with MT system development proceeding in parallel.  
-In a sense, the use of external corpora has ``outsourced'' the rule-based MT linguist's job to third-party translators, who implicitly encode linguistic information in parallel corpora.  
-What we propose is to bring these jobs back ``in-house'', in the updated context of corpus-based MT.
-
 
 
 
@@ -185,7 +184,7 @@ Section \ref{sec:experiments} gives preliminary results,
 and Section \ref{sec:future} proposes future work.
 
 
-% hmm, this would up being disturbingly short...
+% hmm, this wound up being disturbingly short...
 \section{Related Work}
 \label{sec:related}
 
@@ -194,7 +193,7 @@ Previous attempts at creating synthetic parallel corpora have used rule-based MT
 A longer-term approach that may pay dividends (Section \ref{subsec:benefits}) would be to run RBMT systems on specially chosen sentences for which they are known to produce high-quality translations, or perhaps eventually directly encoding their rules into carefully crafted parallel corpora.
 
 Our parallel corpus generation system (Section \ref{sec:generator}) is very similar to the recursive equivalence class approach to example-based MT \mycitep{ebmtbook} used by \mynewcite{brown:99}. 
-Our generator also uses a somewhat more varied grammar that also admits the use of participial noun modifiers.
+Our generator has more of a rule-based flavor, using a somewhat more varied grammar that also admits the use of participial noun modifiers.
 But more importantly, we believe this line of work was ahead of its time and consider our main contribution to be bringing attention to its potential value to the contemporary machine learning approach to MT.  
 
 Equivalence classing is in fact an integral part of the standard pipeline of Moses \mycitep{moses}, the open-source statistical MT system. 
@@ -215,40 +214,41 @@ Furthermore, since they are learned in an unsupervised manner from the parallel 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-%%%%% WAIT a second, doesn't this in principle just leave it up to Moses to pick up ``class phrases''?
-
-
-
-%% uh... 
-
 \section{A Primitive Multilingual Generator}
 \label{sec:generator}
 
-% let's figure out how to do a ``figure''
+Unlike AI-oriented or natural language understanding approaches, our primary goal is to generate parallel corpora of surface forms, offering us a significant amount of flexibility as to the method of generation. 
 
-As a simple example, 
-{\small \tt The NP jumped over the moon}
+\small 
+\begin{center}
+{\tt S V O .}
+
+%S \zh{把} O V
+
+{\tt S \zh{我把} O V}
+
+%\zh{把} {\tt O V} \zh{}
+%\\
+%S 
+\end{center}
+\normalsize
+
+We adopt a pragmatic attitude of only trying to model straightforward linguistic phenomena compositionally; if the theory and data structures required to model a linguistic phenomenon are sufficiently complicated, 
+
+everything is probably better off just going directly to a translation via template, instead of trying to concoct a sophisticated theory that has to be consistent with all previously theorized phenomena.
+
+At the time of this writing, our system can 
+Literal 
+sentence templates are all 
+
+Our parallel corpus generator starts with 
+
+native speakers, linguists or otherwise
+
+S and O can be expanded 
+
+We can then allow the generator to vary both the syntactic and lexical content of 
+
 
 system described below is to have linguists write a template and then levering up with the computer to add lexical and syntactic variation.  
 
@@ -262,7 +262,6 @@ especially if we are just concerned with producing high-quality surface forms, i
 
 used for corpus analysis stanford POS tagger (incomplete bibtex entry?) \mycitep{postagger:2003}
 
-Unlike AI-oriented or natural language understanding approaches, our primary goal is to generate parallel corpora of surface forms, offering us a significant amount of flexibility on the method of generation. 
 adopt elements of both rule-based and example-based MT systems
 
 Our first attempt, described in Section \ref{sec:generator}, 
@@ -271,7 +270,7 @@ rules: syntactic variety
 
 in the spirit of example-based MT system \mycitep{ebmtbook}
 
-We adopt the pragmatic, ``defeatist'' attitude of modeling only straightforward linguistic phenomena compositionally; if the theory and data structures required to model a phenomenon are sufficiently complicated, everything is probably better off just going directly to a translation via template, instead of trying to concoct a sophisticated theory that has to be consistent with all previously theorized phenomena.
+
 The tradeoff is that 
 Compositional trees are more automatic-like, but generate more sentence pairs/tuples.
 Complex templates are more hand-crafted, but generate fewer pairs/tuples, and are (presumably) harder to combine compositionally (but are they really!?).
@@ -317,7 +316,14 @@ We consider the Chinese to English machine translation task, using the
 
 first 
 
+
+
+
+
 Out of domain corpus
+
+we of 
+the {\small \tt tmcombine} script \mycitep{tmcombine} included with Moses
 
 the latest version of the Stanford Segmenter \mycitep{segmenter:2005,segmenter:2008}
 
@@ -399,6 +405,7 @@ a potentially game-changing source of supervised data for NLP in general
 Well, typical approaches are paid, like Mechanical Turk... but there is a vast untapped source of data in the form of student problem sets
 as with the success story of reCAPTCHA \mycitep{recaptcha}, we believe this will scale best when there is a natural harmony between data supply and demand
 
+Sufficient quantities of supervised data seem to underlie high or state of the art performance in NLP
 
 estimate about 1 noun per minute (my pathetic work speed)
 
@@ -422,7 +429,7 @@ Increasing syntactic variation in a high-quality way by harvesting more template
 Work along these lines is currently underway.
 
 
-%RNN encoder-decoders are not the first corpus-based MT methodology (EBMT then SMT then this), and it is unlikely in this era of Big Data that they will be the last.
+RNN encoder-decoders are not the first corpus-based MT methodology (EBMT then SMT then this), and it is unlikely in this era of Big Data that they will be the last.
 
 
 
@@ -479,7 +486,7 @@ But to master one's native tongue takes like 10 years, and there's a BUNCH of un
     \bibliographystyle{apalike}
 \else \if \buildtarget \buildemnlp
     %Note that emnlp2016.bst chokes if there are 0 citations in your paper.    
-    %\mynewcite{moses}    
+    \mynewcite{moses}    
     \bibliographystyle{emnlp2016}
     
 \else \if \buildtarget \buildhcomp    
