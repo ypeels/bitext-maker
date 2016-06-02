@@ -85,8 +85,7 @@ Such a division of labor would let linguists be linguists, with MT system develo
 In a sense, the use of external corpora has ``outsourced'' the rule-based MT linguist's job to third-party translators, who implicitly encode linguistic information in parallel corpora.  
 What we propose is to bring these jobs back ``in-house'', in the updated context of corpus-based MT.
 
-% TODO: i haven't talked yet about the unreasonable effectiveness of in-domain data...
-% oh is that the ``upsides'' section?
+
 
 
 % although it is ``concrete'', this section will probably be the first to get cut if I run OVER length (which had previously been unimaginable, but is starting to look more and more likely)
@@ -186,7 +185,7 @@ Section \ref{sec:experiments} gives preliminary results,
 and Section \ref{sec:future} proposes future work.
 
 
-
+% hmm, this would up being disturbingly short...
 \section{Related Work}
 \label{sec:related}
 
@@ -196,25 +195,23 @@ A longer-term approach that may pay dividends (Section \ref{subsec:benefits}) wo
 
 Our parallel corpus generation system (Section \ref{sec:generator}) is very similar to the recursive equivalence class approach to example-based MT \mycitep{ebmtbook} used by \mynewcite{brown:99}. 
 Our generator also uses a somewhat more varied grammar that also admits the use of participial noun modifiers.
-But more importantly, we believe this line of work was ahead of its time and consider our main contribution to be the reevaluation of its value to the contemporary machine learning approach to MT.  
+But more importantly, we believe this line of work was ahead of its time and consider our main contribution to be bringing attention to its potential value to the contemporary machine learning approach to MT.  
 
-Equivalence classing is itself an integral part of the default pipeline of Moses \mycitep{moses}, the open-source statistical MT system, with the {\small \tt mkcls} component \mycitep{och:98} binning words into automatically-generated equivalence classes to alleviate data sparsity issues.
+Equivalence classing is in fact an integral part of the standard pipeline of Moses \mycitep{moses}, the open-source statistical MT system. 
+To add ``an `example-based' touch to the statistical approach,'' the {\small \tt mkcls} component \mycitep{och:98} clusters words into automatically-generated equivalence classes to ameliorate data sparsity issues.
+However, these clusters are trained only at the word level and not for phrases, and the clusters themselves are typically only used during alignment.
+Furthermore, since they are learned in an unsupervised manner from the parallel corpus, they can still benefit from the addition of more high-quality training examples, synthetic or otherwise.
 
-Moreover, as they are upstream of GIZA++, these bins are constructed at the lexical level, not the phrase level, whereas the templates described below can make substitutions at the level of larger constituents and phrases.
-
-Furthermore, it is run at training time and cannot help with unknown words at test time (is this true??)
-The only real cure for unknown words is moar data
-
-
-no straightforward way to apply linguistic modifiers to the classes, relying instead on the syntactic variety of the data corpus to capture linguistic effects.
-
-% USUALLY alignment only, CAN be applied to translation... http://www.statmt.org/moses/?n=Advanced.Models#ntoc6
-% uh, so do people already do this??
-With some effort, you can use these bins during steps other than alignment, although this is not done by default.
-...
-
-
-
+% POTENTIAL REVIEWER QUESTION (assuming they even understand wtf I was talking about here): well, but you can add word cluster ids as factors/features... (http://www.statmt.org/moses/?n=Advanced.Models#ntoc6 - simply annotate words )
+% my weak responses
+    % supervised data almost always trumps unsupervised data, especially in NLP. there is no real substitute for REAL, in-domain data
+    % also, you would still have to require the models to to learn from these noisy clusterings
+    % actually, word+mkcls is still a LEXICALIZED translation factor; that's probably why it doesn't really help during the translation phase
+        % class-LM (target sequence model over cluster-ids) seems like it might be more useful....BUT, this is for MONOLINGUAL target-side data, 
+            % which generally doesn't need the help
+            % which is a strange thing to do to begin with, taking clusterings that were trained on expensive bilingual corpora and using them on plentiful monolingual corpora
+% a possibly stronger response: automatic clusters are also of lower quality than hand-crafted template variations, and there will likely be clustering errors
+% side note: if mkcls clusters were so awesome, they'd be used as standard factors... so you'd have to think that they're not
 
 
 
@@ -239,10 +236,16 @@ With some effort, you can use these bins during steps other than alignment, alth
 
 
 
+%%%%% WAIT a second, doesn't this in principle just leave it up to Moses to pick up ``class phrases''?
 
+
+
+%% uh... 
 
 \section{A Primitive Multilingual Generator}
 \label{sec:generator}
+
+% let's figure out how to do a ``figure''
 
 As a simple example, 
 {\small \tt The NP jumped over the moon}
