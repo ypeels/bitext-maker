@@ -52,7 +52,7 @@
 
 
 
-% TODO: follow the 300-word website limit as a guideline to abstract length? check pdf guide
+% website limits abstract to 300-word, but that's WAY too long. Mine is about 70 words, and it's short but not too short.
 \begin{abstract}
 The large-scale generation of synthetic parallel corpora for data-driven machine translation is proposed.
 A rudimentary system for doing this is presented, with mechanisms for syntactic complexity in the spirit of classical rule-based machine translation and high-quality sentence pairs in the spirit of example-based machine translation.
@@ -73,6 +73,7 @@ This results in what we perceive to be a disproportionate amount of effort being
     However, these translations are generally optimized for human consumption, not machine learning, with no regard for such niceties as sentence alignment.
     \amtaonly{This is illustrated briefly in Section \ref{subsec:case_study}.}
     }
+% TODO: modernization of corpus acquisition / bring machine learning to bear here too
     
 % it's TEMPTING to say this, but the same is essentially true of all supervised data sets - they're pretty much all human-labeled...
 %It is surprising to say the least to contrast 
@@ -81,13 +82,15 @@ This results in what we perceive to be a disproportionate amount of effort being
 %with the direct human translation 
 %whereas parallel corpus acquisition is still more or less entirely dependent on .
 
+% TODO (AMTA padding?): it's rather like having an athlete with an Olympic-level modern training regimen, when it comes to diet/nutrition, they'll just eat whatever they can find on the streets.
+% Long and rich tradition of decades, if not centuries of linguists, "chefs" - want to exploit this somehow
 
 
 One of the major advantages of data-driven MT is that it removes the need for linguists to develop a new set of rules for an MT system to support a new language.
 In a sense, though, the rule-based MT linguist's job has really been  ``outsourced'' to third-party translators, who implicitly encode linguistic information in parallel corpora.
 We believe there is still a significant ``in-house'' role for linguists to play in corpus-based machine translation, and that is to direct the crafting of high-quality, ``designer'' synthetic parallel corpora, leveraging technologies like crowdsourcing to maximize throughput.
 Such a division of labor would let linguists be linguists, with MT system development proceeding in parallel.  
-
+% TODO: let machines be machines, do what machines do best
 
 
 % although it is ``concrete'', this section will probably be the first to get cut if I run OVER length (which had previously been unimaginable, but is starting to look more and more likely)
@@ -96,9 +99,8 @@ Such a division of labor would let linguists be linguists, with MT system develo
 \subsection{Case Study}
 \label{subsec:case_study}
 
-% TODO: don't need to go into this much detail, do you? This would be the first section to trim, if it runs OVER length
 % To find an example of suboptimally translated parallel corpora in the literature, one need not look far.
-
+% TODO: summarize this in a footnote for emnlp? is there room?
 As an example of suboptimal parallel corpora being used for machine translation, consider the official Chinese to English baseline translation of the {\small \tt tst2010} data set\footnote{https://wit3.fbk.eu/score.php?release=2014-01} from the TED talks corpus, described in greater detail in Section \ref{sec:experiments}.
 As a very crude way of assessing translation quality, we used the official evaluation software MultEval \mycitep{multeval} to compute scores for each translated line individually.
 Upon manual inspection, the worst scoring individual lines (with TER scores over 150\%) were almost all found to correspond to poor human translations on the Chinese side of the gold corpus.\footnote{
@@ -123,7 +125,6 @@ More ideal, though, would be the creation of parallel corpora for the express pu
 % I guess don't be concrete - don't say it... because then, you have to be more concrete about it...
 	% I can elaborate if reviewers ask... but for now, let's just be concise...
 
-% TODO: table with change; also list best and worst 
 % caption should mention that the difference between 
     % ALTHOUGH you would expect that it would improve all models, it's not clear whether...err? hard to be precise here.
 %Removing TED talk number 767 (over 200 lines), as well as 15 hand-picked lines with bad TER scores, 
@@ -132,7 +133,7 @@ More ideal, though, would be the creation of parallel corpora for the express pu
 %This results in a significant TER score change that is almost as large as the score difference between the highest and lowest ranking system from the evaluation campaign.  
 %BLEU scores \mycitep{bleu}, on the other hand, did not change much.
 % no, omit this, because DUH, if you change the test set, the scores will change. (it's like changing your ruler.)
-% TODO: table and reference
+% table and reference
 %\begin{table}[]
 %\centering
 %\label{table:tst2010}
@@ -145,7 +146,7 @@ More ideal, though, would be the creation of parallel corpora for the express pu
 %%{\small \tt tst2014} &  &   \\ \hline
 %% &  &   \\ \hline
 %\end{tabular}
-%\caption{By comparison, the difference between the baseline TER score and (not shown) } % TODO: caption
+%\caption{By comparison, the difference between the baseline TER score and (not shown) } 
 %\end{table}
 % TODO: table of scores after purging. This is pretty crucial? why?
 	% i think i THOUGHT this was crucial because i had to back up my claims concretely...
@@ -173,11 +174,12 @@ We believe that natural language processing in general and machine translation i
 Unlike many machine learning applications (image recognition, finance), NLP data sets are manmade to begin with; humans themselves {\em are} the primary natural producers and consumers of raw written language data.
 Translation is further privileged as perhaps the only NLP task for which millions of people (foreign-language learners) already undergo years of formal training, which has implications for scalability via crowdsourcing (Section \ref{sec:future}).
 
+% TODO: a reference to ``blessing of dimensionality'' for the inverse problem? how it's relatively easy to generate an exponentially large number of sentences?
 Other practical considerations shine a favorable light on parallel corpus generation.
 As the inverse problem of translation, multilingual generation is also an easier task in some senses. 
 For example, lexical ambiguity can be largely alleviated,\footnote{
     Ideally the generator would have {\em a priori} knowledge about whether it is writing a sentence pair about, say,  a (financial) bank or a (river) bank.
-} and segmentation of languages like Chinese \mycitep{segmenter:2005,segmenter:2008} becomes a non-issue.
+}, segmentation of languages like Chinese \mycitep{segmenter:2005,segmenter:2008} becomes a non-issue, and there is the potential for generating annotated corpora with zero annotation error.
 Parallel corpora also provide a natural avenue through which to interface contemporary MT systems with the countless linguist-years of expertise that have been invested into rule-based MT systems, as discussed in Section \ref{sec:related}.
 And unlike the various competing MT methods, which are by nature competitive, corpora are inherently collaborative.
 
@@ -221,8 +223,10 @@ Furthermore, since they are learned in an unsupervised manner from the parallel 
 % http://www.fb10.uni-bremen.de/anglistik/langpro/kpml/genbank/generation-bank.html
 % http://www.fb10.uni-bremen.de/anglistik/langpro/kpml/ genbank/R3b12-English/Docu/ENGLISH-nigel-exerciseset-mismatches-19981209/EX-SET-1.html
 In terms of freely available multilingual natural language generators, the most well-developed one we could find was KPML \mycitep{kpml}.
-But sentence writing is fairly involved because the focus seems to be on having a well-developed linguistic theory to explain the surface forms.
-In contrast, our primary goal is to generate parallel corpora of surface forms, affording us a significant amount of flexibility as to the method of generation. 
+But making sentences using KPML is a lengthy process, involving a well-developed linguistic theory to explain the surface forms.
+In contrast, our primary goal is to generate large parallel corpora of surface forms quickly. 
+This also affords us a significant amount of flexibility as to the method of generation.
+% TODO: for our purposes, the linguistic correctness of a generator (hokey hidden structures) is less important than whether it generates well-translated sentences.
 
 In the next section, we describe our own primitive attempt at a multilingual generator. 
 While we try to model straightforward linguistic phenomena compositionally, in the tradition of example-based MT \mycitep{ebmtbook}, we adopt the pragmatic attitude that sometimes the most effective way to represent a translation phenomenon is simply to write it down.
@@ -232,7 +236,7 @@ Thus, with the long-term goal of scalability, we attempt to construct a system s
 \section{A Nascent Multilingual Generator}
 \label{sec:generator}
 
-
+% TODO: didn't mention how you could easily create infinitely many sentences like ``the number of cats is N'', but they'll be soo correlated that they have zero translation value
 
 As an example of how our synthetic parallel corpus generation system works, consider the following English-Chinese template pair:
 
@@ -248,7 +252,7 @@ Semantic constraints can be imposed from the verb {\small \tt V} as well as exte
 The generator can then vary the template lexically\footnote{Rewrite rule probabilities were set by hand; a more principled approach would, say, use rewrite probabilities from a generative PCFG parser.} and syntactically, allowing a large number of sentence pairs to be generated from a single template.
 We can also trade quantity for quality by adding more literals to the template, in the spirit of example-based MT.
 
-% TODO: looks like this is GOING to run over length. save some if not all of this for AMTA, which is going to run way UNDER length
+% looks like this is GOING to run over length. save some if not all of this for AMTA, which is going to run way UNDER length
 %\subsection{Simplistic Linguistics}
 \amtaonly{
 We adopt an exceedingly simplistic view of language as nouns, verbs, and their modifications and elaborations.
@@ -264,12 +268,11 @@ We plan on eventually open-sourcing both our generator and its accompanying data
 One implementation detail worth mentioning is the choice of YAML for writing sentence templates and lexical data. 
 In particular, YAML has native Unicode support and does not even require quotation marks to enclose strings.
 
-% TODO: should I bother with this? 
+
 
 
 % oh this part really is just flying now, because there's no uncertainty as to what I DID
 
-% running over length, but let's just write it all down and then see what to cut (hint: that stupid tst2010 stuff. maybe just summarize it in a footnote)
 
 
 \section{Preliminary Experiments}
