@@ -17,6 +17,7 @@
     \newcommand\mycitep[1]{\cite{#1}}     % conference-specific ``glue code''
     \newcommand\mynewcite[1]{\newcite{#1}}
     \newcommand\amtaonly[1]{}
+    \newcommand\emnlponly[1]{#1}
     \newcommand\hcomponly[1]{}
 \fi
 \if \buildtarget \buildamta    
@@ -24,6 +25,7 @@
     \newcommand\mycitep[1]{\citep{#1}} 
     \newcommand\mynewcite[1]{\cite{#1}}  
     \newcommand\amtaonly[1]{#1}
+    \newcommand\emnlponly[1]{}
     \newcommand\hcomponly[1]{}
 \fi
 \if \buildtarget \buildhcomp    
@@ -31,6 +33,7 @@
     \newcommand\mycitep[1]{\cite{#1}} 
     \newcommand\mynewcite[1]{\citeauthor{#1}~\shortcite{#1}}  
     \newcommand\amtaonly[1]{}
+    \newcommand\emnlponly[1]{}
     \newcommand\hcomponly[1]{#1}
 \fi
     
@@ -91,6 +94,7 @@ Such a division of labor would let linguists be linguists, with MT system develo
 
 % although it is ``concrete'', this section will probably be the first to get cut if I run OVER length (which had previously been unimaginable, but is starting to look more and more likely)
 % this is some stupid little side note I just noticed a couple weeks ago, but it is expanding to a huge size, because it's like the only concrete ``positive'' result I have...
+%\amtaonly{
 \subsection{Case Study}
 \label{subsec:case_study}
 
@@ -149,7 +153,7 @@ More ideal, though, would be the creation of parallel corpora for the express pu
 	% i think i THOUGHT this was crucial because i had to back up my claims concretely...
 	% but the claim from the data is tenuous at best - of course the scores change if the test set changes! so WHAT?
 	% BESIDES, I tried training and tuning with purged corpora, and the difference was minimal. it's quite possible that people just don't CARE
-
+%} % \amtaonly
 
 
 
@@ -248,11 +252,13 @@ We can also trade quantity for quality by adding more literals to the template, 
 
 % TODO: looks like this is GOING to run over length. save some if not all of this for AMTA, which is going to run way UNDER length
 %\subsection{Simplistic Linguistics}
+%\amtaonly{
 We adopt an exceedingly simplistic view of language as nouns, verbs, and their modifications and elaborations.
 Inspired by early work on transformations by \mynewcite{chomsky}, we focus on declarative indicative present active sentences in the hopes that they can be transformed into other forms in the long run. 
 Similarly, although we enforce some semantic constraints, our system generally produces nonsensical sentences like ``{\em Colorless green ideas sleep furiously.}''
 The fact that verb phrases can also serve as nouns (gerundives) and modifiers (participles) appears to be a common source of complexity, and we made it a priority to implement participial modifiers.
 To capture recursive structures like participles, we adopt a rudimentary tree representation that is something intermediate between constituency trees and dependency trees, with constituent-like modifiers that also maintain dependency-like links to their targets.
+%}
 
 %\subsection{Implementation Details}
 % TODO: mention Python?
@@ -371,36 +377,18 @@ Our baseline        & 11.54  \\ \hline
 
 % preemptively answering reviewer question: yeah yeah, the trained tmcombine weights are like 0.001 for my generated corpora
 The results of these experiments are shown in Table \ref{tab:results}.
-Our generated corpora do not make a significant impact on the final BLEU score,\footnote{
-    Results for the most recently generated synthetic corpus are shown; scores slightly higher than our baseline have been obtained on older generated corpora.
-    We believe both to be within the error bars of the MERT tuning procedure.
-}
-indicating that our generator has a long way to go.
-
-%%%%%%%%%%%%%%%%%%%%%
-TODOOOOOOOOOOOO
-% TODO: HOW SO?
-wanted universal translation memory
-much less ambitious goal of training set amplification
-- out of domain data only boosts performance slightly
-phrase table interpolation using the tmcombine script included with Moses
-The results show that our generator has a long way to go.
-Quantity and maybe even quality (you'd expect MultiUN translations to be better?) seems to matter much less than whether the additional data is in-domain
-So lots of different basic syntactic variation didn't help
-vocabulary is much too small? (only about 100 nouns currently. we used Stanford POS tagger \mycitep{postagger:2003} to find most common nouns, since different corpora tend to translate words differently, and the mini-goal here was training set amplification)
-more templates
-work on that is currently in progress. % I have never liked the sound of ``currently underway''
-%%%%%%%%%%%%%%%%%%%%%%%%
-
 For the table on the left, note that adding in-domain data improves performance significantly more than a much larger amount of out-of-domain data (MultiUN), a commonly reported phenomenon \mycitep{tmcombine}.
 As prepared lectures, TED talks fall somewhere between the conversational language of movie subtitles and the formal written language of UN resolutions; data from the OpenSubtitles 2016 corpus \mycitep{opensubtitles:2016}\footnote{http://www.opensubtitles.org/} from the OPUS project are similarly ineffective at improving performance (scores not shown).
 For the table on the right, note also that the same out-of-domain corpus now gives a much more modest performance increase.
 These observations suggest that amplification of in-domain corpora should still be beneficial, particularly for low-resource language pairs or domains.
 
-% no, I can't mention this, because it's just saying, ``duh, hope it's in-domain!''
-%For a scaled-up corpus generator, one anticipates that the main concern would be to avoid skewing the phrase table with the ``unnatural'' synthetic corpus.
-
-
+Our generated corpora do not make a significant impact on the final BLEU score,\footnote{
+    Results for the most recently generated synthetic corpus are shown; scores slightly higher than our baseline have been obtained on older generated corpora.
+    Both of these outcomes seem to be within the error bars of the MERT tuning procedure.
+}
+indicating that our parallel corpus generator has a long way to go.
+Development on our generator has so far focused on ``rule-based'' syntactic diversity and growing a lexical database tailored to the training set, 
+Given these results, a change of direction seems in order; work on harvesting more templates from the IWSLT15 training corpus is currently in progress.
 
 
 
