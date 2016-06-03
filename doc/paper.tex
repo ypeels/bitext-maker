@@ -16,7 +16,7 @@
     \input{header-emnlp.tex}
     \newcommand\mycitep[1]{\cite{#1}}     % conference-specific ``glue code''
     \newcommand\mynewcite[1]{\newcite{#1}}
-    \newcommand\amtaonly[1]{#1} % currently being used to trim down to 4 pages
+    \newcommand\amtaonly[1]{} % currently being used to trim down to 4 pages
     \newcommand\emnlponly[1]{#1}
     \newcommand\hcomponly[1]{}
 \fi
@@ -52,17 +52,12 @@
 
 
 
+% TODO: follow the 300-word website limit as a guideline to abstract length? check pdf guide
 \begin{abstract}
-\amtaonly{UNDER CONSTRUCTION}
-
-The large-scale generation of high-quality synthetic parallel corpora for data-driven machine translation is proposed.
-
-A preliminary system for doing this is presented, striving toward syntactic complexity, in the spirit of rule-based machine translation, and high-quality sentence pairs via templates, in the spirit of example-based machine translation.
-
-Early results have yet to show improvement. [This is because we need to scale up?]
-Future work is proposed. 
-We believe this is particularly amenable to crowdsourcing by ``amateur linguists.''
-
+The large-scale generation of synthetic parallel corpora for data-driven machine translation is proposed.
+A rudimentary system for doing this is presented, with mechanisms for syntactic complexity in the spirit of classical rule-based machine translation and high-quality sentence pairs in the spirit of example-based machine translation.
+Preliminary experiments integrating these synthetic corpora into a shared task are reported.
+Promising future directions are discussed, in particular, large-scale contributions from ``amateur linguists'' via crowdsourcing.
 \end{abstract}
 
 
@@ -365,6 +360,7 @@ Our baseline        & 11.54  \\ \hline
 
 \end{tabular} % cc (i.e., the big super-table)
 
+% TODO: mention that official results are on a slightly different Moses configuration? mehhhhh
 \caption{
     (Left) Chinese-to-English BLEU scores for our baseline Moses configuration with phrase and reordering tables trained on a random 25\% subset of the IWSLT15 training corpus and interpolated (+) with tables for the remaining 75\% (\textasciitilde 150K) of the in-domain corpus, the MultiUN corpus (a \textasciitilde 1M line subset), and a synthetic corpus from our generator (\textasciitilde 5M lines).
     (Right) Same as on the left, but starting with tables for the entire IWSLT15 corpus.
