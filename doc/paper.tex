@@ -253,18 +253,19 @@ We can also trade quantity for quality by adding more literals to the template, 
 \amtaonly{
 We adopt an exceedingly simplistic view of language as nouns, verbs, and their modifications and elaborations.
 Inspired by early work on transformations by \mynewcite{chomsky}, we focus on declarative indicative present active sentences in the hopes that they can be transformed into other forms in the long run. 
-Similarly, although we enforce some semantic constraints, our system generally produces nonsensical sentences like ``{\em Colorless green ideas sleep furiously.}''
+Similarly, although we enforce some semantic constraints, our system generally produces nonsensical sentences like Chomsky's celebrated ``{\em Colorless green ideas sleep furiously.}''
 The fact that verb phrases can also serve as nouns (gerundives) and modifiers (participles) appears to be a common source of complexity, and we made it a priority to implement participial modifiers.
 To capture recursive structures like participles, we adopt a rudimentary tree representation that is something intermediate between constituency trees and dependency trees, with constituent-like modifiers that also maintain dependency-like links to their targets.
 }
 
 %\subsection{Implementation Details}
 % TODO: mention Python?
+We plan on eventually open-sourcing both our generator and its accompanying data.
 One implementation detail worth mentioning is the choice of YAML for writing sentence templates and lexical data. 
 In particular, YAML has native Unicode support and does not even require quotation marks to enclose strings.
 
 % TODO: should I bother with this? 
-Crude though it may be, we plan on eventually open-sourcing both our generator and its accompanying data.
+
 
 % oh this part really is just flying now, because there's no uncertainty as to what I DID
 
@@ -275,9 +276,12 @@ Crude though it may be, we plan on eventually open-sourcing both our generator a
 \label{sec:experiments}
 
 %\subsection{Methods} % no space? just do one paragraph each?
-We now consider training set amplification as a first application.
-Since we are interested in the relative effect of our synthetic parallel corpus, we chose a simple baseline system and fix all other variables.
-Namely, we used the baseline configuration of Moses \mycitep{moses} as described in \mycitep{iwslt2015}, with the exception of changing the target language model to KenLM \mycitep{kenlm}, which we found to be faster and stabler than IRSTLM \mycitep{irstlm} at decoding time.
+We now consider training set amplification as a first application, using the Chinese to English MT task of IWSLT 2015 \mycitep{iwslt2015}\emnlponly{.}\amtaonly{, mentioned briefly in Section \ref{subsec:case_study}.}
+This task uses the WIT$^3$ corpus \mycitep{wit3}, which consists of multilingual subtitles of TED talks covering a wide variety of subjects. 
+The freely available MultiUN corpus \mycitep{multiun} from the OPUS project \mycitep{opus:2012} was also used for comparison.
+
+To investigate the relative effect of our synthetic parallel corpora, we chose a simple baseline system and fixed all other variables.
+Namely, we used the baseline configuration of Moses \mycitep{moses} as described in \mycitep{iwslt2015}, with the exception of changing the target language model to KenLM \mycitep{kenlm}, which we found to be faster and stabler at decoding time than IRSTLM \mycitep{irstlm}.
 For the remaining unspecified model settings, we used the {\small \tt grow-diag} alignment heuristic recommended by \mynewcite{segmenter:2008} and the {\small \tt mslr-fe} configuration for lexicalized reordering. 
 Chinese text was preprocessed using the latest version of the Stanford Segmenter \mycitep{segmenter:2005,segmenter:2008}.
 Phrase and lexicalized reordering tables were interpolated using the {\small \tt tmcombine} script included with Moses \mycitep{tmcombine}, with the interpolation tuned on the {\small \tt dev2010} data set.
@@ -288,9 +292,7 @@ BLEU scores were computed as described by \mynewcite{iwslt2015} using the IWSLT 
 
 
 % TODO: filler for AMTA? used for corpus analysis stanford POS tagger (incomplete bibtex entry?) \mycitep{postagger:2003}
-The contribution of our synthetic parallel corpora was evaluated using the Chinese to English task of IWSLT 2015 \mycitep{iwslt2015}\emnlponly{.}\amtaonly{, mentioned briefly in Section \ref{subsec:case_study}.}
-This task uses the WIT$^3$ corpus \mycitep{wit3}, which consists of multilingual subtitles of TED talks covering a wide variety of subjects. 
-As a control, we also add the freely available MultiUN corpus \mycitep{multiun} from the OPUS project \mycitep{opus:2012}.
+
 
 % TODO: add OpenSubtitles 2016 results? they don't really add much to the discussion - I can just mention them briefly, maybe even in a footnote
 % oh okay, this is nice - if I don't include OpenSubtitles, then I don't have to talk about the stupid purging either
@@ -334,7 +336,6 @@ As a control, we also add the freely available MultiUN corpus \mycitep{multiun} 
 
 % side-by-side tables as in emnlp2016.tex
 \begin{table}
-\label{tab:results}
 \centering
 \small
 \begin{tabular}{cc}
@@ -360,10 +361,11 @@ Our baseline        & 11.54  \\ \hline
 
 \end{tabular} % cc (i.e., the big super-table)
 
+
 % TODO: mention that official results are on a slightly different Moses configuration? mehhhhh
-\caption{
+\caption{ \label{tab:results} % oh, for reference numbering, label goes INSIDE caption
     (Left) Chinese-to-English BLEU scores for our baseline Moses configuration with phrase and reordering tables trained on a random 25\% subset of the IWSLT15 training corpus and interpolated (+) with tables for the remaining 75\% (\textasciitilde 150K) of the in-domain corpus, the MultiUN corpus (a \textasciitilde 1M line subset), and a synthetic corpus from our generator (\textasciitilde 5M lines).
-    (Right) Same as on the left, but starting with tables for the entire IWSLT15 corpus.
+    (Right) Same as the left, but starting with tables trained on the entire IWSLT15 corpus.
     Official published scores of the IWSLT15 baseline system are also given for comparison.    
     Qualitatively similar trends for NIST and TER scores were also observed (omitted for clarity).
 %    The ``baseline'' row gives 
@@ -375,19 +377,19 @@ Our baseline        & 11.54  \\ \hline
 \end{table}
 
 % preemptively answering reviewer question: yeah yeah, the trained tmcombine weights are like 0.001 for my generated corpora
-The results of these experiments are shown in Table \ref{tab:results}.
+The results of these experiments are shown in Table~\ref{tab:results}.
 For the table on the left, note that adding in-domain data improves performance significantly more than a much larger amount of out-of-domain data (MultiUN), a commonly reported phenomenon \mycitep{tmcombine}.
-As prepared lectures, TED talks fall somewhere between the conversational language of movie subtitles and the formal written language of UN resolutions; data from the OpenSubtitles 2016 corpus \mycitep{opensubtitles:2016}\footnote{http://www.opensubtitles.org/} from the OPUS project are similarly ineffective at improving performance (scores not shown).
-For the table on the right, note also that the same out-of-domain corpus now gives a much more modest performance increase.
-These observations suggest that amplification of in-domain corpora should still be beneficial, particularly for low-resource language pairs or domains.
+As prepared lectures, TED talks fall somewhere between the conversational language of movie subtitles and the formal written language of UN resolutions; data from the OpenSubtitles\footnote{http://www.opensubtitles.org/} 2016 corpus \mycitep{opensubtitles:2016} from the OPUS project were similarly less effective at improving performance than a much smaller amount of in-domain data (scores were similar to MultiUN and are not shown).
+For the table on the right, note the diminishing returns of out-of-domain data as the amount of in-domain data increases.
+These observations underscore the importance of domain overlap and hint at the  potential value to be found in the amplification of in-domain corpora.
 
-Our generated corpora do not make a significant impact on the final BLEU score,\footnote{
-    Results for the most recently generated synthetic corpus are shown; scores slightly higher than our baseline have been obtained on older generated corpora.
-    Both of these outcomes seem to be within the error bars of the MERT tuning procedure.
+Our generated corpora, however, do not make a significant impact on the final BLEU score,\footnote{
+    The sub-baseline scores shown are for our most recently generated synthetic corpus; scores slightly higher than our baseline have also been obtained on older generated corpora.
+    Both of these outcomes seem to be within experimental error bars.
 }
 indicating that our parallel corpus generator has a long way to go.
-Development on our generator has so far focused on ``rule-based'' syntactic diversity and growing a lexical database tailored to the training set, 
-Given these results, a change of direction seems in order; work on harvesting more templates from the IWSLT15 training corpus is currently in progress.
+Development on our generator has so far focused on ``rule-based'' syntactic diversity and growing a lexical database tailored to the training set. 
+Given the resulting scores, a change of direction seems in order; work on harvesting more templates from the IWSLT15 training corpus is currently in progress.
 
 
 
@@ -409,28 +411,28 @@ We have not yet implemented the vast majority linguistic constructions in our ru
 Future development may be expedited by adapting work from existing rule-based MT or natural language generation systems. 
 Dynamic corpus generation may also have a role to play in online or curriculum learning settings.
 
-Deep learning methods like RNN encoder-decoders \mycitep{sutskever:2014,bengio:2014} are just the latest in a succession of corpus-based approaches, following in the footsteps of example-based and statistical machine translation, and it is unlikely in this era of Big Data that they will be the last.
-But they all share a reliance on parallel corpora, and we believe the task of parallel corpus generation will remain relevant for the foreseeable future.
+Deep learning methods like RNN encoder-decoders \mycitep{sutskever:2014,bengio:2014} are but the latest in a succession of corpus-based approaches to MT, following in the footsteps of example-based and statistical machine translation; in this era of Big Data it is unlikely that they will be the last.
+But all such methods share a reliance on parallel corpora, and we believe parallel corpus generation will remain relevant pursuit as even newer methods emerge.
 
-
-We have so far been largely concerned with using the computer to increase human translation throughput.
-But as alluded to in Section \ref{subsec:benefits}, parallel corpora have the innate potential for open collaboration; not only can they be  expert-sourced to linguists, but they can also crowdsourced to ``amateur linguists.''
+As alluded to in Section \ref{subsec:benefits}, parallel corpora have the innate potential for open collaboration; not only can they be expert-sourced to linguists, but they can also crowdsourced to ``amateur linguists.''
 One particularly promising application domain is conversational language, for which syntactic and lexical diversity is expected to be relatively low compared with more formal domains. 
-Multilingual lexical databases, in particular, would be particularly suitable for crowdsourcing, e.g., for slang terms.
+Multilingual lexical databases for slang terms, in particular, would be particularly suitable for crowdsourcing.
 At the very least, crowdsourcing should be strongly considered for post-editing small corpora used as potentially noise-sensitive components of shared tasks, like development or test sets.
-In a shared evaluation task with many language pairs, the most practical way for this is probably crowdsourcing.
+In a shared evaluation task with many language pairs, the most practical way for this is likely to be crowdsourcing.
 
 We believe the most promising path to large-scale parallel corpus creation is through educational crowdsourcing.
 As with the success story of reCAPTCHA \mycitep{recaptcha}, we believe this will scale best when there is a natural harmony between data supply and demand.
 Unlike other staple NLP tasks like parsing or part-of-speech tagging, MT is particularly well-suited to this, with English being taught as a foreign language in classrooms around the world.
-The data representation (English itself) is widely agreed upon and there is an existing market, a vast untapped resource of student problem sets that is yet to be harnessed by machine learning.
+The data format (English itself) is widely agreed upon, and there is even an existing market, a vast untapped resource of student problem sets that is yet to be harnessed by machine learning.
 \amtaonly{As a back of the envelope estimate, at a translation rate of about 1 noun per minute (based on our own data input experience), even for a modest user base of 10,000 users, a ten-minute problem set could in principle yield 100,000 data samples.
 It seems like the bottleneck would be judicious problem set design.}
 
-Large quantities of supervised data underlie state of the art performance in many NLP tasks.
+Large quantities of supervised data underlie state-of-the-art performance in many NLP tasks.
 While current paid approaches like Amazon's Mechanical Turk are already a viable way of obtaining crowdsourced data, we believe it would be well worth the initial investment of time and resources to build a sufficiently compelling and widely used educational app capable of harvesting supervised natural language data from its natural source. 
-The cost per data point could be significantly reduced or perhaps even become negative (a profitable app), although the harvested data itself would clearly have value and would quite possibly be worth subsidizing.
-We consider the construction of this potentially game-changing source of supervised NLP data to be an open challenge to the NLP community in general and large industrial practitioners in particular.
+The cost per data point could be significantly reduced or perhaps even become negative (a profitable app), although the value of the harvested data itself might be worth subsidizing.
+We consider the construction of such a potentially game-changing source of supervised NLP data to be an open challenge to the NLP community in general.
+
+
 
 
 
