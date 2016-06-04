@@ -43,10 +43,6 @@
   nounset:
     en: building
     zh: 建筑
-- tags: [person]#, rank] # TODO: titles/ranks
-  nounset:
-    en: captain
-    zh: 上尉
 - tags: [bodypart.replaceable]
   nounset:
     en: cell
@@ -80,10 +76,10 @@
     en: country
     zh: 国家
     
-# but it's more specific than that, isn't it? numerical?
-# PLUS, it's a divisible quantity, right? 
+
+ 
 - tags: [information, quantity] 
-  nounset:
+  nounset: # but it's more specific than that, isn't it? numerical? PLUS, it's a divisible quantity, right? 
     en: data
     zh: 数据
 - tags: [abstract.object]
@@ -174,10 +170,10 @@
   nounset:
     en: [opportunity, chance]
     zh: 机会
-# zh problem: reads like a measure word when used to modify another noun...
-# also seems to act kind of like a quantifier... disable for now.
+
+
 #- tags: [measure]
-#  nounset:
+#  nounset: # zh problem: reads like a measure word when used to modify another noun... also seems to act kind of like a quantifier... disable for now.
 #    en: part
 #    zh: 部分
 
@@ -269,9 +265,9 @@
     en: time
     zh: 时间 # TODO: 时候
     
-# crudely disabled "time" as noun modifier in generator
+
 - tags: [time]
-  nounset:
+  nounset: # crudely disabled "time" as noun modifier in generator
     en: today
     zh: 今天
 - tags: []
@@ -433,6 +429,10 @@
   nounset:
     en: Californian
     zh: 加州 人
+- tags: [person]#, rank] # TODO: titles/ranks
+  nounset:
+    en: captain
+    zh: 上尉
 - tags: [written]
   nounset:
     en: [caption, captioning, subtitle]

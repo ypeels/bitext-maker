@@ -5,10 +5,11 @@ doc/*.aux
 doc/*.bbl
 doc/*.blg
 doc/*.dvi
+doc/*.gz
 doc/*.log
 doc/*.out
 doc/*.pdf
-doc/*.gz
+doc/submitted-emnlp/
 *.bat
 *.en
 *.lnk
