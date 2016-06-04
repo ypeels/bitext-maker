@@ -66,11 +66,11 @@ Promising future directions are discussed, in particular, large-scale contributi
 
 As early as Jelinek's (in)famous quote during the 1980's that ``{\em Every time I fire a linguist, my performance goes up},'' both linguists and linguistics have been increasingly marginalized in natural language processing (NLP). 
 More recently, for example, \mynewcite{collobert:2011} mention the possibility ``{\em [ideally]...to learn from letter sequences rather than words},'' illustrating an AI-motivated desire to move away from even the most fundamental of linguistic concepts.
-A specific instance of this overall trend is the gradual shift of machine translation (MT) away from classical linguistic rule-based approaches \mycitep{hutchins:2005} to contemporary machine learning approaches, which underlie statistical phrase-based systems like Moses \mycitep{moses} and more recent neural network systems \mycitep{sutskever:2014,bengio:2014}.  
+A specific instance of this overall trend is the gradual shift of machine translation (MT) away from classical linguistic rule-based approaches to contemporary machine learning approaches \mycitep{hutchins:2005}, which underlie statistical phrase-based systems like Moses \mycitep{moses} and more recent neural network systems \mycitep{sutskever:2014,bengio:2014}.  
 But in the end, even the most cutting-edge machine learning MT system relies crucially on multilingual parallel corpora, typically taken from external sources like multilingual parliamentary proceedings. 
 This results in what we perceive to be a disproportionate amount of effort being dedicated to the machine learning component of machine translation, with input corpora being treated almost as an afterthought.\footnote{
     Of course, these parallel corpora represent hundreds of translator-hours of work. 
-    However, these translations are generally optimized for human consumption, not machine learning, with no regard for such niceties as sentence alignment.
+    However, such translations are optimized for human consumption, not machine learning, with no regard for such niceties as sentence alignment.
     \amtaonly{This is illustrated briefly in Section \ref{subsec:case_study}.}
     }
 % TODO: modernization of corpus acquisition / bring machine learning to bear here too
@@ -157,16 +157,16 @@ More ideal, though, would be the creation of parallel corpora for the express pu
 
 
 
-\subsection{Potential Benefits}
+\amtaonly{\subsection{Potential Benefits}}
 \label{subsec:benefits}
 
 Large, high-quality synthetic parallel corpora could be useful as:
 
 \begin{itemize}
 \item Training sets for corpus-based MT systems, particularly for low-resource language pairs
-\item Benchmark tasks for MT evaluation, in the spirit of the Facebook bAbI tasks in question answering \mycitep{bAbI}
-\item Translation memories for computer-aided translation
-\item ``Language archives'': New NLP methods are developed every few years; linguistic theories change every decade or two; parallel corpora live forever (e.g., the Rosetta Stone).
+\item Benchmark tasks for MT evaluation, in the spirit of Facebook's bAbI project \mycitep{bAbI}
+\item Translation memories for computer-assisted translation
+\item ``Language archives'': New NLP methods are developed every few years; linguistic theories change every decade or so; parallel corpora live forever (like the Rosetta Stone).
 \end{itemize}
 % sigh, this set of bullets seems much clearer than all those stupid sentences that came before
 
@@ -176,16 +176,16 @@ Translation is further privileged as perhaps the only NLP task for which million
 
 % TODO: a reference to ``blessing of dimensionality'' for the inverse problem? how it's relatively easy to generate an exponentially large number of sentences?
 Other practical considerations shine a favorable light on parallel corpus generation.
-As the inverse problem of translation, multilingual generation is also an easier task in some senses. 
+As the ``inverse'' of translation, multilingual generation is also an easier task in some senses.
 For example, lexical ambiguity can be largely alleviated,\footnote{
-    Ideally the generator would have {\em a priori} knowledge about whether it is writing a sentence pair about, say,  a (financial) bank or a (river) bank.
-}, segmentation of languages like Chinese \mycitep{segmenter:2005,segmenter:2008} becomes a non-issue, and there is the potential for generating annotated corpora with zero annotation error.
-Parallel corpora also provide a natural avenue through which to interface contemporary MT systems with the countless linguist-years of expertise that have been invested into rule-based MT systems, as discussed in Section \ref{sec:related}.
-And unlike the various competing MT methods, which are by nature competitive, corpora are inherently collaborative.
+    Ideally the generator would ``know'' {\em a priori} whether it is writing a sentence about, say, (financial) banks or (river) banks.
+} segmentation of languages like Chinese \mycitep{segmenter:2005,segmenter:2008} becomes a non-issue, and there is the potential for generating annotated corpora with zero annotation error.
+Parallel corpora also provide a natural avenue to interface contemporary MT systems with the countless linguist-years of expertise that have been invested into rule-based MT systems. %, as discussed in Section \ref{sec:related}. % that's not really discussed there anymore, is it?
+And unlike the various different MT methods, which are by nature competitive, corpora are inherently collaborative.
 
 This paper is organized as follows.
 Section \ref{sec:related} discusses previous related work,
-Section \ref{sec:generator} describes our first attempt at implementing a parallel corpus generator,
+Section \ref{sec:generator} describes our rudimentary parallel corpus generator,
 Section \ref{sec:experiments} gives preliminary results, 
 and Section \ref{sec:future} proposes future work.
 
@@ -195,7 +195,7 @@ and Section \ref{sec:future} proposes future work.
 \label{sec:related}
 
 The idea of using synthetic parallel corpora in machine translation is hardly new.
-Previous attempts at creating synthetic parallel corpora have used rule-based MT (RBMT) systems \mycitep{hu:2007,dugast:2008,murakami:2009,rubino:2014} but the input to the RBMT systems was again dictated by external corpora in the desire to produce immediate results.
+Previous attempts at creating synthetic parallel corpora have used rule-based MT (RBMT) systems \mycitep{hu:2007,dugast:2008,murakami:2009,rubino:2014}, but the input to the RBMT systems was again dictated by external corpora in the desire to produce immediate results.
 A longer-term approach that may pay dividends (Section \ref{subsec:benefits}) would be to run RBMT systems on specially chosen sentences for which they are known to produce high-quality translations, or perhaps eventually directly encoding their rules into carefully crafted parallel corpora.
 
 Our parallel corpus generation system (Section \ref{sec:generator}) is very similar to the recursive equivalence class approach to example-based MT \mycitep{ebmtbook} used by \mynewcite{brown:99}. 
@@ -222,15 +222,15 @@ Furthermore, since they are learned in an unsupervised manner from the parallel 
 % these links are too long for EMNLP. TODO: add them as footnotes for AMTA?
 % http://www.fb10.uni-bremen.de/anglistik/langpro/kpml/genbank/generation-bank.html
 % http://www.fb10.uni-bremen.de/anglistik/langpro/kpml/ genbank/R3b12-English/Docu/ENGLISH-nigel-exerciseset-mismatches-19981209/EX-SET-1.html
-In terms of freely available multilingual natural language generators, the most well-developed one we could find was KPML \mycitep{kpml}.
-But making sentences using KPML is a lengthy process, involving a well-developed linguistic theory to explain the surface forms.
+In terms of freely available multilingual natural language generators, the most well-developed one we found was KPML \mycitep{kpml}.
+But crafting sentences using KPML is a lengthy process, involving a well-developed linguistic theory to explain the surface forms.
 In contrast, our primary goal is to generate large parallel corpora of surface forms quickly. 
-This also affords us a significant amount of flexibility as to the method of generation.
+% This affords us an amount of flexibility as to the method of generation. % redundant and doesn't really flow
 % TODO: for our purposes, the linguistic correctness of a generator (hokey hidden structures) is less important than whether it generates well-translated sentences.
 
-In the next section, we describe our own primitive attempt at a multilingual generator. 
-While we try to model straightforward linguistic phenomena compositionally, in the tradition of example-based MT \mycitep{ebmtbook}, we adopt the pragmatic attitude that sometimes the most effective way to represent a translation phenomenon is simply to write it down.
-Thus, with the long-term goal of scalability, we attempt to construct a system sufficiently flexible to write sentence pairs in large quantities through syntactic variations and also with ``hand-crafted'' quality through example-based templates.
+In the next section, we describe our own primitive attempt at building a multilingual generator from scratch. 
+While we try to model straightforward linguistic phenomena compositionally, we also adopt the pragmatic attitude, in the tradition of example-based MT \mycitep{ebmtbook}, that sometimes the most effective way to represent a translation phenomenon is simply to write it down.
+Thus, with the long-term goal of scalability, we attempt to construct a system sufficiently flexible to write some sentence pairs in large quantities through syntactic variations and others with ``hand-crafted'' quality through example-based templates.
 
 
 \section{A Nascent Multilingual Generator}
@@ -249,25 +249,25 @@ As an example of how our synthetic parallel corpus generation system works, cons
 
 \noindent Our system then expands the subject {\small \tt S} and object {\small \tt O} as noun phrases, adding adjectival and participial modifiers as desired. 
 Semantic constraints can be imposed from the verb {\small \tt V} as well as externally.
-The generator can then vary the template lexically\footnote{Rewrite rule probabilities were set by hand; a more principled approach would, say, use rewrite probabilities from a generative PCFG parser.} and syntactically, allowing a large number of sentence pairs to be generated from a single template.
+The generator can then vary the template lexically\footnote{Rewrite probabilities were set by hand; a more principled approach might use, say, a generative PCFG parser.} and syntactically, allowing a large number of sentence pairs to be generated from a single template.
 We can also trade quantity for quality by adding more literals to the template, in the spirit of example-based MT.
 
 % looks like this is GOING to run over length. save some if not all of this for AMTA, which is going to run way UNDER length
 %\subsection{Simplistic Linguistics}
+We adopt an extremely simplistic view of language as nouns, verbs, and their modifications and elaborations.
 \amtaonly{
-We adopt an exceedingly simplistic view of language as nouns, verbs, and their modifications and elaborations.
 Inspired by early work on transformations by \mynewcite{chomsky}, we focus on declarative indicative present active sentences in the hopes that they can be transformed into other forms in the long run. 
 Similarly, although we enforce some semantic constraints, our system generally produces nonsensical sentences like Chomsky's celebrated ``{\em Colorless green ideas sleep furiously.}''
-The fact that verb phrases can also serve as nouns (gerundives) and modifiers (participles) appears to be a common source of complexity, and we made it a priority to implement participial modifiers.
-To capture recursive structures like participles, we adopt a rudimentary tree representation that is something intermediate between constituency trees and dependency trees, with constituent-like modifiers that also maintain dependency-like links to their targets.
-}
+}The fact that verb phrases can also serve as nouns (gerundives) and modifiers (participles) appears to be a major source of syntactic complexity, and we made it a priority to implement participial modifiers.
+To capture recursive structures like participles, we adopt a rudimentary tree representation that is something intermediate between constituency and dependency trees, with constituent-like modifiers that also maintain dependency-like links to their targets.
+We plan on eventually open-sourcing both our generator code and its accompanying data.
 
 %\subsection{Implementation Details}
+\amtaonly{
 % TODO: mention Python?
-We plan on eventually open-sourcing both our generator and its accompanying data.
 One implementation detail worth mentioning is the choice of YAML for writing sentence templates and lexical data. 
 In particular, YAML has native Unicode support and does not even require quotation marks to enclose strings.
-
+}
 
 
 
@@ -288,7 +288,7 @@ Namely, we used the baseline configuration of Moses \mycitep{moses} as described
 For the remaining unspecified model settings, we used the {\small \tt grow-diag} alignment heuristic recommended by \mynewcite{segmenter:2008} and the {\small \tt mslr-fe} configuration for lexicalized reordering. 
 Chinese text was preprocessed using the latest version of the Stanford Segmenter \mycitep{segmenter:2005,segmenter:2008}.
 Phrase and lexicalized reordering tables were interpolated using the {\small \tt tmcombine} script included with Moses \mycitep{tmcombine}, with the interpolation tuned on the {\small \tt dev2010} data set.
-BLEU scores were computed as described by \mynewcite{iwslt2015} using the IWSLT 2015 progress data set ({\small \tt tst2014}).\footnote{We chose the {\small \tt tst2014} test set to facilitate comparison with systems from both IWSLT 2014 and 2015 in future work.}
+BLEU scores were computed as described by \mynewcite{iwslt2015} using the IWSLT 2015 progress data set ({\small \tt tst2014}).\footnote{We chose the {\small \tt tst2014} test set to facilitate comparison with published results from both IWSLT 2014 and 2015 in future work.}
 
 %\subsection{Task}
 
@@ -338,7 +338,7 @@ BLEU scores were computed as described by \mynewcite{iwslt2015} using the IWSLT 
 
 
 % side-by-side tables as in emnlp2016.tex
-\begin{table}
+\begin{table}[ht] % h for ``here'' - float the table right here in the text, instead of at the top of page
 \centering
 \small
 \begin{tabular}{cc}
@@ -382,17 +382,18 @@ Our baseline        & 11.54  \\ \hline
 % preemptively answering reviewer question: yeah yeah, the trained tmcombine weights are like 0.001 for my generated corpora
 The results of these experiments are shown in Table~\ref{tab:results}.
 For the table on the left, note that adding in-domain data improves performance significantly more than a much larger amount of out-of-domain data (MultiUN), a commonly reported phenomenon \mycitep{tmcombine}.
-As prepared lectures, TED talks fall somewhere between the conversational language of movie subtitles and the formal written language of UN resolutions; data from the OpenSubtitles\footnote{http://www.opensubtitles.org/} 2016 corpus \mycitep{opensubtitles:2016} from the OPUS project were similarly less effective at improving performance than a much smaller amount of in-domain data (scores were similar to MultiUN and are not shown).
+TED talks, which are prepared lectures, fall somewhere between the conversational language of movie subtitles and the formal written language of UN resolutions.
+As such, the OpenSubtitles\footnote{http://www.opensubtitles.org/} 2016 corpus \mycitep{opensubtitles:2016} from the OPUS project was also out-of-domain; results for this corpus were similar to MultiUN and are not shown.
 For the table on the right, note the diminishing returns of out-of-domain data as the amount of in-domain data increases.
-These observations underscore the importance of domain overlap and hint at the  potential value to be found in the amplification of in-domain corpora.
+These observations underscore the importance of domain overlap and hint at the potential value to be found in the amplification of in-domain corpora.
 
-Our generated corpora, however, do not make a significant impact on the final BLEU score,\footnote{
+Our generated corpora do not yet make a significant impact on the final BLEU score,\footnote{
     The sub-baseline scores shown are for our most recently generated synthetic corpus; scores slightly higher than our baseline have also been obtained on older generated corpora.
     Both of these outcomes seem to be within experimental error bars.
 }
 indicating that our parallel corpus generator has a long way to go.
 Development on our generator has so far focused on ``rule-based'' syntactic diversity and growing a lexical database tailored to the training set. 
-Given the resulting scores, a change of direction seems in order; work on harvesting more templates from the IWSLT15 training corpus is currently in progress.
+Given the resulting scores, a change of direction seems in order; work on harvesting more ``example-based'' templates from the IWSLT15 training corpus is currently in progress.
 
 
 
@@ -406,22 +407,19 @@ Given the resulting scores, a change of direction seems in order; work on harves
 \section{Proposed Future Work}
 \label{sec:future}
 
-\amtaonly{UNDER CONSTRUCTION (basically threw everything into loosely strung sentences - will revise tomorrow}
 
-\amtaonly{misc. points that don't have full paragraphs...}
-
-We have not yet implemented the vast majority linguistic constructions in our rudimentary/primitive generator (for example, past tense is only partially supported).
+Many linguistic constructions have yet to be implemented in our rudimentary/primitive generator (for example, past tense is only partially supported).
 Future development may be expedited by adapting work from existing rule-based MT or natural language generation systems. 
-Dynamic corpus generation may also have a role to play in online or curriculum learning settings.
+Dynamic, on-the-fly corpus generation may also have a role to play in online or curriculum learning settings.
 
 Deep learning methods like RNN encoder-decoders \mycitep{sutskever:2014,bengio:2014} are but the latest in a succession of corpus-based approaches to MT, following in the footsteps of example-based and statistical machine translation; in this era of Big Data it is unlikely that they will be the last.
-But all such methods share a reliance on parallel corpora, and we believe parallel corpus generation will remain relevant pursuit as even newer methods emerge.
+But all such methods share a reliance on parallel corpora, and we believe parallel corpus generation will remain a relevant pursuit as even newer methods emerge.
 
 As alluded to in Section \ref{subsec:benefits}, parallel corpora have the innate potential for open collaboration; not only can they be expert-sourced to linguists, but they can also crowdsourced to ``amateur linguists.''
 One particularly promising application domain is conversational language, for which syntactic and lexical diversity is expected to be relatively low compared with more formal domains. 
 Multilingual lexical databases for slang terms, in particular, would be particularly suitable for crowdsourcing.
 At the very least, crowdsourcing should be strongly considered for post-editing small corpora used as potentially noise-sensitive components of shared tasks, like development or test sets.
-In a shared evaluation task with many language pairs, the most practical way for this is likely to be crowdsourcing.
+For shared evaluation tasks with many language pairs, crowdsourcing may also be the only practical way to do this.
 
 We believe the most promising path to large-scale parallel corpus creation is through educational crowdsourcing.
 As with the success story of reCAPTCHA \mycitep{recaptcha}, we believe this will scale best when there is a natural harmony between data supply and demand.
@@ -431,8 +429,9 @@ The data format (English itself) is widely agreed upon, and there is even an exi
 It seems like the bottleneck would be judicious problem set design.}
 
 Large quantities of supervised data underlie state-of-the-art performance in many NLP tasks.
-While current paid approaches like Amazon's Mechanical Turk are already a viable way of obtaining crowdsourced data, we believe it would be well worth the initial investment of time and resources to build a sufficiently compelling and widely used educational app capable of harvesting supervised natural language data from its natural source. 
-The cost per data point could be significantly reduced or perhaps even become negative (a profitable app), although the value of the harvested data itself might be worth subsidizing.
+While current paid approaches like Amazon's Mechanical Turk are already a viable way of obtaining crowdsourced data, we believe it would be well worth the initial investment of time and resources to build a educational app compelling enough to become widely adopted.
+This could then serve as a platform from which to harvest supervised natural language data from its natural source. 
+Compared with current paid approaches, the cost per datum could be significantly reduced or perhaps even become negative (a profitable app), although the value of the harvested data itself might be worth subsidizing.
 We consider the construction of such a potentially game-changing source of supervised NLP data to be an open challenge to the NLP community in general.
 
 
