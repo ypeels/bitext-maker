@@ -59,14 +59,10 @@
   nounset:
     en: city
     zh: 城市
-- tags: [[study], [abstract.object]]
+- tags: [institution, place]
   nounset:
-    en: culture
-    zh: 文化
-- tags: [duration]
-  nounset:
-    en: day
-    zh: 天
+    en: college
+    zh: 大学
 - tags: [electronic]
   nounset:
     en: computer
@@ -75,9 +71,14 @@
   nounset:
     en: country
     zh: 国家
-    
-
- 
+- tags: [[study], [abstract.object]]
+  nounset:
+    en: culture
+    zh: 文化
+- tags: [duration]
+  nounset:
+    en: day
+    zh: 天
 - tags: [information, quantity] 
   nounset: # but it's more specific than that, isn't it? numerical? PLUS, it's a divisible quantity, right? 
     en: data
@@ -86,6 +87,14 @@
   nounset:
     en: design
     zh: 设计
+- tags: [disease]
+  nounset:
+    en: disease
+    zh: 疾病
+- tags: [person]
+  nounset:
+    en: doctor
+    zh: 医生
 - tags: [location]
   nounset:
     en: earth
@@ -134,6 +143,10 @@
   nounset:
     en: history
     zh: 历史
+- tags: [duration]
+  nounset:
+    en: hour
+    zh: 小时
 - tags: [abstract]
   nounset:
     en: idea
@@ -162,6 +175,10 @@
   nounset:
     en: month
     zh: 月
+- tags: [media]
+  nounset:
+    en: movie
+    zh: 电影
 #- tags: [quantity] #[[study], [activity], [sensory]] # it's a "quantity" too, though...
 #  nounset:
 #    en: music
@@ -170,13 +187,10 @@
   nounset:
     en: [opportunity, chance]
     zh: 机会
-
-
 #- tags: [measure]
 #  nounset: # zh problem: reads like a measure word when used to modify another noun... also seems to act kind of like a quantifier... disable for now.
 #    en: part
 #    zh: 部分
-
 - tags: [person]
   nounset:
     en: person
@@ -249,23 +263,18 @@
   nounset:
     en: system
     zh: 系统
-
 - tags: [object, abstract] # it can kind of be anything... or should this be a separate nounset for now?
   nounset:
     en: thing
-    zh: 东西
-    
+    zh: 东西    
 - tags: [ability]
   nounset:
     en: technology
     zh: 技术
-
 - tags: [duration] # or should it just be "time"?
   nounset: 
     en: time
-    zh: 时间 # TODO: 时候
-    
-
+    zh: 时间 # TODO: 时候    
 - tags: [time]
   nounset: # crudely disabled "time" as noun modifier in generator
     en: today
@@ -281,12 +290,15 @@
 - tags: [object, organization, location]
   nounset:
     en: world
-    zh: 世界
-    
+    zh: 世界    
 - tags: [activity]
   nounset:
-    en: work
+    en: [work, job]
     zh: 工作
+- tags: [physical, object]
+  nounset:
+    en: work
+    zh: 作品
 - tags: [duration]
   nounset:
     en: year
@@ -298,6 +310,7 @@
 
 
 
+# --- # TODO: use pyyaml multiple documents to suppress rare word list instead of changing nounset file?
 
 # TODO: alphabetize these. (if there's a lot of them, it'd be easier to reinsert the old entries here
 # - if only YAML could preserve comments... then this could be automated
