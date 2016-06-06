@@ -84,7 +84,7 @@ This results in what we perceive to be a disproportionate amount of effort being
 
 % TODO (AMTA padding?): it's rather like having an athlete with an Olympic-level modern training regimen, when it comes to diet/nutrition, they'll just eat whatever they can find on the streets.
 % Long and rich tradition of decades, if not centuries of linguists, "chefs" - want to exploit this somehow
-
+% fueled by data
 
 One of the major advantages of data-driven MT is that it removes the need for linguists to develop a new set of rules for an MT system to support a new language.
 In a sense, though, the rule-based MT linguist's job has really been  ``outsourced'' to third-party translators, who implicitly encode linguistic information in parallel corpora.
@@ -174,6 +174,7 @@ We believe that natural language processing in general and machine translation i
 Unlike many machine learning applications (image recognition, finance), NLP data sets are manmade to begin with; humans themselves {\em are} the primary natural producers and consumers of raw written language data.
 Translation is further privileged as perhaps the only NLP task for which millions of people (foreign-language learners) already undergo years of formal training, which has implications for scalability via crowdsourcing (Section \ref{sec:future}).
 
+% TODO: corpus generation is (almost like?) a sub-problem
 % TODO: a reference to ``blessing of dimensionality'' for the inverse problem? how it's relatively easy to generate an exponentially large number of sentences?
 Other practical considerations shine a favorable light on parallel corpus generation.
 As the ``inverse'' of translation, multilingual generation is also an easier task in some senses.
@@ -195,6 +196,7 @@ and Section \ref{sec:future} proposes future work.
 \label{sec:related}
 
 The idea of using synthetic parallel corpora in machine translation is hardly new.
+% TODO: it's not domain limitation that matters - it's the fact that they're not amplifying, just mapping sentences 1-1
 Previous attempts at creating synthetic parallel corpora have used rule-based MT (RBMT) systems \mycitep{hu:2007,dugast:2008,murakami:2009,rubino:2014}, but the input to the RBMT systems was again dictated by external corpora in the desire to produce immediate results.
 A longer-term approach that may pay dividends (Section \ref{subsec:benefits}) would be to run RBMT systems on specially chosen sentences for which they are known to produce high-quality translations, or perhaps eventually directly encoding their rules into carefully crafted parallel corpora.
 
@@ -290,6 +292,7 @@ Chinese text was preprocessed using the latest version of the Stanford Segmenter
 Phrase and lexicalized reordering tables were interpolated using the {\small \tt tmcombine} script included with Moses \mycitep{tmcombine}, with the interpolation tuned on the {\small \tt dev2010} data set.
 BLEU scores were computed as described by \mynewcite{iwslt2015} using the IWSLT 2015 progress data set ({\small \tt tst2014}).\footnote{We chose the {\small \tt tst2014} test set to facilitate comparison with published results from both IWSLT 2014 and 2015 in future work.}
 
+% TODO: mention that LM was held constant - since monolingual (even in-domain?) corpora are typically available at large scale
 %\subsection{Task}
 
 
