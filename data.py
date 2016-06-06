@@ -286,9 +286,15 @@ class VerbFormBank(WordFormBank):
         WordFormBank.__init__(self, filename)
         self.DATA_FACTORY = VerbForms
     
-
-# not currently inheriting Bank, since this is (potentially) multi-file...
-class VerbSetBank:
+    
+# not currently inheriting Bank, since this is (potentially) multi-file...    
+class CategoryBank:
+    '''
+    base class for verbsets and prepsets, both of which have
+    - semantic data, with most syntactic data coming from a separate template file (clause_templates.yml and pp_templates.yml)
+        - might want to separate into per-category files, eventually
+    - lexical data
+    '''
     def __init__(self, path):
         self.__data = {}        
         if os.path.isdir(path):  
@@ -301,20 +307,20 @@ class VerbSetBank:
             raise Exception('A path that is neither dir nor file - how zen...', path)
             
         self.__all_templates = { datum['template'] for datum in self.__data.values() }
-
+        
     def all_templates(self):
         '''Returns all available templates - mainly for testing purposes (tiny verbset list)'''
         return self.__all_templates.copy()
-            
+        
     def categories(self):
         return list(self.__data.keys())
-       
+        
     def get_category(self, category):
-        return VerbCategory(self.__data[category])
+        return self.DATA_FACTORY(self.__data[category])
         
     def get_categories_by_template(self, template_id):
         return sorted([cat for cat in self.categories() if self.__data[cat]['template'] == template_id])
-    
+        
     def __add_file(self, filename):
         new_data = read_file(filename)
         
@@ -322,6 +328,27 @@ class VerbSetBank:
         assert(type(new_data) is dict)
         assert(not any(key in self.__data.keys() for key in new_data.keys()))        
         self.__data.update(new_data)
+
+
+class PrepSetBank(CategoryBank):
+    def __init__(self, path):
+        CategoryBank.__init__(self, path)
+        self.DATA_FACTORY = PrepCategory    
+        
+class VerbSetBank(CategoryBank):
+    def __init__(self, path):
+        CategoryBank.__init__(self, path)
+        self.DATA_FACTORY = VerbCategory
+
+
+            
+
+       
+
+        
+
+    
+
             
             
 
@@ -723,21 +750,20 @@ class Transformation:
      
    
 # polylingual lexical "Sets" - e.g., { 'en': 'Alice', 'zh': ... }
-class VerbCategory:
-    '''Verb semantics - responsible for choosing a verb synset for generation'''
+class Category:
     def __init__(self, data):
         self.__data = data
         self.__randomly_picked_symbol_tags = {}
-        self.__randomly_picked_symbol_transformations = {}
-    
+        
     def __str__(self):
         return str(self.__data)
         
     def additions(self):
         return self.__data.get('additions')
         
-    def all_verbsets(self):
-        return [VerbSet(item) for item in self.__data['verbsets']]
+    def tagged_symbols(self):
+        tags = self.__data.get('tags') or {}
+        return tags.keys()
         
     def tags_for_symbol(self, symbol):
         tags = self.__data.get('tags') or {}
@@ -763,16 +789,26 @@ class VerbCategory:
         
         return result #tags.get(symbol)
         
-    def tagged_symbols(self):
-        tags = self.__data.get('tags') or {}
-        return tags.keys()
-        
     def template_id(self):
         return self.__data['template']
+        
+    def _data(self): # expose to concrete subclasses
+        return self.__data
 
+
+class VerbCategory(Category):
+    '''Verb semantics - responsible for choosing a verb synset for generation'''
+    def __init__(self, data):
+        Category.__init__(self, data)
+        #self.__data = data # DELETEME
+        self.__randomly_picked_symbol_transformations = {}
+        
+    def all_verbsets(self):
+        return [VerbSet(item) for item in self._data()['verbsets']]
+        
     # this whole function is analogous to tags_for_symbol. tempting to refactor, but data format is subject to change...
     def transformation_for_symbol(self, symbol):
-        transforms = self.__data.get('transformations', {})
+        transforms = self._data().get('transformations', {})
         symbol_transforms = transforms.get(symbol)
         if symbol_transforms:
             symbol_transforms = wrap_as_list(symbol_transforms)
@@ -948,8 +984,10 @@ DET_FORMS = { lang: DeterminerFormBank(DATA_DIR + 'dets_{}.yml'.format(lang)) fo
 NAME_BANK = NameSetBank(DATA_DIR + 'namesets.yml')
 # TODO: load language-specific name files, for any languages that might have noun declensions
 
-NOUNSET_BANK = NounSetBank(DATA_DIR + 'nounsets.yml')
+NOUNSET_BANK = NounSetBank(DATA_DIR + 'nounsets-test.yml')
 NOUN_FORMS = { lang: NounFormBank(DATA_DIR + 'nouns_{}.yml'.format(lang)) for lang in LANGUAGES }
+
+#PREPSET_BANK = PrepositionSetBank(DATA_DIR + 'prepsets.yml')
 
 PRONSET_BANK = PronounSetBank(DATA_DIR + 'pronsets.yml')
 PRONOUN_FORMS = { lang: PronounFormBank(DATA_DIR + 'prons_{}.yml'.format(lang)) for lang in LANGUAGES }
@@ -967,6 +1005,7 @@ ADVP_TEMPLATE_BANK = TemplateBank(TEMPLATE_DIR + 'advp_templates.yml')
 CLAUSE_TEMPLATE_BANK = TemplateBank(TEMPLATE_DIR + 'clause_templates.yml')
 CUSTOM_TEMPLATE_BANK = TemplateBank(TEMPLATE_DIR + 'custom_templates.yml')
 NP_TEMPLATE_BANK = TemplateBank(TEMPLATE_DIR + 'np_templates.yml')
+PP_TEMPLATE_BANK = TemplateBank(TEMPLATE_DIR + 'pp_templates.yml')
 TRANSFORMATION_BANK = TransformationBank(TEMPLATE_DIR + 'transformations.yml')
 
 
