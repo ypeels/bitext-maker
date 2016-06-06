@@ -263,7 +263,7 @@
   nounset:
     en: system
     zh: 系统
-- tags: [object], [] # it can kind of be anything... or should this be a separate nounset for now?
+- tags: [[object], []] # it can kind of be anything... or should this be a separate nounset for now?
   nounset:
     en: thing
     zh: 东西    
