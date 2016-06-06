@@ -1,0 +1,11 @@
+# Unlike clause_templates.yml, let's put prepsets in this file too
+# this is because the number of syntactic PP-templates is expected to be tiny
+
+symbols:
+  P:
+    type: preposition
+  O:
+    type: NP
+    description: object or complement of preposition
+    
+# this part is like post-transformation participles

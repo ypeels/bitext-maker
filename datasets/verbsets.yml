@@ -346,7 +346,7 @@ perception.hearing.meta:
   additions:
     langs:
       en:
-        prewords: { C: [that, ''] }
+        prewords: { C: [that] } # *to hear Bob provides projects
       zh:
         prewords: { C: [的 是, ''] }
         

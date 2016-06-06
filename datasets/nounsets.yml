@@ -67,7 +67,7 @@
   nounset:
     en: computer
     zh: 电脑
-- tags: [[organization], [location, country]]
+- tags: [[object, organization], [object, location, country]]
   nounset:
     en: country
     zh: 国家
@@ -263,7 +263,7 @@
   nounset:
     en: system
     zh: 系统
-- tags: [object, abstract] # it can kind of be anything... or should this be a separate nounset for now?
+- tags: [object], [] # it can kind of be anything... or should this be a separate nounset for now?
   nounset:
     en: thing
     zh: 东西    
@@ -279,10 +279,6 @@
   nounset: # crudely disabled "time" as noun modifier in generator
     en: today
     zh: 今天
-- tags: []
-  nounset:
-    en: tricycle-wheelchair # that's that it is in the training set...
-    zh: 三轮车
 - tags: [location]
   nounset:
     en: universe
@@ -854,3 +850,7 @@
   nounset:
     en: 
     zh: 
+- tags: []
+  nounset:
+    en: tricycle-wheelchair # that's that it is in the training set...
+    zh: 三轮车

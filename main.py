@@ -428,6 +428,15 @@ def randomly_configure_clause(clause, stack_depth=1, **kwargs):
     
     # TODO: nested modals with same verb read like duplicated verbs in zh... should be alleviated by scaling # verbs up...    
     clause.set_template(template_id, readonly=readonly)
+    
+    # modal ghost subject part 2 of 2 (in execution order)
+    # workaround to set ghost node from any enclosing modal here - can only be called after template has been set
+    # tag propagation should occur fine from this verb to ghost node, even if not fully instantiated...
+        # MAY result in null nodes?
+    subject_from_enclosing_modal = kwargs.pop('subject_from_enclosing_modal', None)
+    if subject_from_enclosing_modal:
+        clause.add_ghostnode('S', subject_from_enclosing_modal, kind='linked')
+    
     clause.set_random_verb_category()  
     
     # randomly add a transformation - these REQUIRE verb_category to have been set...
@@ -438,6 +447,24 @@ def randomly_configure_clause(clause, stack_depth=1, **kwargs):
     
     # finally, recurse to children
     templated_subnodes = [sn for sn in clause._subnodes() if issubclass(type(sn), nodes.TemplatedNode)]
+    
+    # modal ghost subject part 1 of 2 (in execution order)
+    # SPECIAL CASE: complement of modal verb (S V VP[complement]) needs to set up ghost subject node from enclosing nodal
+    # - ghost node can only be set AFTER C's template has been set - currently passing it in externally via kwargs
+    if template_id == 'modal':
+        S, C = [clause._get_symbol_subnode(sym) for sym in 'SC']
+        if S:
+            assert(S in templated_subnodes)
+        else:
+            assert(stack_depth > 1) # S is a ghost node from an outer modal that needs to be passed further down
+            S = clause._get_symbol_ghostnode('S')
+        assert(S)
+
+        templated_subnodes.remove(C)
+        assert(C and C not in templated_subnodes)        
+        
+        randomly_configure_clause(C, stack_depth=stack_depth+1, subject_from_enclosing_modal=S, **kwargs)
+    
     for subnode in templated_subnodes:
         randomly_configure_node(subnode, stack_depth=stack_depth+1, **kwargs)
     
@@ -466,13 +493,14 @@ def randomly_configure_np(np, **kwargs):
         forbidden_templates = np._get_option('forbidden templates')
     except KeyError:
         forbidden_templates = []
-        
+    
     roll = utility.rand()
-    if roll < 0.05 and 'pronoun' not in forbidden_templates:
+    if roll < 0.05 and 'pronoun' not in forbidden_templates and data.PRONSET_BANK.find_tagged(np.semantic_tags()):
         template_id = 'pronoun'
-    elif 0.05 <= roll < 0.2 and 'name' not in forbidden_templates:
+    elif 0.05 <= roll < 0.2 and 'name' not in forbidden_templates and data.NAME_BANK.find_tagged(np.semantic_tags()):
         template_id = 'name' # shouldn't make it THAT common        
     else: 
+        assert(data.NOUNSET_BANK.find_tagged(np.semantic_tags()))
         template_id = 'noun'
             
     np.set_template(template_id)

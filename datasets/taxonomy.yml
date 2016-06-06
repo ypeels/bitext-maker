@@ -17,13 +17,14 @@
     abstract.object:      
   
 - entity: # might be non-living
-    living:
-    location:
-      city:
-      continent:
-      country:
-      state: # or should this be province?
-    organization:
+    animate:
+    inanimate:
+      location:
+        city: # TODO: doesn't this make "country" countable via "object", which is wrong??
+        continent:
+        country:
+        state: # or should this be province?
+      organization:
     
   
 
