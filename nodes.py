@@ -837,13 +837,23 @@ class PrepositionalPhrase(TransformableNode):
         if not TransformableNode.can_modify(self, lexical_target):
             return False
         
-        #assert(issubtype(type(target_node), GenericNoun)) # for verbs, you have to look at verb category...
-        assert(lexical_target.type() == 'noun')
-        current_tags = lexical_target.semantic_tags()
-        requested_tags = sum([gt.semantic_tags() for gt in self._ghost_targets()], [])
-        
-        # don't muck with the taxonomy; just directly check whether any nouns exist fulfilling these tags (based on random np technology)        
-        return bool(data.NOUNSET_BANK.find_tagged(current_tags + requested_tags))
+        if lexical_target.type() == 'noun':
+            assert(self.template_id() == 'pp.adjp')
+            current_tags = lexical_target.semantic_tags()
+            requested_tags = sum([gt.semantic_tags() for gt in self._ghost_targets()], [])
+            
+            # don't muck with the taxonomy; just directly check whether any nouns exist fulfilling these tags (based on random np technology)        
+            return bool(data.NOUNSET_BANK.find_tagged(current_tags + requested_tags))
+            
+        elif lexical_target.type() == 'verb':
+            assert(self.template_id() == 'pp.advp.targeting.clause')
+            
+            # should be okay as long as it's a supported verb category, right? that's it?
+            # back-hacks to clause parent...
+            return lexical_target.parent().verb_category_id() in self._template().categories()
+            
+        else:
+            raise Exception('unsupported lexical target type', lexical_target.type())
         
     def set_template(self, id): #, readonly=True):
         TransformableNode.set_template(self, id, readonly=False) # always allow additions to PP from category

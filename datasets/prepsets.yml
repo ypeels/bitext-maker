@@ -1,6 +1,24 @@
 # split semantics (here) and syntax (pp_templates.yml), just like clause/verbsets
 
-
+# TODO: nonsensical stuff like "the chair in the bird"
+in.inside.adjp:
+  template: pp.adjp
+  tags:
+    T: physical.object # TODO: disallow locations? but you could have "the city in the sky"
+    
+    #O: physical.object # disallow locations for zh - 
+    O: [[bodypart], [edible], [mechanical], [animate]]
+  additions:
+    symbols:
+      O: # *在 美国 里 - what about en? (studied at XXX University)
+        options: { forbidden templates: [pronoun, name] } 
+    langs:
+      zh:
+        postwords: { O: [里, 里, 里, 内] }
+        
+  prepsets:
+  - en: [in, in, in, inside]
+    zh: 在
 
 # I think it would be better to imitate verb categories
 with.having.adjp: &with_having
@@ -23,25 +41,20 @@ with.having.adjp: &with_having
     zh: 有
     
     
-# TODO: nonsensical stuff like "the chair in the bird"
-in.inside.adjp:
-  template: pp.adjp
+with.using.advp: 
+  template: pp.advp.targeting.clause
   tags:
-    T: physical.object # TODO: disallow locations? but you could have "the city in the sky"
+    O: inanimate
     
-    #O: physical.object # disallow locations for zh - 
-    O: [[bodypart], [edible], [mechanical], [animate]]
   additions:
-    symbols:
-      O: # *在 美国 里 - what about en? (studied at XXX University)
-        options: { forbidden templates: [pronoun, name] } 
-    langs:
-      zh:
-        postwords: { O: [里, 里, 里, 内] }
+    categories: [action.creation]
         
+  
   prepsets:
-  - en: [in, in, in, inside]
-    zh: 在
+  - en: [by using] # with - this would work, but there's automatic PP attachment ambiguity for any transitive verb
+    zh: 用
+    
+# TODO: some zh prepositions will require verb duplication instead. this technology can be backported to en possessives
   
 
 ## TODO: of (possessive) - here's one where EN needs an empty preposition, and then postword 's 

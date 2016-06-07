@@ -1,8 +1,3 @@
-# Unlike clause_templates.yml, let's put prepsets in this file too
-# this is because the number of syntactic PP-templates is expected to be tiny
-
-# typical per-language data - override on a case-by-case basis
-
 # this is a shared data node, not a template.
 # shouldn't matter, unless the wrapping TemplateBank gets queried for the "langs" template...
 langs: &langs
@@ -13,19 +8,22 @@ langs: &langs
   zh:
     example: 用 球
     template: P O
+    
+symbols: &symbols
+  P:
+    type: preposition
+  O:
+    type: NP
+    description: object or complement of preposition
 
 
 
 pp.adjp:
 
   # type: PP.ADJP ?
+  symbols: *symbols
+  langs: *langs
 
-  symbols:
-    P:
-      type: preposition
-    O:
-      type: NP
-      description: object or complement of preposition
 
   # this part is like post-transformation participles    
   targets:
@@ -33,10 +31,19 @@ pp.adjp:
       type: NP
       description: target of prepositional modifier
       
-  langs: 
-    <<: *langs
+  #langs: 
+  #  <<: *langs
 
   
   
-
+pp.advp.targeting.clause:
+  symbols: *symbols
+  langs: *langs
+  targets:
+    T:
+      type: Clause
+      description: target of prepositional modifier (will target head verb, lexically)
+    
+  #langs:
+  #  <<: *langs
 

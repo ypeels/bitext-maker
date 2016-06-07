@@ -419,6 +419,19 @@ class EnGenerator(Generator):
         adverbs = self._pop_modifiers(modifiers, 'adverb')
         if adverbs:
             result = self._modify_clause_with_adverbs(node, adverbs, result) # shared from base class
+
+        prepositions = self._pop_modifiers(modifiers, 'pp.advp.targeting.clause')
+        if prepositions:
+            for pp in prepositions:
+                pp_text = pp.generated_text(self.LANG)
+            
+                # unlike NP, the unmodified contents of a clause template are generally nontrivial, hence these acrobatics...
+                # TODO: hmm, this "reverses" the order of the PP's if there is more than one...
+                if 'O' in result:
+                    result.insert(result.index('O')+1, pp_text)                    
+                else:
+                    for head in node.head_symbols():
+                        result.insert(result.index(head)+1, pp_text)
             
         if modifiers:
             raise Exception('TODO: unhandled modifiers - {}'.format(modifiers))
@@ -427,7 +440,7 @@ class EnGenerator(Generator):
 
             
     def _modify_np(self, node):
-        template = self._get_unmodified_template(node)
+        template = self._get_unmodified_template(node) # TODO: handle custom NP templates...
         
         result = [] # most of this logic recycles nicely from the version where modifiers were owned by the LexicalNode itself
         modifiers = list(node.modifiers()) # make a copy (trashed immediately)
@@ -652,6 +665,12 @@ class ZhGenerator(Generator):
                 result = ['当时'] + result
             else:
                 raise Exception('TODO: check adverbs for time phrases')
+          
+        prepositions = self._pop_modifiers(modifiers, 'pp.advp.targeting.clause')
+        if prepositions:            
+            # TODO: query PP metadata for non-default generation orders. I suppose I could tag P
+            # hijack old adverb code (looks like 地 gets added in ADVP for adverbs). this WORKS!?    
+            result = self._modify_clause_with_adverbs(node, prepositions, result)
           
         if modifiers:
             raise Exception('TODO: unhandled modifiers - {}'.format(modifiers))
