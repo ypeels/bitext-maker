@@ -497,7 +497,7 @@ def add_random_tag_to_np(np):
         np.add_options({'tags': [specific_tag]})
     
     
-def randomly_configure_np(np, **kwargs):
+def randomly_configure_np(np, stack_depth=1, **kwargs):
     # pure rand() doesn't give fine-grained control over the distribution
     #template_id = utility.pick_random(data.NP_TEMPLATE_BANK.all_template_ids())
     
@@ -549,7 +549,7 @@ def randomly_configure_np(np, **kwargs):
         adjp_count = 0
         for i in range(5): # TODO: zh gets awkward with more than 2 adjectives, esp. single-char...
             if utility.rand() < 0.2: 
-                modifier = make_random_adjp(np, **kwargs)
+                modifier = make_random_adjp(np, stack_depth=stack_depth+1, **kwargs)
                 if modifier:
                     assert(all(modifier.can_modify(head) for head in np._get_headnodes()))
                     np.add_modifier(modifier)
@@ -559,16 +559,16 @@ def randomly_configure_np(np, **kwargs):
         # not too deep (to prevent verb overload)
         # not too many adjectives (this affects zh more)
         # TODO: disallow ambiguous participle attachment? the man seeing the woman holding the umbrella
-        if kwargs.get('stack_depth') < 3 and adjp_count <= 2 and utility.rand() <= 0.25:
-            participle = make_random_participle(np, **kwargs)
+        if stack_depth < 3 and adjp_count <= 2 and utility.rand() <= 0.25:
+            participle = make_random_participle(np, stack_depth=stack_depth+1, **kwargs)
             #assert(participle) # well, I mean, maybe the semantic tags didn't work out...
             if participle:
                 np.add_modifier(participle)
         else:
             participle = None
             
-        if not participle and kwargs.get('stack_depth') < 3 and adjp_count <= 2 and utility.rand() <= 0.25:
-            preposition = make_random_pp_adjp(np, **kwargs)
+        if not participle and stack_depth < 3 and adjp_count <= 2 and utility.rand() <= 0.25:
+            preposition = make_random_pp_adjp(np, stack_depth=stack_depth+1, **kwargs)
             if preposition:
                 np.add_modifier(preposition)
     
