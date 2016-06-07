@@ -1,0 +1,17 @@
+# split semantics (here) and syntax (pp_templates.yml), just like clause/verbsets
+
+
+
+# I think it would be better to imitate verb categories
+test: 
+  template: pp.adjp
+  
+  # this part is like verbsets
+  tags:
+    S: animate
+    T: inanimate
+  
+  
+  prepsets: # forms for P
+  - en: with
+    zh: 有

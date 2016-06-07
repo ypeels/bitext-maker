@@ -136,6 +136,18 @@ def configure_transitive_clause(clause, number='singular', subject_type='noun', 
             assert(not O.template_id() == 'pronoun')
             O.add_modifier(participle)
     
+    if 'preposition' in modifiers:
+        pp = nodes.node_factory('PP') #raise
+        pp.set_template('pp.adjp')
+        pp.set_prep_category('test')
+        
+        #if pp.can_modify(S):
+        # TODO: check whether pp can modify S (for random PP generation)
+        S.add_modifier(pp)
+        PO = pp._get_symbol_subnode('O')
+        PO.set_template('noun')
+        PO.add_options({'tags': ['object']})
+    
     
     # add a determiner. oooooo
     # TODO: does this logic really belong here?
@@ -465,6 +477,7 @@ def randomly_configure_clause(clause, stack_depth=1, **kwargs):
         
         randomly_configure_clause(C, stack_depth=stack_depth+1, subject_from_enclosing_modal=S, **kwargs)
     
+    # TODO: configure head first? last? or is the current random order perfectly fine?
     for subnode in templated_subnodes:
         randomly_configure_node(subnode, stack_depth=stack_depth+1, **kwargs)
     
@@ -769,6 +782,7 @@ def make_test_clauses():
         #, make_transitive_clause(object_type='pronoun', modifiers=['participle'])
         #, make_transitive_clause(object_type='pronoun', modifiers=['participle'], participle_object_type='name')
         , make_transitive_clause(transformations=['topicalization'], template_readonly=False)
+        , make_transitive_clause(modifiers=['preposition'])
         #, make_custom()
         #, make_custom(number='plural')
         #, make_custom(modifiers=['determiner'])

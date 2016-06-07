@@ -1,11 +1,41 @@
 # Unlike clause_templates.yml, let's put prepsets in this file too
 # this is because the number of syntactic PP-templates is expected to be tiny
 
-symbols:
-  P:
-    type: preposition
-  O:
-    type: NP
-    description: object or complement of preposition
-    
-# this part is like post-transformation participles
+# typical per-language data - override on a case-by-case basis
+
+# this is a shared data node, not a template.
+# shouldn't matter, unless the wrapping TemplateBank gets queried for the "langs" template...
+langs: &langs
+  en:
+    example: with the ball
+    template: P O
+    tags: { O: objective }
+  zh:
+    example: 用 球
+    template: P O
+
+
+
+pp.adjp:
+
+  # type: PP.ADJP ?
+
+  symbols:
+    P:
+      type: preposition
+    O:
+      type: NP
+      description: object or complement of preposition
+
+  # this part is like post-transformation participles    
+  target:
+    T:
+      type: NP
+      
+  langs: 
+    <<: *langs
+
+  
+  
+
+

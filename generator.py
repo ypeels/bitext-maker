@@ -128,6 +128,10 @@ class Generator:
             self._generate_node_text(node, name)   
         elif node_type == 'noun':
             self._generate_noun(node) # punt to subclass
+        elif node_type == 'preposition':
+            #self._generate_preposition(node)
+            assert(self.LANG in ['en', 'zh'])
+            self._generate_node_text(node, node.word(self.LANG))
         elif node_type == 'pronoun':
             self._generate_pronoun(node)
         elif node_type == 'verb':
@@ -466,6 +470,13 @@ class EnGenerator(Generator):
             assert(all(p.num_symbols() > 1 for p in participles)) # objectless? needs different order: "the kicking man"
             part_strings = [p.generated_text(self.LANG) for p in participles]
             result += self.__conjunction(part_strings)
+            
+        prepositions = self._pop_modifiers(modifiers, 'pp.adjp')
+        if prepositions:
+            assert(not participles) # for now, let's not worry about participle/preposition attachment ambiguity...
+            #assert(len(prepositions) is 1) # no chained prepositions for now (cat in the hat on the table...)
+            result += [pp.generated_text(self.LANG) for pp in prepositions]
+            
         
         assert(self._modifiers_are_done(modifiers))
 
@@ -666,9 +677,16 @@ class ZhGenerator(Generator):
                 #assert(not node.has_modifiers()) # TODO: check modifiers for "pluralizers" like CD
                 result.append('一些')
         
+        # prepositions - uh, before or after participles?
+        prepositions = self._pop_modifiers(modifiers, 'pp.adjp')
+        if prepositions:
+            for pp in prepositions:
+                result += [pp.generated_text(self.LANG), '的']
+        
         # participles - generally handle before adjectives, which could even be single-character...
         participles = self._pop_modifiers(modifiers, 'participle')
         if participles:
+            assert(not prepositions)
             for part in participles:
                 text = part.generated_text(self.LANG)
                 result += [text, '的']

@@ -214,7 +214,9 @@ class PronounSetBank(WordSetBank):
             
 class TemplateBank(Bank):
     def all_template_ids(self):
-        return tuple(self._data().keys())
+        #return tuple(self._data().keys())
+        all_ids = [key for key in self._data().keys() if 'symbols' in self._data()[key]] # ignore dummy/referenced entries
+        return all_ids        
 
     def get_template_by_id(self, id, readonly=True):
         return Template(self._data()[id], readonly)
@@ -254,23 +256,11 @@ class DeterminerFormBank(WordFormBank):
     def __init__(self, filename):
         WordFormBank.__init__(self, filename)
         self.DATA_FACTORY = DeterminerForms
-    #def get(self, word):
-    #    df = self._data().get(word)
-    #    if df:
-    #        return DeterminerForms(df)
-    #    else:
-    #        return None
         
 class NounFormBank(WordFormBank):
     def __init__(self, filename):
         WordFormBank.__init__(self, filename)
         self.DATA_FACTORY = NounForms
-    #def get(self, word):
-    #    nf = self._data().get(word)
-    #    if nf:
-    #        return NounForms(nf)
-    #    else:
-    #        return None
             
 class PronounFormBank(WordFormBank):
     # need to differentiate between key with empty entry and a missing key
@@ -330,7 +320,7 @@ class CategoryBank:
         self.__data.update(new_data)
 
 
-class PrepSetBank(CategoryBank):
+class PrepositionSetBank(CategoryBank):
     def __init__(self, path):
         CategoryBank.__init__(self, path)
         self.DATA_FACTORY = PrepCategory    
@@ -343,11 +333,6 @@ class VerbSetBank(CategoryBank):
 
             
 
-       
-
-        
-
-    
 
             
             
@@ -800,7 +785,6 @@ class VerbCategory(Category):
     '''Verb semantics - responsible for choosing a verb synset for generation'''
     def __init__(self, data):
         Category.__init__(self, data)
-        #self.__data = data # DELETEME
         self.__randomly_picked_symbol_transformations = {}
         
     def all_verbsets(self):
@@ -828,6 +812,9 @@ class VerbCategory(Category):
         
         return result #transforms.get(symbol)
 
+class PrepCategory(Category):
+    def all_prepsets(self):
+        return [PrepositionSet(item) for item in self._data()['prepsets']]
         
 class WordForms:
     '''Language-specific morphological forms (e.g., nouns_en.yml)'''
@@ -952,7 +939,7 @@ class NameSet(WordSet):
 class NounSet(WordSet):
     def _get_word_data(self, lang):
         return self._data()['nounset'][lang] or []
-        
+      
 class PronounSet(WordSet):
     '''Unlike NounSet, etc., this is the entire list item - duck typing + reach a little deeper'''
     def person(self):
@@ -960,6 +947,11 @@ class PronounSet(WordSet):
        
     def _get_word_data(self, lang):
         return self._data()['pronounset'][lang] or []       
+
+
+class PrepositionSet(WordSet):
+    def _get_word_data(self, lang):
+        return self._data()[lang] or []
         
 class VerbSet(WordSet):
     # verb categories' structure is different 
@@ -987,7 +979,7 @@ NAME_BANK = NameSetBank(DATA_DIR + 'namesets.yml')
 NOUNSET_BANK = NounSetBank(DATA_DIR + 'nounsets-test.yml')
 NOUN_FORMS = { lang: NounFormBank(DATA_DIR + 'nouns_{}.yml'.format(lang)) for lang in LANGUAGES }
 
-#PREPSET_BANK = PrepositionSetBank(DATA_DIR + 'prepsets.yml')
+PREPSET_BANK = PrepositionSetBank(DATA_DIR + 'prepsets.yml')
 
 PRONSET_BANK = PronounSetBank(DATA_DIR + 'pronsets.yml')
 PRONOUN_FORMS = { lang: PronounFormBank(DATA_DIR + 'prons_{}.yml'.format(lang)) for lang in LANGUAGES }

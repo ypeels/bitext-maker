@@ -476,7 +476,7 @@ class TransformableNode(ModifierNode):
             return False
         
         # the tests below work for multiple targets, but do they make any sense??
-        assert(len(self.__ghosttargets) <= 1) 
+        assert(len(self._ghost_targets()) <= 1) 
         
         # syntactic compatibility
         if not all(gt.type() == target_head.type()  or  gt.type() == target_head.parent().type()  for gt in self.__ghosttargets):
@@ -487,7 +487,7 @@ class TransformableNode(ModifierNode):
             # here, we assume that all tags have been set on the target, and then reject if match is not guaranteed...
         # TODO: merge tags somehow before lexicalizing?
         target_tags = target_head.semantic_tags()
-        for ghost_target in self.__ghosttargets:
+        for ghost_target in self._ghost_targets():
             ghost_tags = ghost_target.semantic_tags()
             for gtag in ghost_tags:            
                 # the following passes: ghost target needs ['animal'], real target supplies ['person']
@@ -575,6 +575,7 @@ class TransformableNode(ModifierNode):
 
             if kind == 'target':
                 options = dict(template.target_options_for_key(key)) # TODO: plug memory leak? (alternative is to trash template's data...)
+                # never gets here?
             else:
                 options = {}            
             
@@ -599,6 +600,9 @@ class TransformableNode(ModifierNode):
         
     def _ghost_symbols(self):
         return self.__ghostnodes.keys()
+        
+    def _ghost_targets(self):
+        return self.__ghosttargets
         
     def _get_symbol_ghostnode(self, symbol):
         return self.__ghostnodes.get(symbol)
@@ -667,7 +671,7 @@ class Clause(TransformableNode):
         return bool(self.__verb_category_id) and bool(self.__verb_category)
     def set_verb_category(self, id):    
         assert(id in data.VERBSET_BANK.categories())
-        assert(not self.__verb_category)
+        assert(self.__verb_category is None) # initialize only once
         
         # TODO: hmm, what if you want to specify semantic category first, or neither? (like with a participle)
         category = data.VERBSET_BANK.get_category(id)       # assume an explicitly-specified verb category is compatible     
@@ -773,7 +777,85 @@ class Clause(TransformableNode):
                     
                 if node: #assert(node) # might legitimately have been ghosted out, e.g., participle
                     node.add_options({'tags': tags}) 
-                
+
+
+
+class PrepositionalPhrase(TransformableNode):
+    WHY_TRANSFORMABLE = 'PrepositionalPhrase inherits TransformableNode for ghost node functionality, but should never be transformed...right?'
+    
+    def __init__(self, **kwargs): 
+        TransformableNode.__init__(self, data.PP_TEMPLATE_BANK, **kwargs)
+        self.__prep_category_id = ''
+        self.__prep_category = None # PrepCategory
+        
+    def has_prep_category(self):
+        return bool(self.__prep_category)
+    def set_prep_category(self, id):
+        assert(id in data.PREPSET_BANK.categories())
+        assert(self.__prep_category is None)
+    
+        category = data.PREPSET_BANK.get_category(id)
+        if self._template_id() == category.template_id():
+            self.__prep_category_id = id
+            self.__prep_category = category
+
+            assert(self._can_create_symbol_subnodes())
+            #if self._can_create_symbol_subnodes():
+            self._create_symbol_subnodes()
+        else:
+            raise Exception('incompatible template', id, self._template_id(), category.template_id())
+    
+
+    
+    #def _create_symbol_subnodes(self):
+    #    TransformableNode._create_symbol_subnodes(self)
+    #    print(self._subnodes()) 
+    
+        
+    # overrides
+    def add_lexical_target(self, target_node):
+        ModifierNode.add_lexical_target(self, target_node)
+        
+        # add tags to target
+        # that's not gonna cut it for verb targets though, is it?
+        # ok, for verb targets, you'd have to pick VerbCategory-compatible PPs at construction time
+        
+    def can_modify(self, lexical_target):
+        if not TransformableNode.can_modify(self, lexical_target):
+            return False
+        
+        #assert(issubtype(type(target_node), GenericNoun)) # for verbs, you have to look at verb category...
+        assert(lexical_target.type() == 'noun')
+        current_tags = lexical_target.semantic_tags()
+        requested_tags = sum([gt.semantic_tags() for gt in self._ghost_targets()], [])
+        
+        # don't muck with the taxonomy; just directly check whether any nouns exist fulfilling these tags (based on random np technology)        
+        return bool(data.NOUNSET_BANK.find_tagged(current_tags + requested_tags))
+        
+    def set_template(self, id, readonly=True):
+        TransformableNode.set_template(self, id, readonly)
+        
+        assert(id.startswith('pp.'))
+        self._set_type(id.split('.')[1].upper())        
+        assert(self.type() in ['ADJP', 'ADVP'])
+        
+    
+    def _can_create_symbol_subnodes(self): # by analogy with Clause
+        assert(not self.transformation_list())
+        return TransformableNode._can_create_symbol_subnodes(self) and self.has_prep_category()
+        
+    def _bequeath_to_subnodes(self):
+        TransformableNode._bequeath_to_subnodes(self)
+
+        assert(self._subnodes())
+        P = self._get_symbol_subnode('P')
+        P.set_category(self.__prep_category)
+
+    def add_transformation(self, _):
+        raise Exception(WHY_TRANSFORMABLE)
+        
+    def apply_transformations(self):
+        raise Exception(WHY_TRANSFORMABLE)
             
         
         
@@ -864,8 +946,8 @@ class AdjectivePhrase(ModifierNode):
     def __init__(self, **kwargs): 
         ModifierNode.__init__(self, data.ADJP_TEMPLATE_BANK, **kwargs)
         
-    def _can_create_symbol_subnodes(self):
-        return self.has_template()
+    #def _can_create_symbol_subnodes(self):
+    #    return self.has_template()
         
         
         
@@ -873,10 +955,9 @@ class AdverbPhrase(ModifierNode):
     def __init__(self, **kwargs): 
         ModifierNode.__init__(self, data.ADVP_TEMPLATE_BANK, **kwargs)
         
-    def _can_create_symbol_subnodes(self):
-        return self.has_template()
-        
-        
+    # moved to base class 
+    #def _can_create_symbol_subnodes(self):
+    #    return self.has_template()
         
         
         
@@ -1261,19 +1342,30 @@ class Pronoun(GenericNoun):
             return None
     
 
-
+class Preposition(LexicalNode):
+    '''Prepositions themselves have no real tags - like Verb, they just pull a word off of their Category'''
+    def __init__(self, **kwargs):
+        LexicalNode.__init__(self, **kwargs)
+        self.__category = None # data.PrepCategory
         
+    def set_category(self, category):
+        assert(self.__category is None)
+        self.__category = category
+        
+    def _get_lexical_candidates(self):
+        return self.__category.all_prepsets()
     
 class Verb(LexicalNode):
     def __init__(self, **kwargs):
         LexicalNode.__init__(self, **kwargs)
-        self.__category = {} # data.VerbCategory
+        self.__category = None # data.VerbCategory
         #self.__verbsets = [] # data.VerbSet
         
     #def get_verbset_by_index(self, index):
     #    return self.get_dataset_by_index(index) #self.__verbsets[index]
         
     def set_category(self, category):
+        assert(self.__category is None or self.__category == category) # TODO: why is category getting set redundantly sometimes?
         self.__category = category
 
     def compatible_modifier_types(self):
@@ -1315,6 +1407,7 @@ FACTORY_MAP = {
     'Clause': Clause,
     'CustomTemplate': CustomTemplate,
     'NP': NounPhrase,
+    'PP': PrepositionalPhrase,
     
     # lexical nodes
     'adjective': Adjective,
@@ -1322,6 +1415,7 @@ FACTORY_MAP = {
     'determiner': Determiner,
     'name': Name, 
     'noun': Noun,
+    'preposition': Preposition,
     'pronoun': Pronoun,
     'verb': Verb
 }
