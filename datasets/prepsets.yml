@@ -8,8 +8,8 @@ test:
   
   # this part is like verbsets
   tags:
-    S: animate
-    T: inanimate
+    T: animate
+    O: inanimate
   
   
   prepsets: # forms for P

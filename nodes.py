@@ -575,7 +575,6 @@ class TransformableNode(ModifierNode):
 
             if kind == 'target':
                 options = dict(template.target_options_for_key(key)) # TODO: plug memory leak? (alternative is to trash template's data...)
-                # never gets here?
             else:
                 options = {}            
             
@@ -816,9 +815,16 @@ class PrepositionalPhrase(TransformableNode):
     def add_lexical_target(self, target_node):
         ModifierNode.add_lexical_target(self, target_node)
         
-        # add tags to target
-        # that's not gonna cut it for verb targets though, is it?
-        # ok, for verb targets, you'd have to pick VerbCategory-compatible PPs at construction time
+        # TODO: for verb targets, you'd have to pick VerbCategory-compatible PPs at construction time
+        if self.type() == 'ADJP':
+            assert(self.template_id() == 'pp.adjp') # maybe switch this with the if test?
+        
+            new_tags = sum([gt.semantic_tags() for gt in self._ghost_targets()], [])
+
+            # target's parent already calls this for every head in add_modifier() - no need to add tags to parent instead, right?
+            # well, this way, the parent doesn't have these new tags... hmm...
+            target_node.add_options({'tags': new_tags})
+            #target_node.parent().add_options({'tags': new_tags})
         
     def can_modify(self, lexical_target):
         if not TransformableNode.can_modify(self, lexical_target):
@@ -834,7 +840,8 @@ class PrepositionalPhrase(TransformableNode):
         
     def set_template(self, id, readonly=True):
         TransformableNode.set_template(self, id, readonly)
-        
+
+        # otherwise you'd have to work PP into the list of acceptable modifiers... but pp.adjp shouldn't modify verbs, etc.
         assert(id.startswith('pp.'))
         self._set_type(id.split('.')[1].upper())        
         assert(self.type() in ['ADJP', 'ADVP'])
@@ -844,12 +851,28 @@ class PrepositionalPhrase(TransformableNode):
         assert(not self.transformation_list())
         return TransformableNode._can_create_symbol_subnodes(self) and self.has_prep_category()
         
-    def _bequeath_to_subnodes(self):
-        TransformableNode._bequeath_to_subnodes(self)
-
+    def _create_symbol_subnodes(self):
+        TransformableNode._create_symbol_subnodes(self)
+    
+        # annoying bit of white-box knowledge: can't just override _bequeath - have to wait for TransformableNode to create ghost nodes.
         assert(self._subnodes())
+        assert(self._ghost_targets())
         P = self._get_symbol_subnode('P')
         P.set_category(self.__prep_category)
+        
+        # propagate semantic tags from category down to other symbols - same as for Clause
+        category = self.__prep_category
+        for sym in category.tagged_symbols():
+            tags = category.tags_for_symbol(sym)
+            if sym in self._symbols():
+                node = self._get_symbol_subnode(sym)
+            elif sym in self._ghost_symbols(): # also propagate down to any ghost nodes, for semantic matching with real nodes
+                node = self._get_symbol_ghostnode(sym)
+            else:
+                raise Exception('''{} shouldn't have been ghosted out, unlike Clause - no transformations for PP'''.format(sym))                
+            
+            if node: 
+                node.add_options({'tags': tags}) 
 
     def add_transformation(self, _):
         raise Exception(WHY_TRANSFORMABLE)

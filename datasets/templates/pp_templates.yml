@@ -28,9 +28,10 @@ pp.adjp:
       description: object or complement of preposition
 
   # this part is like post-transformation participles    
-  target:
+  targets:
     T:
       type: NP
+      description: target of prepositional modifier
       
   langs: 
     <<: *langs
