@@ -951,7 +951,7 @@ class PronounSet(WordSet):
 
 class PrepositionSet(WordSet):
     def _get_word_data(self, lang):
-        return self._data()[lang] or []
+        return self._data()[lang] #or []
         
 class VerbSet(WordSet):
     # verb categories' structure is different 

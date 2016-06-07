@@ -3,13 +3,14 @@
 
 
 # I think it would be better to imitate verb categories
-test: 
+with.having.adjp: &with_having
   template: pp.adjp
   
   # this part is like verbsets
   tags:
     T: animate
-    O: inanimate
+    #O: inanimate # TODO: disallow countries/locations? TODO: this allows "saw (the man with the telescope)"... "in possession of"?
+    O: [[bodypart], [edible], [mechanical]] #[architectural], [computing], [office], [weapon] # currently chokes on unused tags
     
   additions:
     symbols:
@@ -20,3 +21,50 @@ test:
   prepsets: # forms for P
   - en: with
     zh: 有
+    
+    
+# TODO: nonsensical stuff like "the chair in the bird"
+in.inside.adjp:
+  template: pp.adjp
+  tags:
+    T: physical.object # TODO: disallow locations? but you could have "the city in the sky"
+    
+    #O: physical.object # disallow locations for zh - 
+    O: [[bodypart], [edible], [mechanical], [animate]]
+  additions:
+    symbols:
+      O: # *在 美国 里 - what about en? (studied at XXX University)
+        options: { forbidden templates: [pronoun, name] } 
+    langs:
+      zh:
+        postwords: { O: [里, 里, 里, 内] }
+        
+  prepsets:
+  - en: [in, in, in, inside]
+    zh: 在
+  
+
+## TODO: of (possessive) - here's one where EN needs an empty preposition, and then postword 's 
+#  # sub-TODO: editing for plural target ending with s...
+#  # sub-TODO: needs to reorder to before 
+#  # possible workaround: the car of Alice's - but only works with names?
+#of.possessive:
+#  template: pp.adjp
+#  tags: 
+#  
+#  additions:
+#    #symbols:
+#    langs:
+#      en:
+#        postwords: { O: "'s" }
+#  
+#  prepsets:
+#  - en: '' # uses 's postword
+#    zh: '' # just uses 的 from generator
+# TODO: of (attributive) - T = attribute, or MAYBE T = abstract. empty preposition for zh.
+
+  
+  
+  
+  
+test: *with_having

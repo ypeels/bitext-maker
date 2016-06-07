@@ -53,7 +53,7 @@ class Node:
     def generated_text(self, lang):
         return self.__generated_text[lang] # throw an exception to reveal premature accesses #.get(lang, '')
     def has_generated_text(self, lang):
-        return bool(self.__generated_text.get(lang))
+        return self.__generated_text.get(lang) is not None
     def set_generated_text(self, lang, text):
         self.__generated_text[lang] = text
     def reset_generated_text(self):
