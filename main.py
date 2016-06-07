@@ -561,9 +561,16 @@ def randomly_configure_np(np, **kwargs):
         # TODO: disallow ambiguous participle attachment? the man seeing the woman holding the umbrella
         if kwargs.get('stack_depth') < 3 and adjp_count <= 2 and utility.rand() <= 0.25:
             participle = make_random_participle(np, **kwargs)
-            assert(participle)
+            #assert(participle) # well, I mean, maybe the semantic tags didn't work out...
             if participle:
                 np.add_modifier(participle)
+        else:
+            participle = None
+            
+        if not participle and kwargs.get('stack_depth') < 3 and adjp_count <= 2 and utility.rand() <= 0.25:
+            preposition = make_random_pp_adjp(np, **kwargs)
+            if preposition:
+                np.add_modifier(preposition)
     
     
     
@@ -633,10 +640,35 @@ def make_random_participle(target, max_runs=10, stack_depth=1, **kwargs):
         
         if all(participle.can_modify(head) for head in target_heads):
             participle.create_symbol_subnodes_manually()
-            randomly_configure_node(participle._get_symbol_subnode('O'), stack_depth=stack_depth+1, **kwargs)
+            
+            #randomly_configure_node(participle._get_symbol_subnode('O'), stack_depth=stack_depth+1, **kwargs)
+            for sym in participle._symbols():
+                if sym not in participle.head_symbols():
+                    randomly_configure_node(participle._get_symbol_subnode(sym), stack_depth=stack_depth+1, **kwargs)
+            
             return participle
             
     return None
+    
+    
+    
+# based on make_random_participle() and configure_random_clause() technology
+def make_random_pp_adjp(target, max_runs=10, stack_depth=1, **kwargs):
+    assert(target.type() == 'NP')
+        
+    target_heads = target._get_headnodes()
+    for i in range(max_runs):
+        preposition = nodes.node_factory('PP')
+        preposition.set_template('pp.adjp')
+        preposition.set_random_category()
+        
+        if all(preposition.can_modify(head) for head in target_heads):
+            randomly_configure_node(preposition._get_symbol_subnode('O'), stack_depth=stack_depth+1, **kwargs)
+            return preposition
+            
+    return None
+        
+        
         
         
 def randomly_configure_custom(custom):

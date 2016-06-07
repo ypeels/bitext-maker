@@ -10,6 +10,11 @@ test:
   tags:
     T: animate
     O: inanimate
+    
+  additions:
+    symbols:
+      O:
+        options: { forbidden templates: [pronoun, name] } # *with India 
   
   
   prepsets: # forms for P

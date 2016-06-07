@@ -723,6 +723,7 @@ class Clause(TransformableNode):
     def _create_symbol_subnodes(self):
         # quick first attempt - additional bin-specific template overrides from data
         # note that for this to work, the clause has to be writable...
+        # TODO: move add_data() to set_verb_category?.
         additional_data = self.__verb_category.additions()
         if additional_data:
             self._template().add_data(additional_data)        
@@ -797,18 +798,24 @@ class PrepositionalPhrase(TransformableNode):
         if self._template_id() == category.template_id():
             self.__prep_category_id = id
             self.__prep_category = category
-
+            
+            additional_data = category.additions()
+            if additional_data:
+                self._template().add_data(additional_data) 
+                
             assert(self._can_create_symbol_subnodes())
-            #if self._can_create_symbol_subnodes():
             self._create_symbol_subnodes()
+            
         else:
             raise Exception('incompatible template', id, self._template_id(), category.template_id())
-    
-
-    
-    #def _create_symbol_subnodes(self):
-    #    TransformableNode._create_symbol_subnodes(self)
-    #    print(self._subnodes()) 
+            
+            
+    # TODO: DRY this out with Clause.set_random_verb_category()
+    def set_random_category(self):
+        category_candidates = data.PREPSET_BANK.get_categories_by_template(self._template_id())
+        assert(category_candidates)
+        category = utility.pick_random(category_candidates)
+        self.set_prep_category(category)
     
         
     # overrides
@@ -838,8 +845,8 @@ class PrepositionalPhrase(TransformableNode):
         # don't muck with the taxonomy; just directly check whether any nouns exist fulfilling these tags (based on random np technology)        
         return bool(data.NOUNSET_BANK.find_tagged(current_tags + requested_tags))
         
-    def set_template(self, id, readonly=True):
-        TransformableNode.set_template(self, id, readonly)
+    def set_template(self, id): #, readonly=True):
+        TransformableNode.set_template(self, id, readonly=False) # always allow additions to PP from category
 
         # otherwise you'd have to work PP into the list of acceptable modifiers... but pp.adjp shouldn't modify verbs, etc.
         assert(id.startswith('pp.'))
