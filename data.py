@@ -976,7 +976,7 @@ DET_FORMS = { lang: DeterminerFormBank(DATA_DIR + 'dets_{}.yml'.format(lang)) fo
 NAME_BANK = NameSetBank(DATA_DIR + 'namesets.yml')
 # TODO: load language-specific name files, for any languages that might have noun declensions
 
-NOUNSET_BANK = NounSetBank(DATA_DIR + 'nounsets-test.yml')
+NOUNSET_BANK = NounSetBank(DATA_DIR + 'nounsets.yml')
 NOUN_FORMS = { lang: NounFormBank(DATA_DIR + 'nouns_{}.yml'.format(lang)) for lang in LANGUAGES }
 
 PREPSET_BANK = PrepositionSetBank(DATA_DIR + 'prepsets.yml')
