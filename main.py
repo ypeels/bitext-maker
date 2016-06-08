@@ -148,6 +148,19 @@ def configure_transitive_clause(clause, number='singular', subject_type='noun', 
         PO.set_template('noun')
         PO.add_options({'tags': ['object']})
     
+        # prepositions can modify verbs too
+        pp2 = nodes.node_factory('PP')
+        pp2.set_template('pp.advp.targeting.clause')
+        pp2.set_prep_category('with.using.advp')
+        
+        # testing: won't be able to modify unless random (VERB) category is compatible        
+        if category in pp2._template().categories(): 
+            clause.add_modifier(pp2)
+            PO = pp2._get_symbol_subnode('O')
+            PO.set_template('noun')
+            PO.add_options({'tags': ['object']})
+            
+        
     
     # add a determiner. oooooo
     # TODO: does this logic really belong here?
@@ -456,9 +469,19 @@ def randomly_configure_clause(clause, stack_depth=1, **kwargs):
         assert(clause.verb_category_id())
         if clause.verb_category_id() in generator.PAST_TENSE_WHITELIST and utility.rand() <= 0.75:
             clause.add_transformation('tense.past')
+            
+    # adverbial preposition
+    # TODO: whitelisted transformations for prepositions (e.g., past tense)
+    if not clause.transformation_list() and stack_depth < 3:# and utility.rand() <= 0.25:
+        pp = make_random_pp_advp(clause, stack_depth=stack_depth, **kwargs)
+        if pp:
+            clause.add_modifier(pp)
     
     # finally, recurse to children
-    templated_subnodes = [sn for sn in clause._subnodes() if issubclass(type(sn), nodes.TemplatedNode)]
+    # skips pre-configured modifier nodes, unlike _subnodes()
+    #templated_subnodes = [sn for sn in clause._subnodes() if issubclass(type(sn), nodes.TemplatedNode)]
+    symbol_subnodes = [clause._get_symbol_subnode(sym) for sym in clause._symbols()] 
+    templated_subnodes = [sn for sn in symbol_subnodes if issubclass(type(sn), nodes.TemplatedNode)]
     
     # modal ghost subject part 1 of 2 (in execution order)
     # SPECIAL CASE: complement of modal verb (S V VP[complement]) needs to set up ghost subject node from enclosing nodal
@@ -480,6 +503,24 @@ def randomly_configure_clause(clause, stack_depth=1, **kwargs):
     # TODO: configure head first? last? or is the current random order perfectly fine?
     for subnode in templated_subnodes:
         randomly_configure_node(subnode, stack_depth=stack_depth+1, **kwargs)
+    
+    
+    
+# based on make_random_participle() and configure_random_clause() technology
+def make_random_pp_advp(target, max_runs=10, stack_depth=1, **kwargs):
+    assert(target.type() == 'Clause')
+        
+    target_heads = target._get_headnodes()
+    for i in range(max_runs):
+        preposition = nodes.node_factory('PP')
+        preposition.set_template('pp.advp.targeting.clause')
+        preposition.set_random_category()
+        
+        if all(preposition.can_modify(head) for head in target_heads):
+            randomly_configure_node(preposition._get_symbol_subnode('O'), stack_depth=stack_depth+1, **kwargs)
+            return preposition
+            
+    return None
     
     
     
