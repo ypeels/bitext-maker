@@ -816,6 +816,15 @@ class PrepCategory(Category):
     def all_prepsets(self):
         return [PrepositionSet(item) for item in self._data()['prepsets']]
         
+    def target_categories(self):
+        assert(self.template_id() == 'pp.advp.targeting.clause')
+        categories = self._data().get('target categories')
+        if categories:
+            return wrap_as_list(categories)
+        else:
+            return []
+
+
 class WordForms:
     '''Language-specific morphological forms (e.g., nouns_en.yml)'''
     def __init__(self, data):

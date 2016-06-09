@@ -850,7 +850,8 @@ class PrepositionalPhrase(TransformableNode):
             
             # should be okay as long as it's a supported verb category, right? that's it?
             # back-hacks to clause parent...                                                     # allow all-category PP's, like "in NP(location)"
-            return (lexical_target.parent().verb_category_id() in self._template().categories()) #or self._template().categories() == ['*']
+            #return (lexical_target.parent().verb_category_id() in self._template().categories()) #or self._template().categories() == ['*']
+            return lexical_target.parent().verb_category_id() in self.__prep_category.target_categories()
             
         else:
             raise Exception('unsupported lexical target type', lexical_target.type())
