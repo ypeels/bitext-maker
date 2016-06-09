@@ -469,14 +469,18 @@ def randomly_configure_clause(clause, stack_depth=1, **kwargs):
     
     
     # randomly add a transformation - these REQUIRE verb_category to have been set...
-    if do_transform and not clause.transformation_list(): # TODO: multiple transformations (might also have been applied by enclosing meta, etc.)
+    if False: #do_transform and not clause.transformation_list(): # TODO: multiple transformations (might also have been applied by enclosing meta, etc.)
         assert(clause.verb_category_id())
         if clause.verb_category_id() in generator.PAST_TENSE_WHITELIST and utility.rand() <= 0.75:
             clause.add_transformation('tense.past')
             
     # adverbial preposition
     # TODO: whitelisted transformations for prepositions (e.g., past tense)
-    if not clause.transformation_list() and stack_depth < 3:# and utility.rand() <= 0.25:
+    if clause.verb_category_id().endswith('indirect.object') and utility.rand() <= 0.9: # SOMETIMES you just "give", without an IO...
+        pp = make_random_pp_advp(clause, stack_depth=stack_depth, category='to.recipient.advp.indirect.object', **kwargs)
+        assert(pp)
+        clause.add_modifier(pp)
+    elif not clause.transformation_list() and stack_depth < 3 and utility.rand() <= 0.25:
         pp = make_random_pp_advp(clause, stack_depth=stack_depth, **kwargs)
         if pp:
             clause.add_modifier(pp)
@@ -511,14 +515,17 @@ def randomly_configure_clause(clause, stack_depth=1, **kwargs):
     
     
 # based on make_random_participle() and configure_random_clause() technology
-def make_random_pp_advp(target, max_runs=10, stack_depth=1, **kwargs):
+def make_random_pp_advp(target, max_runs=10, stack_depth=1, category=None, **kwargs):
     assert(target.type() == 'Clause')
         
     target_heads = target._get_headnodes()
     for i in range(max_runs):
         preposition = nodes.node_factory('PP')
         preposition.set_template('pp.advp.targeting.clause')
-        preposition.set_random_category()
+        if category:
+            preposition.set_prep_category(category)
+        else:
+            preposition.set_random_category()
         
         if all(preposition.can_modify(head) for head in target_heads):
             randomly_configure_node(preposition._get_symbol_subnode('O'), stack_depth=stack_depth+1, **kwargs)

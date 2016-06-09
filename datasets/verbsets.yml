@@ -390,7 +390,7 @@ possession:
     
 possession.give: &possession_give
   template: transitive
-  tags: { O: [[inanimate], [abstract]] } # VerbCategory will assign ONE of these tag lists
+  tags: { O: [[inanimate], [abstract.object]] } # VerbCategory will assign ONE of these tag lists
   additions:
     symbols:
       O:
