@@ -19,7 +19,7 @@ in.inside.adjp:
   prepsets:
   - en: [in, in, in, inside]
     zh: 在
-
+    
 # I think it would be better to imitate verb categories
 with.having.adjp: &with_having
   template: pp.adjp
@@ -40,6 +40,30 @@ with.having.adjp: &with_having
   - en: with
     zh: 有
     
+    
+    
+# hmm, ambiguous PP attachment (verb or direct object?) is kind of irrelevant? almost the same, semantically?
+  # protect the animals in the forest - pretty much the same meaning, whether the animals or the protecting is in the forest
+# TODO: intransitive verbs? (is it just "in", or is it all adverbial PP's that function more commonly with intransitives?)
+in.location.advp:
+  template: pp.advp.targeting.clause
+  tags:
+    O: location
+    
+  additions: # ugh, it's opt-IN... seems more useful for intransitive verbs?
+    # TODO: allow wildcards like action* and blacklists like ~motion (or maybe ~motion*)
+    categories: [action, action.attempt.modal, action.creation] # (*see (the dog) in the car)"
+    symbols:
+      O:
+        options: { forbidden templates: [pronoun, name] } # so that zh can use 里
+    langs:
+      zh:
+        postwords: { O: 里 }
+    
+  prepsets:
+  - en: in
+    zh: 在
+
     
 with.using.advp: 
   template: pp.advp.targeting.clause

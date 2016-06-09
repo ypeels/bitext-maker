@@ -849,8 +849,8 @@ class PrepositionalPhrase(TransformableNode):
             assert(self.template_id() == 'pp.advp.targeting.clause')
             
             # should be okay as long as it's a supported verb category, right? that's it?
-            # back-hacks to clause parent...
-            return lexical_target.parent().verb_category_id() in self._template().categories()
+            # back-hacks to clause parent...                                                     # allow all-category PP's, like "in NP(location)"
+            return (lexical_target.parent().verb_category_id() in self._template().categories()) #or self._template().categories() == ['*']
             
         else:
             raise Exception('unsupported lexical target type', lexical_target.type())
