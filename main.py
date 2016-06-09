@@ -11,7 +11,7 @@ from utility import LANGUAGES, seed_rng
 
 
 # collected flags for quick toggling during testing
-FIXED_ADJ_TAG = FIXED_NP_TAG = FIXED_ROLL = FIXED_TEMPLATE = None
+FIXED_ADJ_TAG = FIXED_NP_TAG = FIXED_ROLL = FIXED_TEMPLATE = FIXED_VERB_CATEGORY = None
 SKIP_OLD_TEST = True
 if utility.PRODUCTION:
     NUM_SENTENCES = 1000000
@@ -437,7 +437,7 @@ def randomly_configure_clause(clause, stack_depth=1, **kwargs):
             candidates += [key] * (value-1)
         
     template_id = utility.pick_random(candidates)
-    if FIXED_TEMPLATE:
+    if FIXED_TEMPLATE and not utility.PRODUCTION:
         template_id = FIXED_TEMPLATE
     
     # randomly add a transformation, like topicalization or past tense
@@ -462,7 +462,11 @@ def randomly_configure_clause(clause, stack_depth=1, **kwargs):
     if subject_from_enclosing_modal:
         clause.add_ghostnode('S', subject_from_enclosing_modal, kind='linked')
     
-    clause.set_random_verb_category()  
+    if FIXED_VERB_CATEGORY and not utility.PRODUCTION:
+        clause.set_verb_category(FIXED_VERB_CATEGORY)
+    else:
+        clause.set_random_verb_category()  
+    
     
     # randomly add a transformation - these REQUIRE verb_category to have been set...
     if do_transform and not clause.transformation_list(): # TODO: multiple transformations (might also have been applied by enclosing meta, etc.)
@@ -548,15 +552,11 @@ def randomly_configure_np(np, stack_depth=1, **kwargs):
     except KeyError:
         forbidden_templates = []
     
-    roll = utility.rand()
-    if roll < 0.05 and 'pronoun' not in forbidden_templates and data.PRONSET_BANK.find_tagged(np.semantic_tags()):
-        template_id = 'pronoun'
-    elif 0.05 <= roll < 0.2 and 'name' not in forbidden_templates and data.NAME_BANK.find_tagged(np.semantic_tags()):
-        template_id = 'name' # shouldn't make it THAT common        
-    else: 
-        assert(data.NOUNSET_BANK.find_tagged(np.semantic_tags()))
-        template_id = 'noun'
-            
+    template_candidates = ['pronoun'] + ['name']*3 + ['noun']*16
+    wordset_banks = { 'pronoun': data.PRONSET_BANK, 'name': data.NAME_BANK, 'noun': data.NOUNSET_BANK }
+    template_candidates = [cand for cand in template_candidates 
+                            if cand not in forbidden_templates and wordset_banks[cand].find_tagged(np.semantic_tags())]
+    template_id = utility.pick_random(template_candidates)
     np.set_template(template_id)
     
     # generator only supports objects right now (otherwise determiners get tricky... like "water" or "cloth")
@@ -573,7 +573,7 @@ def randomly_configure_np(np, stack_depth=1, **kwargs):
             np.add_options({'number': 'plural'})
             
         # at most one determiner (syntactic constraint)
-        if utility.rand() <= 0.5:
+        if utility.rand() <= 0.8: # NP with lots of modifiers is hard to read in zh without a determiner
             determiner = make_random_determiner(**kwargs)
             
             # TODO: quantifier + plural (currently using singular quanitifiers only - no "all" or "both" or...)
@@ -693,6 +693,7 @@ def make_random_participle(target, max_runs=10, stack_depth=1, **kwargs):
     
     
     
+# TODO: for en, random PP attached to direct object looks EXACTLY like PP attached to the verb itself...
 # based on make_random_participle() and configure_random_clause() technology
 def make_random_pp_adjp(target, max_runs=10, stack_depth=1, **kwargs):
     assert(target.type() == 'NP')

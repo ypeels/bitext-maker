@@ -816,6 +816,9 @@ class PrepositionalPhrase(TransformableNode):
         assert(category_candidates)
         category = utility.pick_random(category_candidates)
         self.set_prep_category(category)
+        
+    def ppform(self, lang):
+        return self.__prep_category.ppform(lang)
     
         
     # overrides

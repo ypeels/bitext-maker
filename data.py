@@ -813,8 +813,20 @@ class VerbCategory(Category):
         return result #transforms.get(symbol)
 
 class PrepCategory(Category):
+    def __init__(self, data):
+        Category.__init__(self, data)
+        self.__ppform = {}
+
     def all_prepsets(self):
         return [PrepositionSet(item) for item in self._data()['prepsets']]
+        
+    def ppform(self, lang):
+        if lang not in self.__ppform:
+            forms_for_all_langs = self._data().get('ppforms', {})
+            forms = wrap_as_list(forms_for_all_langs.get(lang, ['standard']))
+            self.__ppform[lang] = pick_random(forms)            
+        return self.__ppform[lang]
+        
         
     def target_categories(self):
         assert(self.template_id() == 'pp.advp.targeting.clause')

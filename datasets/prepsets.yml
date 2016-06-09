@@ -66,6 +66,32 @@ in.location.advp:
   - en: in
     zh: 在
 
+
+
+    
+to.recipient.advp.indirect.object:
+  #<<: *to_recipient_advp
+  template: pp.advp.targeting.clause
+  tags:
+    O: animate
+  
+  target categories: [possession.give.indirect.object]
+  ppforms: 
+    en: [standard, indirect object]
+    zh: [indirect object] 
+    # TODO: 送 给 他 - special "recipient-placed" post-verb PP, but not compatible with VV=给
+    # methinks this might be better implemented as a custom template...
+    
+  additions:
+    symbols:
+      O: # TODO: indirect objects that are relatively unmodified nouns - S V R O can be confusing if R is huge and O is tiny
+        options: { forbidden templates: [noun] }
+        
+  prepsets:
+  - en: to
+    zh: ''
+        
+
     
 with.using.advp: 
   template: pp.advp.targeting.clause

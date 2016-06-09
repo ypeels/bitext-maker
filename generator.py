@@ -162,6 +162,9 @@ class Generator:
             
             # populate the template - get(key, default value)
             result = [generated_symbols.get(token, token) for token in template ]
+
+            # remove any empty strings (e.g., from zh indirect object)
+            result = [item for item in result if item]
             
             if node._get_option('capitalization hack'): # currently from custom_templates.yml/multiple
                 result[0] = main.sentence_case(result[0])
@@ -423,15 +426,21 @@ class EnGenerator(Generator):
         prepositions = self._pop_modifiers(modifiers, 'pp.advp.targeting.clause')
         if prepositions:
             for pp in prepositions:
-                pp_text = pp.generated_text(self.LANG)
-            
-                # unlike NP, the unmodified contents of a clause template are generally nontrivial, hence these acrobatics...
-                # TODO: hmm, this "reverses" the order of the PP's if there is more than one...
-                if 'O' in result:
-                    result.insert(result.index('O')+1, pp_text)                    
-                else:
+                if pp.ppform(self.LANG) == 'indirect object':
+                    pp_obj = pp.generated_text(self.LANG).split(' ', maxsplit=1)[1]
                     for head in node.head_symbols():
-                        result.insert(result.index(head)+1, pp_text)
+                        result.insert(result.index(head)+1, pp_obj)                
+                else: 
+                    assert(pp.ppform(self.LANG) == 'standard')
+                    pp_text = pp.generated_text(self.LANG)
+
+                    # unlike NP, the unmodified contents of a clause template are generally nontrivial, hence these acrobatics...
+                    # TODO: hmm, this "reverses" the order of the PP's if there is more than one...
+                    if 'O' in result:
+                        result.insert(result.index('O')+1, pp_text)                    
+                    else:
+                        for head in node.head_symbols():
+                            result.insert(result.index(head)+1, pp_text)
             
         if modifiers:
             raise Exception('TODO: unhandled modifiers - {}'.format(modifiers))
@@ -668,9 +677,17 @@ class ZhGenerator(Generator):
           
         prepositions = self._pop_modifiers(modifiers, 'pp.advp.targeting.clause')
         if prepositions:            
+            if len(prepositions) is 1 and prepositions[0].ppform(self.LANG) == 'indirect object':
+                pp_text = prepositions[0].generated_text(self.LANG)                
+                result.insert(result.index('O'), pp_text)
+                
             # TODO: query PP metadata for non-default generation orders. I suppose I could tag P
-            # hijack old adverb code (looks like 地 gets added in ADVP for adverbs). this WORKS!?    
-            result = self._modify_clause_with_adverbs(node, prepositions, result)
+            # hijack old adverb code (looks like 地 gets added in ADVP for adverbs). this WORKS!?
+            else:
+                assert(all(pp.ppform(self.LANG) == 'standard' for pp in prepositions))
+                result = self._modify_clause_with_adverbs(node, prepositions, result)
+            
+                
           
         if modifiers:
             raise Exception('TODO: unhandled modifiers - {}'.format(modifiers))

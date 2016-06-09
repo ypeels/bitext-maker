@@ -143,6 +143,12 @@ get:
   VBN: gotten
   VBP: get
   VBZ: gets
+give:
+  VBD: gave
+  VBG: giving
+  VBN: given
+  VBP: give
+  VBZ: gives
 hear:
   VBD: heard
   VBG: hearing

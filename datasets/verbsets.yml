@@ -37,7 +37,7 @@ action.attempt.modal: # wordnet has this under verb.social...
     zh: 尝试    
 
 # the biggest category by FAR. TED talkers really like talking about creation
-action.creation:
+action.creation: &action_creation
   template: transitive
   #tags:
   #  S: [entity]
@@ -388,7 +388,7 @@ possession:
   #- en: possess
   #  zh: 独有
     
-possession.give: &possession_give # TODO: ditransitive, of course...
+possession.give: &possession_give
   template: transitive
   tags: { O: [[inanimate], [abstract]] } # VerbCategory will assign ONE of these tag lists
   additions:
@@ -398,6 +398,12 @@ possession.give: &possession_give # TODO: ditransitive, of course...
   verbsets:
   - en: provide
     zh: 提供
+    
+possession.give.indirect.object: 
+  <<: *possession_give
+  verbsets:
+  - en: give
+    zh: 给
     
 possession.obtain:
   template: transitive
