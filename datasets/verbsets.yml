@@ -209,15 +209,20 @@ cognition.solve:
     zh: 解决
 
 
-# communication.inform.ditransitive
+# communication.inform.ditransitive - meh, seems kind of uncommon - not worth the trouble for now...
   # example: I|S told|V him|R about the cat|O
-  # en: prewords: O: about
+  # en: prewords: O: about - ugh... seems preferable to put a high-probability "oblique PP" in the random generator
   # tell, remind, inform
+    # *提醒 does NOT have this usage...
     # R is more obligatory?
   
   # talk/speak: R = "to him", O = "about NP" 
     # even though it's intransitive, there are 2 common prepositions that attach, neither of which is obligatory
-  # 谈
+    # also, the general en order is "spoke to R about O", NOT "*spoke about O to R"... can't enforce that here...
+      # so... one workaround is to add them in a particular order in the randomizer
+    # an additional complication is that with zero PP's, zh would need a dummy argument 讲话 or 说话
+      # COULD sidestep using 跟 R 说话 关于 O, but that looks awfully formal...
+  # 谈 生意 - this is a collocation; 谈 NP generally does not work
   
   # 讲/说: R = 跟他 (although this maps more onto "said" than "talk")
     # could hack it and do "讲/说 O 的 事情"
