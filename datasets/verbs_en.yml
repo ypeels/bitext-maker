@@ -1,3 +1,10 @@
+__verb__:
+  VBD: 
+  VBG: 
+  VBN: 
+  VBP: 
+  VBZ: 
+
 # morphological information - which Chinese doesn't need...
 # - for ALL verbs in all semantic categories
 # n.b. pyyaml cannot write comments back to file (duh - parser discards them)
@@ -8,12 +15,6 @@
 #VBN:    # past participle - he had VBN the O
 #VBP:    # present - we now VBP the car
 #VBZ:    # present 3-sing - he now VBZ the car
-__verb__:
-  VBD: 
-  VBG: 
-  VBN: 
-  VBP: 
-  VBZ: 
 
 # COULD use references, but that would add an annoying extra key to EVERY entry...
 # unused? isn't it easier to just check each verb for an "irregular" key? well, doesn't hurt to have this info...
@@ -252,7 +253,12 @@ start:
   VBN: started
   VBP: start
   VBZ: starts
-  
+tell:
+  VBD: told
+  VBG: telling
+  VBN: told
+  VBP: tell
+  VBZ: tells
 think:
   VBD: thought
   VBG: thinking

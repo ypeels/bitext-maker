@@ -15,6 +15,7 @@ PAST_TENSE_WHITELIST = {
     'change.change',
     'change.start',     
     'cognition.solve', 
+    'communication.inform.meta.audience',
     'communication.verbal.meta', 
     'motion.bring', 
     'motion.enter.into',

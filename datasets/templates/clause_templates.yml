@@ -98,6 +98,38 @@ meta:
       template: S V C
       #punctuation: 。
         
+  
+# this is for meta verbs with obligatory audiences, like told or inform  
+# TODO: DRY out with meta using YAML reference?
+meta.audience:
+  example: I|S told|V Bob|O that (Alice wants to kick him)|C
+  symbols:
+    V:
+      type: verb
+      description: head
+    S: 
+      type: NP
+      description: subject
+    O: # hidden detail: used "O" so en generator would know to place adverbial PP's after it...
+      type: NP
+      description: audience (listener, reader, etc.)
+    C:
+      type: Clause
+      description: complement
+      
+  langs:
+    en:
+      template: S V O C
+      dependencies: { V: S }
+      prewords: { C: [that, ''] }
+      tags:
+        S: subjective
+        O: objective
+    zh:
+      template: S V O C
+      prewords: { C: ['，', ''] }
+  
+        
     
 modal:
   example: Alice|S wants|V (to kick Bob)|C
@@ -126,6 +158,33 @@ modal:
     zh: 
       template: S V C
       #punctuation: 。
+    
+modal.audience:
+  example: I told Alice|O (to kick Bob)|C
+  symbols:
+    V:
+      type: verb
+      description: head verb
+    S: 
+      type: NP
+      description: subject
+    O: 
+      type: NP
+      description: audience (listener, reader, etc.)
+      #options:
+      #  forbidden templates: [noun] # for now, don't allow a hugely nested "indirect object"...
+    C:
+      type: Clause
+      description: complement      
+  langs:
+    en:
+      template: S V O C
+      dependencies: { V: S }
+      tags: 
+        S: subjective
+        O: objective
+    zh: 
+      template: S V O C
     
     
 intransitive:

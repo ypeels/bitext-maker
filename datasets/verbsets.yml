@@ -221,15 +221,36 @@ cognition.solve:
   
   # 讲/说: R = 跟他 (although this maps more onto "said" than "talk")
     # could hack it and do "讲/说 O 的 事情"
+
+communication.command.modal: # this is actually a very different usage of "tell", and it maps cleanly onto modal 叫
+  template: modal.audience
+  tags:
+    S: person # although you might get some funny stuff like "the toaster told me to kick Alice"
+    O: animate
+  transformations: { C: infinitive.vp }
+  additions:
+    langs:
+      zh: 
+        prewords: { C: ['', '去'] } 
+  verbsets: # TODO: 叫了 sounds awkward yet "told" is most common...
+  - en: tell
+    zh: 叫
+
+    
+communication.inform.meta.audience:
+  template: meta.audience
+  tags:
+    S: person
+    O: animate
+  additions:
+    symbols: # would be better here, but would need to set the template as writable...
+      O: 
+        options: { forbidden templates: [noun] } # for now, don't allow a hugely nested "indirect object"...
+  verbsets:
+  - en: tell
+    zh: 告诉
   
-# communication.inform.meta
-  # template: meta.ditransitive?
-  # I told him [that|,] 
-  # 我 告诉 他 [|，]
-  
-# communication.command.modal? this is actually different
-  # I told him to VP
-  # 我 叫 他 VP
+
     
 communication.verbal.meta:
   template: meta
@@ -273,7 +294,7 @@ communication.written.meta:
       en:
         prewords: { C: that }
       zh:
-        prewords: { C: 的 是 }
+        prewords: { C: '，' } #的 是 - incompatible with past tense, like 说
   verbsets:
   - en: write
     zh: 写

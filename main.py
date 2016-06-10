@@ -420,9 +420,11 @@ def randomly_configure_clause(clause, stack_depth=1, **kwargs):
         
     # don't go too deep down the rabbit hole (human speakers and writers typically don't)
     if stack_depth > 1:
-        candidates.remove('meta')    
+        #candidates.remove('meta')    
+        candidates = [can for can in candidates if not can.startswith('meta')] # remove 'meta', 'meta.audience', etc.
     if stack_depth > 2:
-        candidates.remove('modal')
+        #candidates.remove('modal')
+        candidates = [can for can in candidates if not can.startswith('modal')] 
         
     # add back in some custom templates as desired... not very scalable...
     if stack_depth > 1 and len(clause.transformation_list()) is 0:
@@ -444,8 +446,8 @@ def randomly_configure_clause(clause, stack_depth=1, **kwargs):
     # randomly add a transformation, like topicalization or past tense
     # in current implementation, topicalization breaks if this is done after verb_category is set 
         # probably need to redo something involving subnode creation    
-    readonly = template_id not in modifiable_template_ids()
-    do_transform = not readonly and utility.rand() <= 0.25 # overall transformation rate  
+    modifiable = template_id not in modifiable_template_ids()
+    do_transform = modifiable and utility.rand() <= 0.25 # overall transformation rate  
     if do_transform: 
         # syntactically, topicalization should only be done at the top level, right? (the code fails anyway at lower levels with meta/modal?)
         if utility.rand() <= 0.25 and template_id in ['transitive'] and stack_depth is 1:
@@ -453,7 +455,7 @@ def randomly_configure_clause(clause, stack_depth=1, **kwargs):
             do_transform = False # TODO: multiple transformations
     
     # TODO: nested modals with same verb read like duplicated verbs in zh... should be alleviated by scaling # verbs up...    
-    clause.set_template(template_id, readonly=readonly)
+    clause.set_template(template_id, readonly=False) # make templates modifiable to allow verbset-modifications #not modifiable)
     
     # modal ghost subject part 2 of 2 (in execution order)
     # workaround to set ghost node from any enclosing modal here - can only be called after template has been set
