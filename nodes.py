@@ -811,11 +811,22 @@ class PrepositionalPhrase(TransformableNode):
             
             
     # TODO: DRY this out with Clause.set_random_verb_category()
-    def set_random_category(self):
-        category_candidates = data.PREPSET_BANK.get_categories_by_template(self._template_id())
-        assert(category_candidates)
-        category = utility.pick_random(category_candidates)
-        self.set_prep_category(category)
+    def set_random_category(self, target_verbs = []):
+        if target_verbs:
+            assert(self.type() == 'ADVP') # categories are also used for ADJP! (NP-PP semantics)
+            #category_candidates = [cand for cand in category_candidates  
+            # if all(verb.parent().verb_category_id() in data.PREPSET_BANK.get_category(cand).target_categories() for verb in target_verbs)]
+            assert(len(target_verbs) is 1) # well, really assuming verb category is the same for all verbs
+            verb = target_verbs[0]
+            category_candidates = data.PREPSET_BANK.get_categories_by_template_and_target_category(
+                                                self._template_id(), verb.parent().verb_category_id())
+        else:
+            category_candidates = data.PREPSET_BANK.get_categories_by_template(self._template_id())
+            assert(category_candidates)        
+
+        if category_candidates:
+            category = utility.pick_random(category_candidates)
+            self.set_prep_category(category)
         
     def ppform(self, lang):
         return self.__prep_category.ppform(lang)
@@ -850,7 +861,8 @@ class PrepositionalPhrase(TransformableNode):
             
         elif lexical_target.type() == 'verb':
             assert(self.template_id() == 'pp.advp.targeting.clause')
-            
+            assert(self.has_prep_category())
+
             # should be okay as long as it's a supported verb category, right? that's it?
             # back-hacks to clause parent...                                                     # allow all-category PP's, like "in NP(location)"
             #return (lexical_target.parent().verb_category_id() in self._template().categories()) #or self._template().categories() == ['*']
@@ -984,8 +996,9 @@ class NounPhrase(TemplatedNode):
         # NR
         # VP-NP - who knows!
         
-        
-        
+
+
+# TODO: disallow adjectives that are "included" in the noun? like "? ??"        
 class AdjectivePhrase(ModifierNode):
     def __init__(self, **kwargs): 
         ModifierNode.__init__(self, data.ADJP_TEMPLATE_BANK, **kwargs)

@@ -54,6 +54,15 @@ action.creation: &action_creation
     zh: 产生
 
   
+## I made him a table
+## *I created him a table
+## TODO: "make" also has that "transform" usage... let's skip this for now
+#action.creation.indirect.object:
+#  <<: *action_creation
+#  verbsets:
+#  - en: make
+#    zh: 做
+  
 change.change:
   template: transitive
   # wait, doesn't this belong in its own category?
@@ -199,6 +208,29 @@ cognition.solve:
   - en: solve
     zh: 解决
 
+
+# communication.inform.ditransitive
+  # example: I|S told|V him|R about the cat|O
+  # en: prewords: O: about
+  # tell, remind, inform
+    # R is more obligatory?
+  
+  # talk/speak: R = "to him", O = "about NP" 
+    # even though it's intransitive, there are 2 common prepositions that attach, neither of which is obligatory
+  # 谈
+  
+  # 讲/说: R = 跟他 (although this maps more onto "said" than "talk")
+    # could hack it and do "讲/说 O 的 事情"
+  
+# communication.inform.meta
+  # template: meta.ditransitive?
+  # I told him [that|,] 
+  # 我 告诉 他 [|，]
+  
+# communication.command.modal? this is actually different
+  # I told him to VP
+  # 我 叫 他 VP
+    
 communication.verbal.meta:
   template: meta
   tags:
@@ -210,6 +242,8 @@ communication.verbal.meta:
         prewords: { C: ['', that] }        
       #zh: # TODO: useful for deep stacks... roughly equivalent to "that", but not that common? incompatible with past tense
         #prewords: { C: ['', '', '', 的 是] } 
+      zh:
+        prewords: { C: ['', '，'] }
   
   verbsets:
   - en: say

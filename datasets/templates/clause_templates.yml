@@ -146,7 +146,12 @@ intransitive:
     zh:
       template: S V
       punctuation: 。
-      
+    
+
+# TODO: verbs for to.listener.indirect.object
+# tell/告诉, remind/提醒 - meta ditransitive? obligatory recipient, oblique complement clause (OR PP via about)
+  # postword [that, ','] , ['', '，']
+    
     
 # ---------------------------------------------------------------------
     

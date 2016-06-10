@@ -419,8 +419,9 @@ def randomly_configure_clause(clause, stack_depth=1, **kwargs):
         candidates = modifiable_template_ids()
         
     # don't go too deep down the rabbit hole (human speakers and writers typically don't)
+    if stack_depth > 1:
+        candidates.remove('meta')    
     if stack_depth > 2:
-        candidates.remove('meta')
         candidates.remove('modal')
         
     # add back in some custom templates as desired... not very scalable...
@@ -437,7 +438,7 @@ def randomly_configure_clause(clause, stack_depth=1, **kwargs):
             candidates += [key] * (value-1)
         
     template_id = utility.pick_random(candidates)
-    if FIXED_TEMPLATE and not utility.PRODUCTION:
+    if FIXED_TEMPLATE and FIXED_TEMPLATE in candidates and not utility.PRODUCTION:
         template_id = FIXED_TEMPLATE
     
     # randomly add a transformation, like topicalization or past tense
@@ -476,7 +477,8 @@ def randomly_configure_clause(clause, stack_depth=1, **kwargs):
             
     # adverbial preposition
     # TODO: whitelisted transformations for prepositions (e.g., past tense)
-    if clause.verb_category_id().endswith('indirect.object') and utility.rand() <= 0.9: # SOMETIMES you just "give", without an IO...
+    # TODO: move these verb-specific PP's to a subroutine
+    if clause.verb_category_id().endswith('indirect.object') and utility.rand() <= 0.9: # SOMETIMES you just "give", without an IO... OR should this just always be on? (template the other case?)
         pp = make_random_pp_advp(clause, stack_depth=stack_depth, category='to.recipient.advp.indirect.object', **kwargs)
         assert(pp)
         clause.add_modifier(pp)
@@ -515,7 +517,8 @@ def randomly_configure_clause(clause, stack_depth=1, **kwargs):
     
     
 # based on make_random_participle() and configure_random_clause() technology
-def make_random_pp_advp(target, max_runs=10, stack_depth=1, category=None, **kwargs):
+# max_runs reduced from 10 - do the category search in PrepositionalPhrase node instead of blindly here, but still worry about other checks
+def make_random_pp_advp(target, max_runs=5, stack_depth=1, category=None, **kwargs):
     assert(target.type() == 'Clause')
         
     target_heads = target._get_headnodes()
@@ -525,12 +528,12 @@ def make_random_pp_advp(target, max_runs=10, stack_depth=1, category=None, **kwa
         if category:
             preposition.set_prep_category(category)
         else:
-            preposition.set_random_category()
+            preposition.set_random_category(target_verbs=target_heads)
         
-        if all(preposition.can_modify(head) for head in target_heads):
+        if preposition.has_prep_category() and all(preposition.can_modify(head) for head in target_heads):
             randomly_configure_node(preposition._get_symbol_subnode('O'), stack_depth=stack_depth+1, **kwargs)
             return preposition
-            
+
     return None
     
     
@@ -711,6 +714,7 @@ def make_random_pp_adjp(target, max_runs=10, stack_depth=1, **kwargs):
         preposition.set_template('pp.adjp')
         preposition.set_random_category()
         
+        assert(preposition.has_prep_category())
         if all(preposition.can_modify(head) for head in target_heads):
             randomly_configure_node(preposition._get_symbol_subnode('O'), stack_depth=stack_depth+1, **kwargs)
             return preposition

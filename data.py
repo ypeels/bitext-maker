@@ -311,6 +311,9 @@ class CategoryBank:
     def get_categories_by_template(self, template_id):
         return sorted([cat for cat in self.categories() if self.__data[cat]['template'] == template_id])
         
+    def _data(self):
+        return self.__data
+        
     def __add_file(self, filename):
         new_data = read_file(filename)
         
@@ -325,6 +328,20 @@ class PrepositionSetBank(CategoryBank):
         CategoryBank.__init__(self, path)
         self.DATA_FACTORY = PrepCategory    
         
+        # try paying this cost up front instead of fumbling randomly in main/randomizer
+        self.__categories_per_target_category = collections.defaultdict(set)
+        for category in self.categories():
+            category_data = PrepCategory(self._data()[category])
+            if category_data.template_id() == 'pp.advp.targeting.clause':
+                for target_category in category_data.target_categories():
+                    self.__categories_per_target_category[target_category].add(category)
+        
+    def get_categories_by_template_and_target_category(self, template_id, target_category):
+        return [cat for cat in self.get_categories_by_template(template_id) 
+                    if cat in self.__categories_per_target_category[target_category]]
+
+                    
+    
 class VerbSetBank(CategoryBank):
     def __init__(self, path):
         CategoryBank.__init__(self, path)

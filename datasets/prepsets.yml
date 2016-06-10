@@ -45,6 +45,19 @@ with.having.adjp: &with_having
 # hmm, ambiguous PP attachment (verb or direct object?) is kind of irrelevant? almost the same, semantically?
   # protect the animals in the forest - pretty much the same meaning, whether the animals or the protecting is in the forest
 # TODO: intransitive verbs? (is it just "in", or is it all adverbial PP's that function more commonly with intransitives?)
+#for.recipient.advp: #&for_recipient_advp
+#  template: pp.advp.targeting.clause
+#  tags:
+#    O: animate
+#    
+#  target categories: [action.creation] # 
+#  
+#  prepsets:
+#  - en: for
+#    zh: 给
+    
+
+
 in.location.advp:
   template: pp.advp.targeting.clause
   tags:
@@ -67,7 +80,15 @@ in.location.advp:
     zh: 在
 
 
-
+to.listener.advp:
+  template: pp.advp.targeting.clause
+  tags:
+    O: animate
+  target categories: [communication.verbal.meta]
+  prepsets:
+  - en: to
+    zh: 跟
+    
     
 to.recipient.advp.indirect.object:
   #<<: *to_recipient_advp
