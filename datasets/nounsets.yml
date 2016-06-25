@@ -818,14 +818,6 @@
   nounset:
     en: krill
     zh: 磷虾
-- tags: [man]
-  nounset:
-    en: Cub Scout
-    zh: 童子军
-- tags: [monetary]
-  nounset:
-    en: dollar
-    zh: 银子 # liberal translation...
 - tags: []
   nounset:
     en: 
@@ -1033,3 +1025,11 @@
   nounset:
     en: sugar pill
     zh: 糖片
+- tags: [man]
+  nounset:
+    en: Cub Scout
+    zh: 童子军
+- tags: [monetary]
+  nounset:
+    en: dollar
+    zh: 银子 # liberal translation...
