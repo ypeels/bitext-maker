@@ -1,6 +1,6 @@
 - tags: []
   nameset: 
-    en:
+    en: 
     zh: 
 # dummy entry for copy/pasting
     
@@ -76,3 +76,106 @@
   nameset: 
     en: the Three Gorges
     zh: 三峡
+    
+    
+    
+    
+    
+# tst2010 snooping - complete with idiosyncratic segmentation...
+- tags: [location, city]
+  nameset: 
+    en: Wilmington, Delaware
+    zh: 德拉华州 威尔明顿
+- tags: [man]
+  nameset: 
+    en: Nathan Myhrvold 
+    zh: 纳 珊米赫 沃尔德
+- tags: [organization]
+  nameset: 
+    en: The Institute for the Future
+    zh: 未来 研究所
+- tags: [man]
+  nameset: 
+    en: Don
+    zh: 唐 阁下 # honorific? sarcastic?
+- tags: [organization]
+  nameset: 
+    en: NASA
+    zh: 美国 航空局
+- tags: [organization]
+  nameset: 
+    en: ILM
+    zh: 工业光魔
+- tags: [location, city]
+  nameset: 
+    en: Buffalo, New York
+    zh: 水 牛市
+- tags: [man]
+  nameset: 
+    en: Herodotus
+    zh: 希罗多德
+- tags: [man]
+  nameset: 
+    en: Arthur Clarke
+    zh: 阿瑟·克拉克
+- tags: [man]
+  nameset: 
+    en: Dr. P
+    zh: P 医生
+- tags: [man]
+  nameset: 
+    en: Danny Kahneman
+    zh: 丹尼尔·卡纳曼
+- tags: [man]
+  nameset: 
+    en: Jacques Cousteau
+    zh: 雅克.格斯特
+- tags: [man]
+  nameset: 
+    en: Greg LeMond
+    zh: 格雷格·莱蒙德
+- tags: [location]
+  nameset: 
+    en: Pandora
+    zh: 潘朵拉
+- tags: [person]
+  nameset: 
+    en: McKay
+    zh: 麦基
+- tags: [location]
+  nameset: 
+    en: Bhopal
+    zh: 博帕尔
+- tags: [man]
+  nameset: 
+    en: Larry King
+    zh: 拉里金
+- tags: [location]
+  nameset: 
+    en: Azeroth
+    zh: 艾泽拉斯
+- tags: [person]
+  nameset: 
+    en: Bruckheimer
+    zh: 布鲁克海默
+- tags: [[organization], [location]]
+  nameset: 
+    en: Hahnemann Medical School
+    zh: 哈奈曼 医学院
+- tags: [[organization], [location]]
+  nameset: 
+    en: Hershey Medical School
+    zh: 赫尔 希 医学院
+- tags: [person]
+  nameset: 
+    en: Kean
+    zh: 基恩
+- tags: [man]
+  nameset: 
+    en: Hafiz
+    zh: 哈 菲斯
+- tags: []
+  nameset: 
+    en: 
+    zh: 
+

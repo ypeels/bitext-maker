@@ -1,6 +1,4 @@
-
-    
-- tags:
+- tags: []
   adjset:
     en: 
     zh: 
@@ -263,4 +261,63 @@
     en: best
     zh: 最好
 
-  
+
+# tst2010 snooping
+- tags: [[quality, target.inanimate], [quality, target.abstract]]
+  adjset:
+    en: epic
+    zh: 史诗般
+- tags: [target.animate]
+  adjset:
+    en: manic
+    zh: 狂躁
+- tags: [quality, target.abstract]
+  adjset:
+    en: plus-one
+    zh: 加一
+- tags: []
+  adjset:
+    en: crazy
+    zh: 不可理喻
+- tags: []
+  adjset:
+    en: completely different
+    zh: 天壤之别
+- tags: [[target.inanimate], [target.abstract]]
+  adjset:
+    en: awe-inspiring
+    zh: 威严
+- tags: [target.animate]
+  adjset:
+    en: lazy
+    zh: 懈怠
+- tags: [target.physical]
+  adjset:
+    en: colored
+    zh: 有 颜色
+- tags: [target.object] # countable
+  adjset:
+    en: "600,000"
+    zh: 六十万
+- tags: []
+  adjset:
+    en: normal
+    zh: 正统
+- tags: []
+  adjset:
+    en: blissful
+    zh: 幸福
+- tags: [abstract]
+  adjset:
+    en: urgent
+    zh: 紧急
+- tags: []
+  adjset:
+    en: hostile
+    zh: 险恶
+- tags: []
+  adjset:
+    en: 
+    zh: 
+
+

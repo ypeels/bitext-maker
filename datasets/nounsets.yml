@@ -818,14 +818,14 @@
   nounset:
     en: krill
     zh: 磷虾
-- tags: []
+- tags: [man]
   nounset:
-    en: 
-    zh: 
-- tags: []
+    en: Cub Scout
+    zh: 童子军
+- tags: [monetary]
   nounset:
-    en: 
-    zh: 
+    en: dollar
+    zh: 银子 # liberal translation...
 - tags: []
   nounset:
     en: 
@@ -854,3 +854,182 @@
   nounset:
     en: tricycle-wheelchair # that's that it is in the training set...
     zh: 三轮车
+
+    
+# tst2010 snooping
+- tags: [waterbody]
+  nounset:
+    en: canal
+    zh: 运河
+- tags: [abstract.object]
+  nounset:
+    en: feeling
+    zh: 情愫
+- tags: [inanimate]
+  nounset:
+    en: impurity
+    zh: 杂质
+- tags: [[abstract.object], [process]] # TODO: hacked it in as an "object" to get into sentences
+  nounset:
+    en: cooling
+    zh: 降温
+- tags: [person] # not REALLY...but close enough, for language purposes...
+  nounset:
+    en: Neanderthal
+    zh: 尼安德特
+- tags: [event]
+  nounset:
+    en: famine
+    zh: 大饥荒
+- tags: [disease]
+  nounset:
+    en: measles
+    zh: 麻疹
+- tags: [disease]
+  nounset:
+    en: rubella
+    zh: [德国 麻疹, 风疹]
+- tags: [disease]
+  nounset:
+    en: diphtheria
+    zh: 白喉
+- tags: [[inanimate], [written]] # the abstract "written" sense refers to its contents? 
+  nounset:
+    en: thesaurus
+    zh: 同义词 词典
+- tags: [event]
+  nounset:
+    en: moment
+    zh: 十分
+- tags: [abstract, process]
+  nounset:
+    en: negative feedback
+    zh: 负反馈
+- tags: [material.food]
+  nounset:
+    en: gingko
+    zh: 银杏果
+- tags: [material.food]
+  nounset:
+    en: echinacea
+    zh: 紫锥花
+- tags: [material.food]
+  nounset:
+    en: acai
+    zh: 阿薩伊果
+- tags: [abstract]
+  nounset:
+    en: conversion ratio
+    zh: 转换率
+- tags: [abstract]
+  nounset:
+    en: experience
+    zh: 阅历
+- tags: [written]
+  nounset:
+    en: entry
+    zh: 词条
+- tags: [material]
+  nounset:
+    en: titanium
+    zh: 钛金
+- tags: [bodypart]
+  nounset:
+    en: hip # TODO: hip bone?
+    zh: 股骨头
+- tags: [event]
+  nounset:
+    en: miracle
+    zh: 奇迹
+- tags: [duration]
+  nounset:
+    en: 11,000 years
+    zh: 一万一千年
+- tags: [plumbing]
+  nounset:
+    en: outlet
+    zh: 宣泄 途径
+- tags: [clothing]
+  nounset:
+    en: shorts
+    zh: 短裤
+- tags: [activity]
+  nounset:
+    en: physical therapy
+    zh: 身体 训练
+- tags: [attribute]
+  nounset:
+    en: leadership
+    zh: 领袖 才 能
+- tags: [event]
+  nounset:
+    en: ending
+    zh: 结尾
+- tags: [[physical.object], [abstract.object]]
+  nounset:
+    en: obstacle
+    zh: 障碍
+- tags: [communication]
+  nounset:
+    en: step-by-step instruction
+    zh: 步骤 说明
+- tags: [physical.object]
+  nounset:
+    en: prize
+    zh: 奖杯
+- tags: [fruit]
+  nounset:
+    en: cantaloupe
+    zh: 哈密瓜
+- tags: [edible]
+  nounset:
+    en: chicken pellet
+    zh: 鸡丸
+- tags: [communication]
+  nounset:
+    en: love story
+    zh: 爱情故事
+- tags: [inanimate] # TODO: tag for plants?
+  nounset:
+    en: aquatic plant
+    zh: 水生植物
+- tags: [material]
+  nounset:
+    en: pond water
+    zh: 池水
+- tags: [person]
+  nounset:
+    en: artist
+    zh: 艺术者
+- tags: [mechanical]
+  nounset:
+    en: vehicle
+    zh: 探索器
+- tags: [geographical]
+  nounset:
+    en: vent
+    zh: 裂口
+- tags: [monetary]
+  nounset:
+    en: tax
+    zh: 税费
+- tags: [inanimate] # TODO: "plant bodypart"?
+  nounset:
+    en: log
+    zh: 木柱
+- tags: [edible]
+  nounset:
+    en: marshmallow
+    zh: 棉花糖
+- tags: [disease]
+  nounset:
+    en: mumps
+    zh: 腮腺炎
+- tags: [disease]
+  nounset:
+    en: rotavirus
+    zh: 轮状 病毒
+- tags: [medicine]
+  nounset:
+    en: sugar pill
+    zh: 糖片

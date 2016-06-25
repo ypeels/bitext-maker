@@ -83,6 +83,8 @@ research: { NNS: research } # or researches? or typically uncountable?
 reason:
 right:
 school:
+shorts: # as in "eat my"
+  NNS: 
 side:
 society:
 space:
@@ -91,6 +93,8 @@ student:
 study:
 system:
 technology:
+thesaurus:
+  NNS: thesauri
 thing:  
 time:
 today:

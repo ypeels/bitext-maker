@@ -55,9 +55,11 @@
           bodypart.replaceable: # because you can't say "his cell"... but this name is TERRIBLE
           injury:
           organ: # foot, liver
+        clothing:
         computing:
         edible: # sigh, should have called this "food"
           beverage:
+          fruit:
           seed:
           vegetable:
         furniture:
@@ -70,6 +72,9 @@
         mechanical:
           electronic:
           transportation:
+        medical:
+          medicine: # like a pill
+        monetary:
         office: # pen, paper, ...
         plumbing:
         sensory: # sound, music, sight, ... # TODO: combine with audio/video?
