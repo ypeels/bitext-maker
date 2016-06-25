@@ -5,7 +5,9 @@
 \def\buildemnlp{0}
 \def\buildamta{1}
 \def\buildhcomp{2}
-\def\buildtarget{\buildemnlp} % required to be a single character for \if
+\def\buildtarget{\buildamta} % required to be a single character for \if
+
+\title{Return of the Linguist:\\Toward scalable parallel corpus generation for machine translation}
 
 % emnlp2016.sty, included by header-emnlp.tex, does NOT tolerate ANY surrounding \else statements...
 % an if/else if/... or ifcase statement would have been preferred...
@@ -27,6 +29,10 @@
     \newcommand\amtaonly[1]{#1}
     \newcommand\emnlponly[1]{}
     \newcommand\hcomponly[1]{}
+    
+    % needed by Multeval tables
+    \usepackage{amstext}
+    \usepackage{multirow}
 \fi
 \if \buildtarget \buildhcomp    
     \input{header-aaai.tex}
@@ -44,6 +50,7 @@
 
 % this would allow clickable urls for my convenience - but many conferences forbid them?
 % \usepackage{hyperref}
+
 
 
 \begin{document}
@@ -155,6 +162,30 @@ More ideal, though, would be the creation of parallel corpora for the express pu
 } % \amtaonly
 
 
+\amtaonly{
+
+\begin{table}[htb]
+\begin{center}
+%\begin{footnotesize}
+\begin{tabular}{|l|l|l|l|l|l|}
+\hline
+\bf Metric & \bf System & \bf Avg & \bf $\overline{s}_{\text{sel}}$ & \bf $s_{\text{Test}}$ & \bf $p$-value \\
+\hline
+\multirow{2}{*}{BLEU $\uparrow$}
+& baseline & 11.5 & 0.3 & - & - \\
+& system 1 & 10.9 & 0.3 & - & 0.00 \\
+\hline
+\multirow{2}{*}{TER $\downarrow$}
+& baseline & 76.0 & 0.8 & - & - \\
+& system 1 & 82.8 & 1.0 & - & 0.00 \\
+\hline
+\end{tabular}
+%\end{footnotesize}
+\end{center}
+\caption{\label{tab:scores} Metric scores for all systems generated using MultEval 0.5.1 \mycitep{multeval}: jBLEU V0.1.1 (an exact reimplementation of NIST's mteval-v13.pl without tokenization); Translation Error Rate (TER) V0.8.0. p-values are relative to baseline and indicate whether a difference of this magnitude (between the baseline and the system on that line) is likely to be generated again by some random process (a randomized optimizer). Metric scores are averages over multiple runs. $s_{sel}$ indicates the variance due to test set selection and has nothing to do with optimizer instability.}
+\end{table}
+
+} % amtaonly
 
 
 \amtaonly{\subsection{Potential Benefits}}
@@ -220,7 +251,7 @@ Furthermore, since they are learned in an unsupervised manner from the parallel 
             % which is a strange thing to do to begin with, taking clusterings that were trained on expensive bilingual corpora and using them on plentiful monolingual corpora
 % a possibly stronger response: automatic clusters are also of lower quality than hand-crafted template variations, and there will likely be clustering errors
 % side note: if mkcls clusters were so awesome, they'd be used as standard factors... so you'd have to think that they're not
-
+% TODO: propose ``next-generation mkcls''? meh that's so ridiculously vague...
 
 % these links are too long for EMNLP. TODO: add them as footnotes for AMTA?
 % http://www.fb10.uni-bremen.de/anglistik/langpro/kpml/genbank/generation-bank.html
@@ -301,6 +332,7 @@ BLEU scores were computed as described by \mynewcite{iwslt2015} using the IWSLT 
 
 % TODO: filler for AMTA? used for corpus analysis stanford POS tagger (incomplete bibtex entry?) \mycitep{postagger:2003}
 
+% TODO: propose using sub-sentence timing information? you already HAVE relatively fine-grained alignment information... but the corpus crawler just throws that away. Then again, you might get stuff like cross-fragment alignments...
 
 % TODO: add OpenSubtitles 2016 results? they don't really add much to the discussion - I can just mention them briefly, maybe even in a footnote
 % oh okay, this is nice - if I don't include OpenSubtitles, then I don't have to talk about the stupid purging either
@@ -407,7 +439,7 @@ Given the resulting scores, a change of direction seems in order; work on harves
 
 
 
-
+% TODO: current SMT is still really expert-sourced to professional translators. crowdsourcing translations takes things to their logical extreme.
 
 \section{Proposed Future Work}
 \label{sec:future}
@@ -439,10 +471,12 @@ This could then serve as a platform from which to harvest supervised natural lan
 Compared with current paid approaches, the cost per datum could be significantly reduced or perhaps even become negative (a profitable app), although the value of the harvested data itself might be worth subsidizing.
 We consider the construction of such a potentially game-changing source of supervised NLP data to be an open challenge to the NLP community in general.
 
+% TODO: I suspect MT requirements are very similar to that of, say, AP Latin - where the best translations are the most LITERAL, not necessarily the most fluent. 
+% That also means that you might have to create TWO parallel corpora per language pair? To translate idioms in the source as compositional in the target...
+% this would be closer to training data, since human translators are lazy too.
 
 
-
-
+% TODO: Tarzan English (see OneNote)
 
 % TODO: should I note somewhere how much mature the ML component is, 
 
