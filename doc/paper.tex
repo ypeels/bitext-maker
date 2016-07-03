@@ -281,6 +281,8 @@ Our baseline        & 11.54  \\ \hline
 
 \end{tabular} % cc (i.e., the big super-table)
 
+% TODO: adding (fairly arbitrary) out-of-domain corpus is really more like using a different model (or maybe bagging?)
+
 % TODO: mention that official results are on a slightly different Moses configuration? mehhhhh
 \caption{ \label{tab:results} % oh, for reference numbering, label goes INSIDE caption
     (Left) Chinese-to-English BLEU scores for our baseline Moses configuration with phrase and reordering tables trained on a random 25\% subset of the IWSLT15 training corpus and interpolated (+) with tables for the remaining 75\% (\textasciitilde 150K) of the in-domain corpus, the MultiUN corpus (a \textasciitilde 1M line subset), and a synthetic corpus from our generator (\textasciitilde 5M lines).
@@ -480,13 +482,17 @@ Official baseline results (with IRSTLM instead of KenLM as discussed previously)
 
 \pagebreak
 Now we discuss Table~\ref{tab:multeval_tst2010-fixed}.
+Baseline's TER score changes by about 10\% relative to TAble~\ref{tab:multeval_tst2010}, but BLEU doesn't change as much.
+Apparently, BLEU is more robust to relatively minor changes?
 This time there is a statistically significant improvement in TER for train2015, but not for BLEU.
 Post-editing train2015 again leads to further improvement.
 More surprisingly, post-edited dev2010 gets slightly better BLEU at the expense of much worse TER; this is more like Table~\ref{tab:tst2010} than Table~\ref{tab:multeval_tst2010}.
 This is counter-intuitive, since you would think that removing sentences with duplicated segments from tst2010 would improve TER scores, not worsen them.
 This emphasizes the fact that tuning set noise can affect bottom-line performance in relatively unpredictable ways.
 
-
+% NOTE
+% +0.3 BLEU -0.6 TER from post-editing the entire training corpus, esp the new 2015 additions (~25000 lines)
+% +0.1 BLEU -0.2 TER from ``snoop-editing'' Moses output lexical items only. cheating takes you FAR...
 \begin{table}[htb]
 \begin{center}
 %\begin{footnotesize}
@@ -494,14 +500,14 @@ This emphasizes the fact that tuning set noise can affect bottom-line performanc
 \hline
 \bf Metric & \bf System (all with post-edited {\small \tt tst2010}) & \bf Avg & \bf $\overline{s}_{\text{sel}}$ & \bf $s_{\text{Test}}$ & \bf $p$-value \\
 \hline
-\multirow{5}{*}{BLEU $\uparrow$}
+\multirow{4}{*}{BLEU $\uparrow$}
 & Our baseline & 11.4 & 0.3 & 0.2 & - \\
 & Trained on {\small \tt train2015} & 11.4 & 0.3 & 0.2 & 0.44 \\
 & Post-edited: {\small \tt train2015} & 11.6 & 0.3 & 0.2 & 0.01 \\
 & Post-edited: {\small \tt dev2010} & \textbf{11.9} & 0.3 & 0.1 & 0.00 \\
 %& Post-edited: {\small \tt train2015} and {\small \tt dev2010} & \textbf{12.2} & 0.3 & 0.1 & 0.00 \\
 \hline
-\multirow{5}{*}{TER $\downarrow$}
+\multirow{4}{*}{TER $\downarrow$}
 & Our baseline & 70.6 & 0.4 & 0.5 & - \\
 & Trained on {\small \tt train2015} & 70.1 & 0.4 & 0.3 & 0.00 \\
 & Post-edited: {\small \tt train2015} & \textbf{69.7} & 0.4 & 0.2 & 0.00 \\
@@ -617,6 +623,8 @@ We consider the construction of such a potentially game-changing source of super
 % TODO: wtf, ``chinese'' is not capitalized in stupid bibliography
 
 % TODO: SMT as dynamic-length or variable-length EBMT. just a qualitative observation of mine...but I suppoose, thinking about SMT mechanistically, that's what it is, really
+
+% TODO: I think another thing that SHOULD be done, but isn't commonly done, is that for a given DOMAIN, characterize inter-annotator differences in terms of , what kind of BLEU/TER scores do typical human translations get?
 
 %\amtaonly{
 %\section{AMTA}
