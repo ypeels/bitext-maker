@@ -4,9 +4,9 @@ import yaml
 # Miniconda's PyYAML doesn't include libyaml
 # also note that yaml.safe_load() cannot switch to CSafeLoader (prevents switching to unsafe loader)
 try:
-    from yaml import CSafeLoader as SafeLoader
+    from yaml import CSafeLoader as SafeLoader, CSafeDumper as SafeDumper
 except ImportError:
-    from yaml import SafeLoader as SafeLoader
+    from yaml import SafeLoader as SafeLoader, SafeDumper as SafeDumper
 
     
     
@@ -22,6 +22,15 @@ def read_file(filename):
         else:
             return result
 
+            
+def write_file(filename, data):
+    with open(filename, 'w', encoding='utf8') as output:
+        output.write(yaml.dump(data, Dumper=SafeDumper
+                , allow_unicode=True # otherwise gets written out as \u1234, etc.
+                , default_flow_style=False # one entry per line - for readability, post-editing
+                #, width=40 # newlines in dict entries are ignored, as long as you indent far enough
+                ))
+                #encoding='utf-8', ))
             
             
 def test():

@@ -1,0 +1,21 @@
+# basically back to my original idea for templates
+# - something super easy to edit, super close to surface forms
+# - transduce to YAML "templates" 
+
+# Twitter-inspired tags
+# @ = symbol name
+# # = semantic tag
+# % = language-specific tag
+
+#1:
+#  zh: 这 位 是 比尔|NR . 兰格|NR ， 我 是 大卫|NR . 盖罗|NR 。
+#  en: This is Bill|NNP Lange|NNP . I 'm Dave|NNP Gallo|NNP 
+  
+
+2:
+  zh: 我们 将 用 一些 影片|NN 来 讲述 一些 深海|NN|@N1|#waterbody 里 的 故事 。
+  en: And we 're going to tell you some stories from the sea|NN|@N1|%aaa here in video . 
+  
+  
+  
+  
