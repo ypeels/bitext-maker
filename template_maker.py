@@ -6,11 +6,11 @@ Example: The quick brown fox|NN#animal jumps
 This goes back to my pre-YAML basic idea for template data format - now it's a meta-template of sorts.
 '''
 import collections
-
+import yaml # useful for debugging as well as error messages
 
 from utility import LANGUAGES
 import yaml_reader
-import yaml
+
 
 FORBIDDEN_YAML_DATA = Exception('FORBIDDEN_YAML_DATA') # just anything that will raise an error if you try to write it to YAML
 TAG_SEPARATOR = '|'
@@ -19,6 +19,7 @@ INPUT_FILE = 'template_input.yml'
 
     # also need to specify symbol names, since you can't just go in order!
     # TODO: does this belong in data.py? but this is like a METAdata format...
+
     
     
 
@@ -33,17 +34,53 @@ def find_hashtags(tags):
 def find_formattags(tags):
     return [t[1:] for t in tags if t.startswith('%')]
     
+def get_type_from_pos(pos, lang):
+    #return POS_TO_TYPE_MAPPING[lang][pos] # meh, this would actually be less DRY - can't "combine" switch statements
+    if lang == 'en':
+        if pos in ['JJ', 'JJR', 'JJS']:
+            return 'adjective'
+        elif pos in ['NN', 'NNS']:
+            return 'noun'
+        elif pos in ['NNP', 'NNPS']:
+            return 'name'
+        elif pos in ['VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ']:
+            return 'verb'
+        else:
+            raise RuntimeError('Unsupported English POS tag: ' + pos)
+    elif lang == 'zh':
+        if pos in ['JJ', 'VA']:
+            return 'adjective'
+        elif pos == 'NN':
+            return 'noun'
+        elif pos == 'VV':
+            return 'verb'
+        else:
+            raise RuntimeError('Unsupported Chinese POS tag: ' + pos)
+    else:
+        raise RuntimeError('Unsupported language: ' + lang)
+        
     
+    
+# TODO: DRY out dict accessors...
 def process_datum(datum):
-    data_per_lang = { lang: process_tagged_sentence(datum[lang]) for lang in datum if lang in LANGUAGES }
+    data_per_lang = { lang: process_tagged_sentence(datum[lang], lang) for lang in datum if lang in LANGUAGES }
+
+    # this is much cleaner if you write things from a data-centric perspective/style
+    symbols_per_lang = { 
+        lang: {
+            sym: data_per_lang[lang]['symbols'][sym]['type'] for sym in data_per_lang[lang]['symbols']        
+        } for lang in data_per_lang
+    }
     
-    # all languages must have the same symbols
-    assert('en') in data_per_lang
-    symbol_set = set(data_per_lang['en']['symbols'])
-    if any(set(data_per_lang[lang]['symbols']) != symbol_set for lang in data_per_lang.keys()):
-        for lang in data_per_lang:
-            print('{} symbols:'.format(lang), list(data_per_lang[lang]['symbols']))
-        raise RuntimeError('symbol lists do not match (see above)') 
+    assert('en' in symbols_per_lang)
+    symbol_types = symbols_per_lang['en']
+    symbols = set(symbol_types.keys())
+    
+    # symbol declarations and types must match for all languages
+    if (    any(set(symbols_per_lang[lang].keys()) != symbols for lang in data_per_lang) or
+            any(symbols_per_lang[lang][sym] != symbol_types[sym] for sym in symbols for lang in data_per_lang)):
+        raise RuntimeError('symbol declaration or type mismatch\n{}'.format(yaml.dump(symbols_per_lang))) 
+    
 
     # establish basic backbone - code after this just writes into it.
     # TODO: could (and probably should) read a blank template in from YAML instead...
@@ -51,13 +88,13 @@ def process_datum(datum):
         # meh, with decent indentation, it resembles the YAML sufficiently
     result = { 
         'symbols': { 
-            symbol: {
-                'type': FORBIDDEN_YAML_DATA, # this entry must get filled in below
+            sym: {
+                'type': symbol_types[sym], # these entries must get filled in below
                 'options': {
                     # TODO: number?
                     'tags': []
                 }
-            } for symbol in symbol_set 
+            } for sym in symbols 
         },
         
         'langs': { 
@@ -71,22 +108,21 @@ def process_datum(datum):
     for lang in data_per_lang:
         result['langs'][lang]['template'] = data_per_lang[lang]['template']
     
-        for symbol in symbol_set:
+        for sym in symbols:
         
-            hashtags = data_per_lang[lang]['symbols'][symbol]['hashtags']
+            hashtags = data_per_lang[lang]['symbols'][sym]['hashtags']
             assert(type(hashtags) is list)
             if hashtags:
-                result['symbols'][symbol]['options']['tags'] += hashtags # generator ignores duplicates, right?
+                result['symbols'][sym]['options']['tags'] += hashtags # generator ignores duplicates, right?
                 
             result['langs']
-            formattags = data_per_lang[lang]['symbols'][symbol]['formattags']
+            formattags = data_per_lang[lang]['symbols'][sym]['formattags']
             assert(type(formattags) is list)
             if formattags:
-                result['langs'][lang]['tags'][symbol] = formattags
+                result['langs'][lang]['tags'][sym] = formattags
                 
             
-            
-        # TODO: symbol type - infer this from the POS tags...
+            # TODO: for particular types, specify literal forms
         
     
     print(yaml.dump(data_per_lang))
@@ -102,7 +138,7 @@ def process_datum(datum):
 
     
 
-def process_tagged_sentence(sentence):
+def process_tagged_sentence(sentence, lang):
     assert(type(sentence) is str)
     tokens = sentence.split()
     
@@ -115,7 +151,6 @@ def process_tagged_sentence(sentence):
             word, pos = tok_pieces[0:2]
             assert(pos[0] not in '#@%')
             assert(pos) # not empty
-            result['POS'] = pos
             
             if len(tok_pieces) is 2: # just word|POS - no post-editing was done - just revert to untagged word             
                 template_words.append(word)
@@ -132,7 +167,12 @@ def process_tagged_sentence(sentence):
                 assert(1 + len(hashtags) + len(formattags) == len(tags))
                 
                 assert(symbol not in result['symbols'])
-                result['symbols'][symbol] = { 'hashtags': hashtags, 'formattags': formattags, 'original word': word }
+                result['symbols'][symbol] = { 
+                        'hashtags': hashtags, 
+                        'formattags': formattags, 
+                        'original word': word,
+                        'POS': pos,
+                        'type': get_type_from_pos(pos, lang) }
         
         else: # bare word
             template_words.append(tok)
