@@ -368,7 +368,7 @@ class TemplatedNode(Node):
             
     ### "protected" - these override the base class ###
     def _generate(self, generators):
-        assert(self._subnodes()) #self._ready_to_create_subnodes()) #self._subnodes())
+        assert(self._subnodes() or (self.has_template() and self.num_symbols() is 0)) #self._ready_to_create_subnodes()) #self._subnodes())
         for lang in generators.keys():
             if all(sn.has_generated_text(lang) for sn in self._subnodes()) and not self.has_generated_text(lang):  
                 generators[lang].generate(self)
