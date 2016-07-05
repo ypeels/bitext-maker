@@ -484,6 +484,9 @@ def randomly_configure_clause(clause, stack_depth=1, **kwargs):
         pp = make_random_pp_advp(clause, stack_depth=stack_depth, category='to.recipient.advp.indirect.object', **kwargs)
         assert(pp)
         clause.add_modifier(pp)
+        
+    # optional arguments to inform.ditransitive? horrible hack...
+        
     elif not clause.transformation_list() and stack_depth < 3 and utility.rand() <= 0.25:
         pp = make_random_pp_advp(clause, stack_depth=stack_depth, **kwargs)
         if pp:
@@ -568,6 +571,7 @@ def randomly_configure_np(np, stack_depth=1, **kwargs):
     wordset_banks = { 'pronoun': data.PRONSET_BANK, 'name': data.NAME_BANK, 'noun': data.NOUNSET_BANK }
     template_candidates = [cand for cand in template_candidates 
                             if cand not in forbidden_templates and wordset_banks[cand].find_tagged(np.semantic_tags())]
+
     template_id = utility.pick_random(template_candidates)
     np.set_template(template_id)
     
@@ -790,11 +794,11 @@ def generate_all(clause, outputs=None, blow_it_up=False):
     
     try:
         clause.analyze_all(analyzer)
-    except AssertionError:
-        if utility.PRODUCTION: # have to run with asserts on - beats generating garbage...
-            return
-        else:
-            raise
+    #except AssertionError: # gets handled in run_production() now
+    #    if utility.PRODUCTION: # have to run with asserts on - beats generating garbage...
+    #        return
+    #    else:
+    #        raise
     except Exception as e: # allows access to root node for debugging
         #import pdb; pdb.set_trace()
         raise
@@ -889,6 +893,7 @@ def run_test():
     random_clauses = [make_random_sentence() for i in range(NUM_RANDOM_TEST)] 
     #random_clauses = []
 
+    #clauses = test_clauses
     clauses = test_clauses + random_clauses
     
     outputs = { lang: open('output_{}.txt'.format(lang), 'w', encoding='utf8') for lang in LANGUAGES }
@@ -900,9 +905,21 @@ def run_test():
         
         
 def run_production(output_prefix):
-    if not output_prefix:
-        output_prefix = datetime.datetime.isoformat(datetime.datetime.now()).replace('T', '-').replace(':', '')[:-7]
-    outputs = { lang: open('{}-generated.{}'.format(output_prefix, lang), 'w', encoding='utf8') for lang in LANGUAGES }
+    if utility.PRODUCTION:
+        if not output_prefix:
+            output_prefix = datetime.datetime.isoformat(datetime.datetime.now()).replace('T', '-').replace(':', '')[:-7]
+        outputs = { lang: open('{}-generated.{}'.format(output_prefix, lang), 'w', encoding='utf8') for lang in LANGUAGES }
+    else:
+        outputs = { lang: open('output_{}.txt'.format(lang), 'w', encoding='utf8') for lang in LANGUAGES }
+    
+    #rule_based_production(outputs)
+    template_based_production(outputs)
+            
+    for o in outputs.values():
+        o.close()
+        
+        
+def rule_based_production(outputs):
     for i in range(0, NUM_SENTENCES): # for large corpus, you want to "stream" the trees instead of storing them all
         # TODO: pick, say, just one random lexical node (make sure it's Noun/Verb/Adj) and blow it up - guarantee some "parallel" sentences
         try:
@@ -915,8 +932,23 @@ def run_production(output_prefix):
         if (i+1) % int(NUM_SENTENCES / 100) is 0:
             print('{} / {}'.format(i+1, NUM_SENTENCES))
             
-    for o in outputs.values():
-        o.close()
+            
+def template_based_production(outputs):
+    '''Exhaustively produce all custom templates'''
+    template_ids = data.CUSTOM_TEMPLATE_BANK.all_template_ids()
+    for id in template_ids:
+        # make root node
+        custom = nodes.node_factory('CustomTemplate')
+        custom.set_template(id)
+    
+        # make the rest of the tree
+        templated_subnodes = [sn for sn in custom._subnodes() if issubclass(type(sn), nodes.TemplatedNode)]
+        for subnode in templated_subnodes:
+            if not subnode.has_template(): # might have specified template manually in data
+                randomly_configure_node(subnode, stack_depth=2)
+                
+        # use ALL lexical choices - assumes there aren't many of them...
+        generate_all(custom, outputs, blow_it_up=True)
     
     
 if __name__ == '__main__':
