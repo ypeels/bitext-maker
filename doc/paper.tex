@@ -78,8 +78,14 @@ But in the end, even the most cutting-edge machine learning MT system relies cru
 This results in what we perceive to be a disproportionate amount of effort being dedicated to the machine learning component of machine translation, with input corpora being treated almost as an afterthought.\footnote{
     Of course, these parallel corpora represent hundreds of translator-hours of work. 
     However, such translations are optimized for human consumption, not machine learning, with no regard for such niceties as sentence alignment.
-    \amtaonly{This is illustrated briefly in Section \ref{subsec:case_study}.}
-    }
+    \amtaonly{
+        This is not unlike an athlete having an Olympic-level training regimen, fueled by food scrounged off the streets.
+        
+        An example of suboptimal parallel corpora being used for machine translation is given in Section \ref{subsec:case_study}.
+        At the very least, it suggests a need for more careful post-editing of bitexts, particularly for development and test corpora.
+        More ideal, though, would be the creation of parallel corpora for the express purpose of training, tuning, and evaluating data-driven MT systems.
+    }    
+} % footnote
 % TODO: modernization of corpus acquisition / bring machine learning to bear here too
     
 % it's TEMPTING to say this, but the same is essentially true of all supervised data sets - they're pretty much all human-labeled...
@@ -89,9 +95,7 @@ This results in what we perceive to be a disproportionate amount of effort being
 %with the direct human translation 
 %whereas parallel corpus acquisition is still more or less entirely dependent on .
 
-% TODO (AMTA padding?): it's rather like having an athlete with an Olympic-level modern training regimen, when it comes to diet/nutrition, they'll just eat whatever they can find on the streets.
-% Long and rich tradition of decades, if not centuries of linguists, "chefs" - want to exploit this somehow
-% fueled by data
+
 
 One of the major advantages of data-driven MT is that it removes the need for linguists to develop a new set of rules for an MT system to support a new language.
 In a sense, though, the rule-based MT linguist's job has really been  ``outsourced'' to third-party translators, who implicitly encode linguistic information in parallel corpora.
@@ -100,96 +104,8 @@ Such a division of labor would let linguists be linguists, with MT system develo
 % TODO: let machines be machines, do what machines do best
 
 
-% although it is ``concrete'', this section will probably be the first to get cut if I run OVER length (which had previously been unimaginable, but is starting to look more and more likely)
-% this is some stupid little side note I just noticed a couple weeks ago, but it is expanding to a huge size, because it's like the only concrete ``positive'' result I have...
-\amtaonly{
-\subsection{Case Study}
-\label{subsec:case_study}
-
-% To find an example of suboptimally translated parallel corpora in the literature, one need not look far.
-% TODO: summarize this in a footnote for emnlp? is there room?
-As an example of suboptimal parallel corpora being used for machine translation, consider the official Chinese to English baseline translation of the {\small \tt tst2010} data set\footnote{https://wit3.fbk.eu/score.php?release=2014-01} from the TED talks corpus, described in greater detail in Section \ref{sec:experiments}.
-As a very crude way of assessing translation quality, we used the official evaluation software MultEval \mycitep{multeval} to compute scores for each translated line individually.
-Upon manual inspection, the worst scoring individual lines (with TER scores over 150\%) were almost all found to correspond to poor human translations on the Chinese side of the gold corpus.\footnote{
-    High TER scores indicated misaligned sentences as well as clerical errors.  In particular, the lecture with {\small \tt talkid} 767 had dozens of erroneous lines, in some of the worst cases having the same Chinese sentence copy/pasted three times on the same line. 
-    The baseline Moses system tries valiantly, but it ultimately scores poorly for trying to produce a good machine translation of a poor human translation.
-    Alternatively, one can interpret these errors as an additional source of noise in the human encoding of English into Chinese.
-}
-Such translations might suffice for viewing translated videos monolingually, but they are far from ideal for training a machine translation system.
-
-One might expect such errors to be relatively well-tolerated in large training corpora. 
-Nevertheless, this is particularly unsettling because the {\small \tt tst2010} data set has been used as the official development/tuning set for the past several IWSLT evaluation campaigns. 
-It is also unclear what effect such noisy test corpora have on MT system evaluation and comparison.
-
-In any case, the fact that these errors have persisted this long ({\small \tt tst2010} has been distributed with only minor changes for every IWSLT Chinese-English evaluation campaign since 2012) is a testament to how insidious these errors can be, even for a leading international conference. 
-At the very least, this suggests a need for more careful post-editing of bitexts, particularly for development and test corpora.
-More ideal, though, would be the creation of parallel corpora for the express purpose of training, tuning, and evaluating data-driven MT systems.
-
-
-
-% TODO: display an example bad-sentence pair? If I don't, then what was the point of getting zh fonts working?? sigh
-
-% I guess don't be concrete - don't say it... because then, you have to be more concrete about it...
-	% I can elaborate if reviewers ask... but for now, let's just be concise...
-
-% caption should mention that the difference between 
-    % ALTHOUGH you would expect that it would improve all models, it's not clear whether...err? hard to be precise here.
-%Removing TED talk number 767 (over 200 lines), as well as 15 hand-picked lines with bad TER scores, 
-%First, note that the scores improve, which is consistent with the observation that 
-% something to keep in mind in case reviewers ask
-%This results in a significant TER score change that is almost as large as the score difference between the highest and lowest ranking system from the evaluation campaign.  
-%BLEU scores \mycitep{bleu}, on the other hand, did not change much.
-% no, omit this, because DUH, if you change the test set, the scores will change. (it's like changing your ruler.)
-% table and reference
-%\begin{table}[]
-%\centering
-%\label{table:tst2010}
-%\begin{tabular}{|l|l|l|}
-%\hline
-% & BLEU & TER  \\ \hline
-%Full {\small \tt tst2010} & 11.2 & 77.0  \\ \hline
-%Purged {\small \tt tst2010} & 11.8 & 71.3  \\ \hline
-%%\hline
-%%{\small \tt tst2014} &  &   \\ \hline
-%% &  &   \\ \hline
-%\end{tabular}
-%\caption{By comparison, the difference between the baseline TER score and (not shown) } 
-%\end{table}
-% TODO: table of scores after purging. This is pretty crucial? why?
-	% i think i THOUGHT this was crucial because i had to back up my claims concretely...
-	% but the claim from the data is tenuous at best - of course the scores change if the test set changes! so WHAT?
-	% BESIDES, I tried training and tuning with purged corpora, and the difference was minimal. it's quite possible that people just don't CARE
-} % \amtaonly
-
-
-\amtaonly{
-
-\begin{table}[htb]
-\begin{center}
-%\begin{footnotesize}
-\begin{tabular}{|l|l|l|l|l|l|}
-\hline
-\bf Metric & \bf System & \bf Avg & \bf $\overline{s}_{\text{sel}}$ & \bf $s_{\text{Test}}$ & \bf $p$-value \\
-\hline
-\multirow{2}{*}{BLEU $\uparrow$}
-& baseline & 11.5 & 0.3 & - & - \\
-& system 1 & 10.9 & 0.3 & - & 0.00 \\
-\hline
-\multirow{2}{*}{TER $\downarrow$}
-& baseline & 76.0 & 0.8 & - & - \\
-& system 1 & 82.8 & 1.0 & - & 0.00 \\
-\hline
-\end{tabular}
-%\end{footnotesize}
-\end{center}
-\caption{\label{tab:scores} Metric scores for all systems generated using MultEval 0.5.1 \mycitep{multeval}: jBLEU V0.1.1 (an exact reimplementation of NIST's mteval-v13.pl without tokenization); Translation Error Rate (TER) V0.8.0. p-values are relative to baseline and indicate whether a difference of this magnitude (between the baseline and the system on that line) is likely to be generated again by some random process (a randomized optimizer). Metric scores are averages over multiple runs. $s_{sel}$ indicates the variance due to test set selection and has nothing to do with optimizer instability.}
-\end{table}
-
-} % amtaonly
-
-
-\amtaonly{\subsection{Potential Benefits}}
-\label{subsec:benefits}
+%\amtaonly{\subsection{Potential Benefits}}
+\label{subsec:benefits} % ha, this works even if it's not a subsection - LaTeX just figures out what sec/subsec it's in
 
 Large, high-quality synthetic parallel corpora could be useful as:
 
@@ -219,7 +135,7 @@ And unlike the various different MT methods, which are by nature competitive, co
 This paper is organized as follows.
 Section \ref{sec:related} discusses previous related work,
 Section \ref{sec:generator} describes our rudimentary parallel corpus generator,
-Section \ref{sec:experiments} gives preliminary results, 
+Section \ref{sec:experiments} gives experimental results, 
 and Section \ref{sec:future} proposes future work.
 
 
@@ -254,10 +170,11 @@ Furthermore, since they are learned in an unsupervised manner from the parallel 
 % TODO: propose ``next-generation mkcls''? meh that's so ridiculously vague...
 
 % these links are too long for EMNLP. TODO: add them as footnotes for AMTA?
-% http://www.fb10.uni-bremen.de/anglistik/langpro/kpml/genbank/generation-bank.html
-% http://www.fb10.uni-bremen.de/anglistik/langpro/kpml/ genbank/R3b12-English/Docu/ENGLISH-nigel-exerciseset-mismatches-19981209/EX-SET-1.html
+% 
+
 In terms of freely available multilingual natural language generators, the most well-developed one we found was KPML \mycitep{kpml}.
-But crafting sentences using KPML is a lengthy process, involving a well-developed linguistic theory to explain the surface forms.
+But crafting sentences using KPML is a lengthy process,\amtaonly{\footnote{
+    For examples, see http://www.fb10.uni-bremen.de/anglistik/langpro/kpml/genbank/generation-bank.html}} involving a well-developed linguistic theory to explain the surface forms.
 In contrast, our primary goal is to generate large parallel corpora of surface forms quickly. 
 % This affords us an amount of flexibility as to the method of generation. % redundant and doesn't really flow
 % TODO: for our purposes, the linguistic correctness of a generator (hokey hidden structures) is less important than whether it generates well-translated sentences.
@@ -283,10 +200,11 @@ As an example of how our synthetic parallel corpus generation system works, cons
 
 \noindent Our system then expands the subject {\small \tt S} and object {\small \tt O} as noun phrases, adding adjectival and participial modifiers as desired. 
 Semantic constraints can be imposed from the verb {\small \tt V} as well as externally.
-The generator can then vary the template lexically\footnote{Rewrite probabilities were set by hand; a more principled approach might use, say, a generative PCFG parser.} and syntactically, allowing a large number of sentence pairs to be generated from a single template.
+The generator can then vary the template lexically\footnote{
+    Rewrite probabilities were set by hand; a more principled approach might use, say, a generative PCFG parser.} and syntactically, allowing a large number of sentence pairs to be generated from a single template.
 We can also trade quantity for quality by adding more literals to the template, in the spirit of example-based MT.
 
-% looks like this is GOING to run over length. save some if not all of this for AMTA, which is going to run way UNDER length
+
 % TODO: maybe these nonsense sentences shed some light as to what is NOT a sensible, ``natural'' sentence...
 %\subsection{Simplistic Linguistics}
 We adopt an extremely simplistic view of language as nouns, verbs, and their modifications and elaborations.
@@ -310,27 +228,25 @@ In particular, YAML has native Unicode support and does not even require quotati
 
 
 
-\section{Preliminary Experiments}
-\label{sec:experiments}
+\section{Experimental Results}
 
 %\subsection{Methods} % no space? just do one paragraph each?
+\amtaonly{\subsection{Training Set Amplification}}
+\label{sec:experiments}
 We now consider training set amplification as a first application, using the Chinese to English MT task of IWSLT 2015 \mycitep{iwslt2015}\emnlponly{.}\amtaonly{, mentioned briefly in Section \ref{subsec:case_study}.}
 This task uses the WIT$^3$ corpus \mycitep{wit3}, which consists of multilingual subtitles of TED talks covering a wide variety of subjects. 
 The freely available MultiUN corpus \mycitep{multiun} from the OPUS project \mycitep{opus:2012} was also used for comparison.
 
 To investigate the relative effect of our synthetic parallel corpora, we chose a simple baseline system and fixed all other variables.
 Namely, we used the baseline configuration of Moses \mycitep{moses} as described in \mycitep{iwslt2015}, with the exception of changing the target language model to KenLM \mycitep{kenlm}, which we found to be faster and stabler at decoding time than IRSTLM \mycitep{irstlm}.
+Since monolingual corpora are typically available at scale, target language models were obtained using the same in-domain monolingual corpus for all runs.
 For the remaining unspecified model settings, we used the {\small \tt grow-diag} alignment heuristic recommended by \mynewcite{segmenter:2008} and the {\small \tt mslr-fe} configuration for lexicalized reordering. 
 Chinese text was preprocessed using the latest version of the Stanford Segmenter \mycitep{segmenter:2005,segmenter:2008}.
-Phrase and lexicalized reordering tables were interpolated using the {\small \tt tmcombine} script included with Moses \mycitep{tmcombine}, with the interpolation tuned on the {\small \tt dev2010} data set.
-BLEU scores were computed as described by \mynewcite{iwslt2015} using the IWSLT 2015 progress data set ({\small \tt tst2014}).\footnote{We chose the {\small \tt tst2014} test set to facilitate comparison with published results from both IWSLT 2014 and 2015 in future work.}
-
-% TODO: mention that LM was held constant - since monolingual (even in-domain?) corpora are typically available at large scale
-%\subsection{Task}
-
-
-
-% TODO: filler for AMTA? used for corpus analysis stanford POS tagger (incomplete bibtex entry?) \mycitep{postagger:2003}
+Phrase and lexicalized reordering tables were interpolated using the {\small \tt tmcombine} script included with Moses \mycitep{tmcombine}, with the interpolation optimized on the {\small \tt dev2010} data set.
+Following \mynewcite{iwslt2015}, the model was tuned on the {\small \tt tst2010} data set using the MERT procedure included in Moses.
+For Table~\ref{tab:results}, BLEU scores were computed as described by \mynewcite{iwslt2015} using the IWSLT 2015 progress data set ({\small \tt tst2014}).\footnote{
+    We chose the {\small \tt tst2014} test set to facilitate comparison with published results from both IWSLT 2014 and 2015 in future work.
+} % might be nice to throw this sentence into the Table caption, but LATeX chokes on the \footnote{}
 
 % TODO: propose using sub-sentence timing information? you already HAVE relatively fine-grained alignment information... but the corpus crawler just throws that away. Then again, you might get stuff like cross-fragment alignments...
 
@@ -338,40 +254,6 @@ BLEU scores were computed as described by \mynewcite{iwslt2015} using the IWSLT 
 % oh okay, this is nice - if I don't include OpenSubtitles, then I don't have to talk about the stupid purging either
 %heuristically purged zh\_zh, which is a very noisy corpus
 %zh\_zh corpus from the OpenSubtitles 2016 corpus , with lines cleaned using some ad hoc heuristics
-
-
-
-%\subsection{Results}
-
-
-% yeah sure, let's add Bing/Google results just for kicks, then take them out later
-
-% definitely want 2 tables?
-    % one for learning curves, to show that iwslt > zh_zh > multiun - domain overlap is greater
-    
-    % one for 100%, to show that the out of domain corpora aren't helping that much. need moar in-domain data (probably)
-    % well, maybe i'll do away with this one
-    
-    % I guess don't bother showing single-corpus results for zh_zh and multiun, because then I'd have to show MY single-corpus results, which are even more embarrassing than the horribleness I've written up here
-
-
-% when i actually go and READ the table, it's clear that I don't even want to LOOK at more than one metric. it's information overload.
-%\begin{table}
-%\centering
-%\label{table:tst2010}
-%\begin{tabular}{|l|r|r|r|}
-%\hline
-%                    & BLEU  & NIST & TER    \\ \hline
-%IWSLT15 official    & 11.43 & 4.67 & 72.65  \\ \hline
-%Our baseline        & 11.54 & 4.43 & 72.43  \\ \hline
-%  + OpenSubtitles   & 11.54 & 4.43 & 72.43  \\ \hline
-%  + MultiUN         & 11.67 & 4.48 & 72.60  \\ \hline
-%  + generated       & 11.46 & 4.39 & 72.51  \\ \hline
-%% &  &   \\ \hline
-%\end{tabular}
-%\caption{}
-% 
-%\end{table}
 
 
 % side-by-side tables as in emnlp2016.tex
@@ -385,7 +267,6 @@ BLEU scores were computed as described by \mynewcite{iwslt2015} using the IWSLT 
                     & BLEU   \\ \hline
 25\% corpus         &  9.95  \\ \hline
   + 75\%            & \textbf{11.47}  \\ \hline
-%  + Subtitles       & 10.57  \\ \hline
   + MultiUN         & 10.76  \\ \hline
   + Generated       &  9.91  \\ \hline
 \end{tabular}
@@ -394,13 +275,13 @@ BLEU scores were computed as described by \mynewcite{iwslt2015} using the IWSLT 
 \hline                    & BLEU   \\ \hline
 Official            & 11.43  \\ \hline
 Our baseline        & 11.54  \\ \hline
-%  + Subtitles       & 11.54  \\ \hline
   + MultiUN         & \textbf{11.67}  \\ \hline
   + Generated       & 11.46  \\ \hline
 \end{tabular} & % oh this is how you get 2 tables side by side
 
 \end{tabular} % cc (i.e., the big super-table)
 
+% TODO: adding (fairly arbitrary) out-of-domain corpus is really more like using a different model (or maybe bagging?)
 
 % TODO: mention that official results are on a slightly different Moses configuration? mehhhhh
 \caption{ \label{tab:results} % oh, for reference numbering, label goes INSIDE caption
@@ -408,10 +289,6 @@ Our baseline        & 11.54  \\ \hline
     (Right) Same as the left, but starting from tables trained on the entire IWSLT15 corpus.
     Official published scores of the IWSLT15 baseline system are also given for comparison.    
     Qualitatively similar trends for NIST and TER scores were also observed (omitted for clarity).
-%    The ``baseline'' row gives 
-%    MultiUN is actually more data because it has more words per line.
-% automatically cleaned version of the en-zh_zh language pair of OpenSubtitles 2016, roughly 1M lines.
-% and a similar number of lines from MultiUN, which is actually more words. but it doesn't do as well.
 } % caption
 
 \end{table}
@@ -431,10 +308,272 @@ Our generated corpora do not yet make a significant impact on the final BLEU sco
 indicating that our parallel corpus generator has a long way to go.
 Development on our generator has so far focused on ``rule-based'' syntactic diversity and growing a lexical database tailored to the training set. 
 Given the resulting scores, a change of direction seems in order; work on harvesting more ``example-based'' templates from the IWSLT15 training corpus is currently in progress.
-
+\amtaonly{As a first step in this direction, we examine the gold corpora qualitatively.}
 
 
 % TODO: maybe add Bing and Google results, since nobody seems to report these? save this for AMTA? (haha not gonna have room, sucka)
+% but should also add IWSLT-best results if you're doing that - and I don't see the point, unless my results were anywhere NEAR them
+% nah, if at all, just mention in a table caption briefly somewhere
+
+
+
+% new results for AMTA, and adding the old ``case study''
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    
+\amtaonly{
+\subsection{Qualitative Analysis of Corpora}
+\label{subsec:case_study}
+
+
+Consider the official Chinese to English baseline translation of the {\small \tt tst2010} data set\footnote{
+    \label{foot:tst2010}https://wit3.fbk.eu/score.php?release=2014-01
+}.
+As a crude way of assessing translation quality, we used the official evaluation software MultEval \mycitep{multeval} to compute scores for each translated line individually.
+Upon manual inspection, the worst scoring individual lines (especially above 150\%) were almost all found to correspond to poor human translations on the Chinese side of the gold corpus.
+This is particularly unsettling because the {\small \tt tst2010} data set has been used as the official development/tuning set for the past several IWSLT evaluation campaigns. 
+The fact that these errors have persisted this long ({\small \tt tst2010} has been distributed with only minor changes for every IWSLT Chinese-English evaluation campaign since 2012) is a testament to how insidious these errors can be, even for a prominent international workshop. 
+
+
+
+% TODO: display an example bad-sentence pair? If I don't, then what was the point of getting zh fonts working?? sigh
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+Gold zh & \zh{安德森：是六万美元。} \\ \hline
+Gold en & 60,000. \\ \hline
+Moses output & CA : That is 60,000 dollars .  \\ \hline
+\end{tabular}
+\caption{ \label{tab:bad_pair}
+   A ``poorly translated'' sentence pair from {\small \tt tst2010}, with a TER score of 250\%.    
+}
+\end{table}
+
+An example is given in Table~\ref{tab:bad_pair}.
+The baseline Moses system tries valiantly, but it ultimately scores poorly for producing a good machine translation of a liberal human translation.
+Alternatively, one can interpret these errors as an additional source of noise in the human encoding of English into Chinese.
+It is not entirely clear how the MT process is affected by this kind of noise.
+
+The most effective automated ways we found to identify lines in dire need of post-editing were:
+\begin{itemize}
+\item 
+Duplicated Chinese segments on the same line. 
+This was presumably caused by having the same sentence displayed at multiple time points in the video subtitles. 
+Often, would also indicate passages that were poorly aligned at the sentence level.
+Such translations might suffice for viewing translated videos monolingually, but they are far from ideal for training a machine translation system.
+
+\item 
+Missing segments (usually English) when compared with the original lecture transcripts online.\footnote{http://www.ted.com/} 
+This issue seems to have been introduced in the IWSLT15 Chinese-English corpus. 
+When applied to the IWSLT14 corpus, most of these would be ``false positives'' indicating post-editing of musical symbols and other artifacts.
+True positives were often indicative of misaligned sentences.
+\end{itemize}
+
+
+
+\subsection{Experiments on Post-Edited Corpora}
+\label{subsec:post_edited}
+
+% SLIGHTLY inconsistent formatting, since now I have discussion ABOVE the table instead of below...
+% but this creates a natural break for the discussion 
+Table~\ref{tab:tst2010} shows the results of ``lightly'' post-editing {\small \tt tst2010}. 
+On the Chinese side, duplicated segments, applause lines, and translator notes were removed. 
+Speaker annotations were normalized on both sides, as well as sentence alignments wherever possible.
+Small but noticeable differences in scores are observed. 
+(By comparison, the difference between the best and worst scoring Chinese-to-English systems in IWSLT14 \mycitep{iwslt2014} was 6 BLEU points and 7 TER points.)
+In this case, the post-edited tuning set seems to guide the MERT optimization procedure of Moses to a slightly different local optimum.
+
+% my baseline - 2016-05-15-213619
+% tst2010 fixed lite - 2016-06-17-131927
+\begin{table}[ht]
+\centering
+\begin{tabular}{|l|r|r|r|}
+\hline
+                    & BLEU  & NIST & TER    \\ \hline
+(a) Official IWSLT15    & 11.43 & \textbf{4.67} & 72.65  \\ \hline
+(b) Our baseline        & 11.54 & 4.43 & \textbf{72.43} \\ \hline
+(c) Post-edited {\small \tt tst2010} & \textbf{11.91} & 4.33 & 75.34 \\ \hline
+% &  &   \\ \hline
+\end{tabular}
+    % TODO: fairly labor intensive, not THAT much payoff? but there is definitely a payoff, and if you could crowd-lever it...
+
+\caption{ \label{tab:tst2010}
+    Chinese-to-English translation scores evaluated on the {\small \tt tst2014} data set, with experimental parameters as described in Section~\ref{sec:experiments}. 
+    (a) Official published IWSLT15 baseline scores \mycitep{iwslt2015}, for comparison.
+    (b) Our baseline Moses configuration, which uses KenLM instead of IRSTLM, as described previously.
+    (c) Same as (b), but with a post-edited tuning set {\small \tt tst2010}. 
+} % caption
+\end{table}
+
+For the rest of this section, we show the results of applying the same post-editing procedure to the test and training sets as well, with the additional step of restoring missing segments for both languages. 
+To preserve the integrity of {\small \tt tst2014}, evaluation is now performed using MultEval \mycitep{multeval} on the {\small \tt tst2010} data set itself, with the MERT procedure tuned on the {\small \tt dev2010} data set instead.
+Our baseline model is also trained on the IWSLT corpus Chinese-English training corpus from 2014 instead of 2015.
+These data sets and this evaluation software were used by the official benchmark cited in footnote \ref{foot:tst2010}.
+MultEval has the added benefit of providing bootstrapped error bar estimates.
+
+
+% TODO: I am here. the rest of the stuff from here to ``Proposed Future Work'' is not finished yet. Just draft entries...
+
+% In Table~\ref{tab:multeval_tst2010} 
+In the tables below with MultEval results, metric scores for all systems were generated using MultEval 0.5.1 \mycitep{multeval}: jBLEU V0.1.1 (an exact reimplementation of NIST's mteval-v13.pl without tokenization); Translation Error Rate (TER) V0.8.0. 
+The $p$-values are relative to the baseline and indicate whether a difference of this magnitude (between the baseline and the system on that line) is likely to be generated again by some random process (a randomized optimizer). 
+Metric scores are averages over three runs per system. 
+$s_{sel}$ indicates the variance due to test set selection and has nothing to do with optimizer instability.\footnote{
+    This paragraph and the tables with MultEval results are adopted from \LaTeX~code automatically generated by MultEval.
+}
+
+% \pagebreak % soooooo ugly
+
+% well, looks like I'm stuck doing discussion THEN table... (tab:multeval_tst2010 won't fit on the same page if before)
+Let's discuss Table~\ref{tab:multeval_tst2010}.
+Train2015 adds more data, but it's noisy and does not produce a statistically significant change in scores.
+On the other hand, post-edited {\small \tt train2015} produces a significant improvement in scores.
+(Quality matters - not just quantity, which is something we've been saying. Post-editing makes a significant difference.)
+% TODO: post-editing DOES provide performance boost. But it's labor intensive, and a SMALL boost...
+Unlike Table~\ref{tab:tst2010}, post-editing the MERT tuning set {\small \tt dev2010} actually makes things uniformly worse.
+The effect of this kind of noise in tuning corpora appears to be ill-defined.
+Input-domain noise can play a role similar to regularization in machine learning - get a reference from denoising autoencoders?
+We do indeed find that making the tuning set translations more literal also tends to decrease performance, but this could be because of premature stopping.
+Also, the amount of noise added is generally some small amount of Gaussian noise, and it is unclear
+
+\begin{table}[htb]
+\begin{center}
+%\begin{footnotesize}
+\begin{tabular}{|l|l|l|l|l|l|}
+\hline
+\bf Metric & \bf System & \bf Avg & \bf $\overline{s}_{\text{sel}}$ & \bf $s_{\text{Test}}$ & \bf $p$-value \\
+\hline
+\multirow{5}{*}{BLEU $\uparrow$}
+& Official IWSLT14 baseline  & 11.2 & -   & -   & - \\
+& Our baseline & 11.4 & 0.3 & 0.2 & - \\
+& Trained on 2015 corpus ({\small \tt train2015}) & 11.5 & 0.3 & 0.3 & 0.30 \\
+& Post-edited: {\small \tt train2015} & \textbf{11.7} & 0.3 & 0.1 & 0.01 \\
+& Post-edited: {\small \tt dev2010} & 10.8 & 0.3 & 0.3 & 0.00 \\
+%& Post-edited: {\small \tt train2015} and {\small \tt dev2010} & 11.0 & 0.3 & 0.2 & 0.00 \\
+\hline
+\multirow{5}{*}{TER $\downarrow$}
+& Official IWSLT14 baseline & 77.0 & -   & -   & - \\
+& Our baseline & 76.2 & 0.8 & 0.3 & - \\
+& Trained on {\small \tt train2015} & 76.4 & 0.8 & 0.5 & 0.26 \\
+& Post-edited: {\small \tt train2015} & \textbf{75.6} & 0.8 & 0.0 & 0.00 \\
+& Post-edited: {\small \tt dev2010} & 83.4 & 1.0 & 0.5 & 0.00 \\
+%& system 4 & 82.7 & 1.0 & 0.8 & 0.00 \\
+\hline
+\end{tabular}
+%\end{footnotesize}
+\end{center}
+
+\caption{\label{tab:multeval_tst2010} % \caption[LoF entry] would allow multi-paragraph caption... \hspace{0.6 cm} to indent
+%\-\caption[LoF entry]{ \label{tab:multeval_tst2010}
+MultEval results for systems evaluated on the unmodified {\small \tt tst2010} data set.
+Official baseline results (with IRSTLM instead of KenLM as discussed previously) are also given for comparison.
+%UHHHH do I have anything else to say here in the immediate caption? 
+%I'll interpret results in the text body.
+%But this caption needs to be kind of short, because otherwise it winds up on a different page than its discussion... although at this rate, it doesn't really matter - that'll happen anyway
+} % caption
+\end{table}
+
+
+
+% TODO: Adding train2015 + 
+% this is pointless to say, unless I also have unmodified train2015 + dev2010?
+
+\pagebreak
+Now we discuss Table~\ref{tab:multeval_tst2010-fixed}.
+Baseline's TER score changes by about 10\% relative to TAble~\ref{tab:multeval_tst2010}, but BLEU doesn't change as much.
+Apparently, BLEU is more robust to relatively minor changes?
+This time there is a statistically significant improvement in TER for train2015, but not for BLEU.
+Post-editing train2015 again leads to further improvement.
+More surprisingly, post-edited dev2010 gets slightly better BLEU at the expense of much worse TER; this is more like Table~\ref{tab:tst2010} than Table~\ref{tab:multeval_tst2010}.
+This is counter-intuitive, since you would think that removing sentences with duplicated segments from tst2010 would improve TER scores, not worsen them.
+This emphasizes the fact that tuning set noise can affect bottom-line performance in relatively unpredictable ways.
+
+% NOTE
+% +0.3 BLEU -0.6 TER from post-editing the entire training corpus, esp the new 2015 additions (~25000 lines)
+% +0.1 BLEU -0.2 TER from ``snoop-editing'' Moses output lexical items only. cheating takes you FAR...
+\begin{table}[htb]
+\begin{center}
+%\begin{footnotesize}
+\begin{tabular}{|l|l|l|l|l|l|}
+\hline
+\bf Metric & \bf System (all with post-edited {\small \tt tst2010}) & \bf Avg & \bf $\overline{s}_{\text{sel}}$ & \bf $s_{\text{Test}}$ & \bf $p$-value \\
+\hline
+\multirow{4}{*}{BLEU $\uparrow$}
+& Our baseline & 11.4 & 0.3 & 0.2 & - \\
+& Trained on {\small \tt train2015} & 11.4 & 0.3 & 0.2 & 0.44 \\
+& Post-edited: {\small \tt train2015} & 11.6 & 0.3 & 0.2 & 0.01 \\
+& Post-edited: {\small \tt dev2010} & \textbf{11.9} & 0.3 & 0.1 & 0.00 \\
+%& Post-edited: {\small \tt train2015} and {\small \tt dev2010} & \textbf{12.2} & 0.3 & 0.1 & 0.00 \\
+\hline
+\multirow{4}{*}{TER $\downarrow$}
+& Our baseline & 70.6 & 0.4 & 0.5 & - \\
+& Trained on {\small \tt train2015} & 70.1 & 0.4 & 0.3 & 0.00 \\
+& Post-edited: {\small \tt train2015} & \textbf{69.7} & 0.4 & 0.2 & 0.00 \\
+& Post-edited: {\small \tt dev2010} & 75.1 & 0.5 & 0.3 & 0.00 \\
+%& Post-edited: {\small \tt train2015} and {\small \tt dev2010} & 74.7 & 0.5 & 0.2 & 0.00 \\
+\hline
+\end{tabular}
+%\end{footnotesize}
+\end{center}
+
+\caption{\label{tab:multeval_tst2010-fixed} % \caption[LoF entry] would allow multi-paragraph caption... \hspace{0.6 cm} to indent
+%\-\caption[LoF entry]{ \label{tab:multeval_tst2010}
+MultEval results for systems evaluated on the post-edited {\small \tt tst2010} data set.
+} % caption
+\end{table}
+
+
+\subsection{Data Snooping}
+% Data Snooping - dedicate this to its own section, to make clear that these are not ``REAL'' results
+we perform snooping on a dedicated snooping set (as if that makes it right...)
+
+uhhh there's not enough room for a table and discussion, is there? i guess i'd have to pad with some philosophical discussion about snooping
+
+
+\begin{table}[htb]
+\begin{center}
+%\begin{footnotesize}
+\begin{tabular}{|l|l|l|l|l|l|}
+\hline
+\bf Metric & \bf System & \bf Avg & \bf $\overline{s}_{\text{sel}}$ & \bf $s_{\text{Test}}$ & \bf $p$-value \\
+\hline
+\multirow{3}{*}{BLEU $\uparrow$}
+& baseline & 11.4 & 0.3 & 0.2 & - \\
+& system 1 & 36.8 & 0.6 & 0.0 & 0.00 \\
+& system 2 & 11.2 & 0.3 & 0.1 & 0.03 \\
+\hline
+\multirow{3}{*}{TER $\downarrow$}
+& baseline & 76.2 & 0.8 & 0.3 & - \\
+& system 1 & 48.3 & 0.7 & 0.0 & 0.00 \\
+& system 2 & 76.3 & 0.7 & 0.1 & 0.46 \\
+\hline
+\end{tabular}
+%\end{footnotesize}
+\end{center}
+
+\caption{\label{tab:multeval_tst2010-fixed} % \caption[LoF entry] would allow multi-paragraph caption... \hspace{0.6 cm} to indent
+%\-\caption[LoF entry]{ \label{tab:multeval_tst2010}
+MultEval results for systems evaluated on the post-edited {\small \tt tst2010} data set.
+System 1: trained on the concatenation of train14 and tst2010. SNOOPING!
+System 2: snooped out a bunch of mistranslated or OOV words from baseline translation and generated sentences with those words using the generator (remember that thing?)
+} % caption
+\end{table}
+
+The rationale for not bothering with tmcombine was that the additional data was very small in comparison.
+Shouldn't skew the tables that much or whatever.
+Yet there is still the ``unreasonable effectiveness of data'' or whatever - but really it's just overfitting...
+
+Snooping data set establishes an ``upper bound'' of sorts of how much performance boost you could get by simply adding more data.
+It's a measure of the inherent limitation (bias?) of the model being used.
+Generated data doesn't make a dent, and in fact makes things slightly worse (although TER is within error bars).
+So nonsense sentences of OOV words does NOT help - or even if it does, the nonsense-noise drowns it out
+
+} % amtaonly
+
+
+
 
 
 
@@ -483,6 +622,9 @@ We consider the construction of such a potentially game-changing source of super
 % TODO: Wit^3 is not fully capitalized in stupid bibliography
 % TODO: wtf, ``chinese'' is not capitalized in stupid bibliography
 
+% TODO: SMT as dynamic-length or variable-length EBMT. just a qualitative observation of mine...but I suppoose, thinking about SMT mechanistically, that's what it is, really
+
+% TODO: I think another thing that SHOULD be done, but isn't commonly done, is that for a given DOMAIN, characterize inter-annotator differences in terms of , what kind of BLEU/TER scores do typical human translations get?
 
 %\amtaonly{
 %\section{AMTA}
