@@ -1,6 +1,7 @@
 __pycache__/
 datasets/*-old.yml
 datasets/*-test.yml
+datasets/templates/custom_postedited.yml
 doc/*.aux
 doc/*.bbl
 doc/*.blg
