@@ -126,7 +126,7 @@ def process_datum(datum):
             # TODO: for particular types, specify literal forms
         
     
-    print(yaml.dump(data_per_lang))
+    #print(yaml.dump(data_per_lang))
     
     # TODO: handle POS tags - depending on language and depending on POS, might want a literal form
         # can probably do this pretty easily by using a mapping from POS tags to 
