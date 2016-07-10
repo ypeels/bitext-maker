@@ -12,10 +12,264 @@
 #  en: This is Bill|NNP Lange|NNP . I 'm Dave|NNP Gallo|NNP 
   
 
-2:
-  zh: 我们 将 用 一些 影片|NN 来 讲述 一些 深海|NN|@N1|#waterbody 里 的 故事 。
-  en: And we 're going to tell you some stories from the sea|NN|@N1|%aaa here in video . 
+#2:
+#  zh: 我们 将 用 一些 影片|NN 来 讲述 一些 深海|NN|@N1|#waterbody 里 的 故事 。
+#  en: And we 're going to tell you some stories from the sea|NN|@N1|%test_format_tag here in video . 
   
   
+
+  
+# TODO: one-year-olds, two-year-olds, etc. as nouns... this would go on the lexical side? is it worth it?
+
+
+# TODO: amplify us? - later when there's a few more of them?
+40766: # score = 200.0
+  zh: 而且 坏处|NN 也 不 只 是 一 两 件 而已 。
+  en: And it 's not just one or two downsides|NNS .
+44574: # score = 150.0
+  zh: 这样 就 很 清楚 了 ， 那些 怀着|VV 末日|NN 心态|NN 的 作家|NN 实际上 是 夸大其辞|VV 了 。
+  en: So clearly|RB , apocalyptically-minded|JJ authors|NNS have overstated|VBN the case .
+72103: # score = 162.5
+  zh: 他们 认为 艾滋病 不 该 成为 人人|NN 回避|VV 的 社会 标签|NN 。
+  en: They bring out the issues|NNS of stigma|NN .
+73717: # score = 160.0
+  zh: 虽然 这 不 是 件 简单 的 事 。
+  en: Not an easy project . # hmm, would have to worry about a/an...
+79865: # score = 171.4
+  zh: 于是 ， 外界|NN 对 纽约 时报|NN 指责|VV 如潮|VV 。
+  en: The Times was deluged|VBN with criticism|NN .
+80788: # score = 175.0
+  zh: 这 是 什么样 的 企业 啊 ！
+  en: What a company .
+92599: # score = 175.0
+  zh: 突然 之间 ， 美国 充满 了 歇斯底里|NN 的 情绪
+  en: America suddenly|RB was swept|VBN up by hysteria|NN .
+105030: # score = 157.1
+  zh: 举 个 例子 ： 为了 将来 的 成功 我们 需要 牺牲|VV 些 什么 呢 ？
+  en: For example , what do we need to sacrifice for future success ? #What do futures|NNS sacrifice|VB for success|NN ?
+116266: # score = 157.1
+  zh: 我们 期待|VV 的 是 看到 ' 巨作|NN ' ， 你 懂|VV 吗 "
+  en: And we expected|VBD huge masterpieces|NNS ! " #Moses: We hope to see ' 巨作 , ' you understand ? "
+116507: # score = 200.0
+  zh: 但 大自然|NN 的 法则|NN 不 是 这样的|AD
+  en: Nature works very differently|RB .
+124211: # score = 200.0
+  zh: 首先 它 使 辩论|NN 的 技巧|NN 凌驾|VV 与 观点 本身 。
+  en: First , it elevates argument techniques over ideas themselves . #First it elevates|VBZ tactics|NNS over substance|NN .
+131139: # score = 160.0
+  zh: 能 把 这么 复杂 的 事 讲 得 头头是道|VV 真 不 简单
+  en: That was a masterful|JJ job of pulling|VBG things together .
+140824: # score = 150.0
+  zh: 大量 人口 涌入|VV 城市 也 意味 着 这 种 新 发现 的 工业 材料 开始 取代|VV 原先|JJ 的 、 很 难 获取|VV 的 天然|JJ 牧草|NN
+  en: Rural|JJ to urban|JJ migration|NN meant|VBD that newfound|JJ industrial|JJ materials|NNS started to replace|VB hard-to-come-by|JJ natural grasses|NNS .
+144503: # score = 200.0 # consider amplifying 光 as adverb...
+  zh: 光 制作 就 花 了 两 年 半 时间 。
+  en: Making it alone took two and a half years time . #Two-and-a-half|CD years in the making .
+145073: # score = 160.0
+  zh: 对 她们 而言 社会 毫|AD 无 正义|NN 可言|VV
+  en: There was no justice|NN .
+177241: # score = 128.6
+  zh: " 压力 使得 万|CD 物|NN 再次 变得 完整|VA ， "
+  en: Pressure|NN can make everything whole again .
+183295: # score = 183.3
+  zh: 整个 社会 支离破碎|VV ，
+  en: The whole society|NN had shattered into pieces . #It had shattered|VBN into pieces|NNS .
+185427: # score = 171.4
+  zh: 我 十分 震惊|VV ， 无法 接受 这 一 事实 。
+  en: I was completely surprised , unable to accept this fact . #I was taken completely by surprise|NN .
+188039: # score = 180.0
+  zh: 这些 城市|NN 的 相貌|NN 如何 ？
+  en: How is the appearance|NN of these cities|NNS ? #What is their profile|NN ?
+188448: # score = 155.6
+  zh: 我 所 说 的 颜色 变化 是 什么 意思 呢 ？
+  en: So what do I mean by color|NN changes ?
+188556: # score = 125.0
+  zh: 我的 工作 是 编|VV 词典|NN
+  en: I make dictionaries|NNS .
+#189094: # TODO: segment zh
+#  zh: 「火车全程那么长。」
+#  en: " The length of the entire train ride . " #"Oh," we said, "full length."
+#189132: this one is kind of off too (manual inspection)
+205172: # score = 210.0
+  zh: 没有 " 绿色 实验室 " 的 团队 ， 这 一切 都 不复|AD 存在
+  en: None|NN of this is possible without the GreenLab|NNP team|NN .
+
+
+
+
+
   
   
+# ---------------------------------------
+# unamplified rewrites that weren't fixed directly in the corpus (because they're just LIBERAL translations, not wrong per se)
+
+4210: # score = 172.7
+  zh: 接下来 ， 我们 就 在 还 没有 三 ， 四百|CD 岁 的 人 之前 就 研究 到 如何 治疗 三 ， 四百|CD 岁 的 人 所 死于|VV 的 因素 。
+  en: And then , before we even have three or four hundred year olds , we 'll research how to treat the cause of death for three or four hundred year olds . #And the same for 300|CD and 400|CD and so on .
+5330: # score = 250.0
+  zh: 是 我们 自己 。
+  en: It 's us . # Us .
+5330v2:
+  zh: 是 我们 自己 。
+  en: It 's ourselves .
+6749: # score = 185.7
+  zh: 我 真 不曾|AD 想象 到 我 会 有 机会 登上|VV 这个 舞台|NN
+  en: I really never imagined I would have the chance to stand on this stage . #I cannot believe I 'm here .
+9645: # score = 200.0
+  zh: 于是 它 想出|VV 了 一 个 新 法子|NN 。
+  en: So she came up with a new way . #So she adapted|VBD .
+12913: # score = 166.7
+  zh: 这 算|VV 是 个 还 不错 的 消息 。
+  en: This is not bad news . # Not bad .
+15775: # score = 214.3
+  zh: 每 天 都 会 有 发现 新型|JJ 的 细胞 。
+  en: Every day , there are new cells being discovered . #New ones are being discovered|VBN everyday|NN .
+19049: # score = 192.9
+  zh: 其实 不 是 这样 的 。 这里 是 把 小块|NN 的 适宜|VA 步行|VV 的 街区|NN 建 在 那些 已经 不再 发挥|VV 功能 的 建筑上|NN ．
+  en: No , it 's pockets|NNS of walkability|NN on the sites|NNS of under-performing|JJ properties|NNS .
+  en: Actually , it 's not like that . It 's building little pockets of walkable blocks on properties that are already underperforming .
+19960: # score = 300.0
+  zh: 此话|NN 怎|AD 讲 ？
+  en: What does this mean ? # How ?
+21457: # score = 250.0
+  zh: 没关系|VV 。
+  en: It doesn 't matter . # Irrelevant|JJ .
+23987: # score = 183.3
+  zh: 于是 我们 就 得出|VV 了 " 加速|VV " 这个 概念 。 这 是 9 岁 的 孩子 想 得到 的 概念
+  en: So we get this concept of " acceleration . " This is the concept that nine year old children wanted to get . #We get a visual|JJ pattern|NN of what these nine-year-olds|NNS called acceleration|NN .
+24170: # score = 180.0
+  zh: 它们 会 带 你 到 " 脾气|NN 暴躁|VV 婚姻|NN 失败 爸爸 "
+  en: They 'll take you to " grumpy failed marriage dad . " #They take you to gruff-ex-cop-on-his-fourth-marriage.dad.|VB
+26844: # score = 160.0
+  zh: 为什么 从前|NT 你 都 不 示现|VV 给 我 看 ？ " #为什么 从前|NT 你 都 不示|VV 现|AD 给 我 看 ？ "
+  en: Why did you not show yourself to me before ? " #What is this ? "
+26846: # score = 158.3 # bad translation, but I wanted to fix the segmentation
+  zh: 弥勒|NR 菩提|NN 继续 说 " 你 一直 在 寻找 我 但 却 看 不 到 我 " #大笑|VV 弥勒|NR 菩提|NN 继续 说 " 你 一直 在 寻找 我 但却|VV 看 不 到 我 "
+  en: Maitreya continued , " You were always looking for me, but you could not see me . " #" Looking for the Buddha|NNP in person , " he said .
+28861: # score = 200.0
+  zh: 你 要 不断 的 建设 和 维护|VV 这些 关系 。
+  en: You have to keep building and maintaining those relationships . #Keep building them .
+30804: # score = 185.7
+  zh: 大家 留心|AD 看 会 发现 底下|NN 那里 有 一 把 刀|NN
+  en: If you look carefully , you 'll notice a knife beneath it . #Beneath|IN it is a wonderful knife|NN .
+32400: # score = 200.0
+  zh: 还是 有 那么 一些 可能性 使得 " 少 " 也 能 意味 着 某 种 " 多 " 。
+  en: Or maybe there 's a chance to make " less " mean a kind of " more . " #Maybe , just maybe , less might equal|VB more .
+44385: # score = 172.7
+  zh: 我们 要 知道 我们 的 处境|NN ， 而后|AD 才 能 对 未来 采取 应对|NN 措施|NN
+  en: We need to know our situation , and only then will we be able to implement appropriate measures for the future . #We need to settle|VB down before we wreck|VBP the planet .
+58403: # score = 200.0
+  zh: 那么 ， 这 是 不 是 一 项 低 成本 的 科技 呢 ？
+  en: So , is this a low cost technology ? #Is it cost-competitive|JJ ?
+58502: # score = 150.0
+  zh: 这天|AD ， 我 得知|VV 我 是 爱滋病|NN 患者 ，
+  en: That day , I found out I was HIV positive . #That 's the day I found out .
+60540: # score = 225.0
+  zh: 我的 研究 涉及|VV 很多 方面
+  en: My research involves a lot of disciplines. # I am multidisciplinary|JJ .
+65894: # score = 190.0
+  zh: 住|VV 在 那些 地方 的 人 连 最 基本 的 生存 条件 都 得 不 到 保障|NN 呢
+  en: The people living in those places cannot guarantee even the most basic of living conditions . #And people simply do not have enough to survive|VB .
+69837: # score = 200.0
+  zh: 这 是 完全 一样 的 事 。
+  en: This is exactly the same thing . #Exact|JJ equivalent|NN .
+76047: # score = 183.3
+  zh: 我 不 会 说 在座 各位 谁 自恋|VV 。 我 知道 你们 跟 自恋|VV 这个 概念 不熟|VV
+  en: I won't say anybody sitting here is narcisstic . I know you aren 't familiar with this concept of narcissism . #Nobody|NN here would ever be accused|VBN or be familiar|JJ with Narcissus|NNP .
+80852: # score = 180.0
+  zh: 我们 只 希望 一 个 小时 内 可以 做出 更多的|JJ 地毯|NN
+  en: We just hope to make more carpet per hour . #More carpet|NN per man-hour|NN .
+92800: # score = 200.0
+  zh: 因为 北极|NR 上 不 会 有 生物 适应 。
+  en: Because there won't be biological adaptation at the North Pole . #And there 's no adaption|NN .
+94695: # score = 190.9
+  zh: 若|CS 我 现在 找 他们 ， 估计|VV 没 人 理|VV 我 ， 因为 他们 现在 有 很多 事 缠身|VV 。
+  en: If I called them now , I suppose nobody would pay attention to me, because they are now preoccupied with many things . #BP|NN obviously|RB has a bit more on their mind now .
+110101: # score = 180.0
+  zh: 我们 没有 办法 帮助 他 。
+  en: We don 't have a way to help him . #Nothing can be done .
+116570: # score = 200.0
+  zh: 太阳 能源 应用 技术 需要 去除|VV 矿物质|NN 的 水
+  en: Solar energy technology needs demineralized water . #CSP|NNP needs a supply|NN of demineralized|VBN freshwater|NN .
+124517: # score = 157.1
+  zh: 还有 ， 能否|VV 达到 食用|VV 这些 东西 的 目的 ？
+  en: And , can you achieve the purpose of consuming these things ?  #And does purpose|NN play into it ?
+128257: # score = 200.0
+  zh: 在 这 种 状况 下 思考 逻辑|NN 如 鬼|NN 打墙|NN 般|AD 走 不 出来
+  en: In these circumstances, logical thinking is like a ghost stuck behind a wall . #What happens is that circular|JJ logic|NN takes over .
+129398: # score = 200.0
+  zh: 这 真 是 太 棒了|VA
+  en: This is really awesome . #Brilliant|JJ . # Moses: It 's really amazing .
+132591: # score = 183.3
+  zh: 但 突然间|AD ， 世界 变得 漆黑|VA 一 片 。
+  en: But all of a sudden , the world became pitch black . #And then everything went black .
+137592: # score = 180.0
+  zh: 所以 , 当然 不 是 这样 。
+  en: So , of course , not like this . # So , not very .
+142765: # score = 200.0
+  zh: 我们 是 怎么 做到 的呢|NN ？
+  en: How did we do that ? # How ?
+145886: # score = 181.8
+  zh: 公务|NN 人员 既可以|VV 在 某一|DT 类 部门 中长期|NN 工作 也 可以 在 三 类 中 交替|VV 任职|NN .
+  en: Public employees can either do long-term work in one branch , or they can alternate positions between the three . #They form separate|JJ yet integrated|VBN career|NN paths|NNS for Chinese|JJ officials|NNS .
+150433: # score = 166.7
+  zh: 哦 ， 不 会 的 。 "
+  en: Oh , no . " #Oh ... "
+151090: # score = 220.0
+  zh: 大家 试着 猜|VV 一 猜|VV ， 有 人 说 是 1816 年 。
+  en: Everyone try to take a guess, somebody said it's 1816 . #Any guesses|NNS ? 1816|CD .
+156884: # score = 180.0
+  zh: 我 真 不 知道 这 是 一 个 什么 事儿|NN 。
+  en: I really don 't know what this thing was . #It was really something .
+160308: # score = 200.0
+  zh: 这 都 是 如同|P 国际 货币|NN 基金|NN 组织 一样 的 好 例子
+  en: This is like the good example of the International Monetary Fund . #Model on the IMF|NNP .
+161203: # score = 185.7
+  zh: 而 造成 死亡 最 多 的 因素 主要 在 以下|PN 几 个 方面 。
+  en: And the most common causes of death are mainly the following few ways . #The big growth industry|NN are these .
+163677: # score = 183.3
+  zh: 这 在 整个 美国 司法|NN 审判|NN 过程 中 都 很 罕见|VA 。
+  en: This is very rare in the entire process of U.S. jurisprudence . #A shocker|NN in American jurisprudence|NN .
+165948: # score = 180.0
+  zh: 科技 让 我们 的 世界 以 指数|NN 级|NN 的 加速度|NN 加速|AD 前进|VV 。
+  en: Technology lets our world accelerate faster with exponential acceleration . #Technology accelerates|VBZ things exponentially|RB .
+168992: # score = 180.0
+  zh: 我 要 开 一 间 「|PU 平民|NN 超市|NN 」|PU 。
+  en: I want to open a " people 's supermarket . " #The People 's Supermarket|NNP .
+169587: # score = 200.0
+  zh: 现在 ， 非暴力|JJ 的 成效|NN 已经 得以|VV 显现|VV 并且 有 一 种 继续 发展 的 惯性|NN
+  en: Now the effect of nonviolence is able to emerge and have a kind of inertia to continue to develop . #Now nonviolence|NN starts|VBZ to work like a flywheel|NN .
+169760: # score = 250.0
+  zh: 怎么 会 这样 ？
+  en: How can this be ? # Why ?   #  also 1726 (score 200!?) "What ?"
+172133: # score = 175.0
+  zh: 盖瑞|NR ： 是的 ， 我 总 接到|VV 那样 的 电话 。
+  en: "Gehry|NNP : Yeah , I always get that kind of phone call ."
+177103: # score = 175.0
+  zh: 我 曾 生活 于此|NN 。
+  en: I used to live there . #I live there .
+181261: # score = 175.0
+  zh: 你 要 有 疑问|NN ， 我 只 能 说 这 绝对 是 学生 做 的 。
+  en: If you have any doubts , I can only say that this was definitely made by students .  #Really scholastic|JJ , if you ask me .
+188645: # score = 160.0
+  zh: 专注|NN 过程 ， 而 不 是 结果 。
+  en: Focus on the process , rather than the results . #The power of yet .
+184992: # score = 200.0
+  zh: 肯定 ！
+  en: Definitely ! #Definitely|RB . # Moses: I 'm sure !
+186140: # score = 171.4
+  zh: 他们 知道 如果 你 不 具备|VV 多样性|JJ 的 思维 ， 不 知道 如何 争论|VV ， 创新 就 很 难 实现 。
+  en: They know that if you don 't have diversity of thinking , don 't know how to debate , innovation is very hard to achieve . #They understand that innovation|NN rarely|RB happens unless|IN you have both diversity|NN and conflict|NN .
+188105: # score = 187.5
+  zh: 技术 有 巨大 的 好处 ， 也 有 巨大 的 危害|NN 。
+  en: Technology has huge advantages, and it also has huge disadvantages . #Technology has enormous|JJ promise|NN but also peril|NN .
+189397: # score = 200.0
+  zh: 有 太 多 不确定性|NN 。
+  en: There 's too much uncertainty . #Highly|RB speculative|JJ .
+199017: # score = 180.0
+  zh: O 可 就 不 是 这样 啦|SP 。
+  en: O is not like that . # Not so with an O.|NNP
+199258: # score = 200.0
+  zh: 有 孩子 的 夫妇|NN 的 压力 要 高于|VV 那些 没有 孩子 的 夫妇|NN
+  en: Stress for couples who have children is higher than for couples who don 't have children . #Parents experience more stress|NN than non-parents|NNS .
+

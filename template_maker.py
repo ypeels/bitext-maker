@@ -16,6 +16,7 @@ FORBIDDEN_YAML_DATA = Exception('FORBIDDEN_YAML_DATA') # just anything that will
 TAG_SEPARATOR = '|'
 
 INPUT_FILE = 'template_input.yml'
+OUTPUT_FILE = 'datasets/templates/custom_postedited.yml'
 
     # also need to specify symbol names, since you can't just go in order!
     # TODO: does this belong in data.py? but this is like a METAdata format...
@@ -68,7 +69,7 @@ def process_datum(datum):
     # this is much cleaner if you write things from a data-centric perspective/style
     symbols_per_lang = { 
         lang: {
-            sym: data_per_lang[lang]['symbols'][sym]['type'] for sym in data_per_lang[lang]['symbols']        
+            sym: data_per_lang[lang]['symbols'][sym]['type'] for sym in data_per_lang[lang].get('symbols', [])
         } for lang in data_per_lang
     }
     
@@ -196,4 +197,4 @@ if __name__ == '__main__':
             raise Exception('Error processing {} - key {} - {}'.format(INPUT_FILE, key, e.args[0]))
             #import pdb; pdb.set_trace()
             
-    yaml_reader.write_file('test.yml', output_data)
+    yaml_reader.write_file(OUTPUT_FILE, output_data)
