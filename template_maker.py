@@ -51,6 +51,8 @@ def get_type_from_pos(pos, lang):
     elif lang == 'zh':
         if pos in ['JJ', 'VA']:
             return 'adjective'
+        elif pos == 'NR':
+            return 'name'
         elif pos == 'NN':
             return 'noun'
         elif pos == 'VV':
