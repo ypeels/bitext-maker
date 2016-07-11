@@ -16,43 +16,106 @@
 #  zh: 我们 将 用 一些 影片|NN 来 讲述 一些 深海|NN|@N1|#waterbody 里 的 故事 。
 #  en: And we 're going to tell you some stories from the sea|NN|@N1|%test_format_tag here in video . 
   
+# amplified (however barely...)
+19840: # score = 150.0
+  zh: 现在 ， 墨西哥|NR|@N|#country 有 许多 人 都 感到 恐惧
+  en: Many people in Mexico|NNP|@N are afraid|JJ today .
+32286: # score = 150.0
+  zh: 我 把 这 个 照片|NN|@N|#physical.object 放 上来 ， 他 一定 很 想 杀 了 我 。   #我 把 这 张 照片 放 上来|VV ， 他 一定 很 想 杀|VV 了 我 。
+  en: He 'll kill me for showing that photo|NN|@N .   # originally no "photo"
+40766: # score = 200.0
+  zh: 而且 坏处|NN|@N 也 不 只 是 一 个 而已 。  # originally 一 两 件
+  en: And it 's not just one downside|NN|@N|#object .  # originally: one or two downsides|NNS
+72103: # score = 162.5
+  zh: 他们 认为 艾滋病|NN|@N 不 该 成为 人人|NN 回避|VV 的 社会 标签|NN 。
+  en: They believe AIDS|NN|@N|#disease should not become a stigma .  #They bring out the issues|NNS of stigma|NN .
+98021: # score = 144.4
+  zh: 好了 ， 台下|NN 的 年轻 人 还 不 需 去 想 退休|NN|@N 这个 问题 。  # originally 退休|VV
+  en: So forget|VB about retirement|NN|@N if you 're young .  # originally retirements|NNS
+113270: # score = 144.4
+  zh: 如今 ， " 人民|NN|@N " 对 我们 来说 是 一 种 资本|NN
+  en: Today we talk of people|NN|@N as an asset|NN .
+116507: # score = 200.0
+  zh: 但 大自然|NN|@N 的 法则|NN 不 是 这样的|AD
+  en: Nature|NN|@N works very differently|RB .
+134011: # score = 145.5
+  zh: 我们 无须|AD 因为 牛|NN|@N 而 慌张|VA  # originally 大量 的 空虚|VA
+  en: Let 's not be freaked|VBN out by the cow|NN|@N . #our bountiful|JJ nothingness|NN .
+177241: # score = 128.6 - the first sentence at which I amplified more than one word!
+  zh: 压力|NN|@N 使得 万|CD 物|NN 再次 变得 完整|VA|@J
+  en: Pressure|NN|@N can make everything whole|JJ|@J again .
+183295: # score = 183.3
+  zh: 整个 社会|NN|@N 支离破碎|VV ，
+  en: The whole society|NN|@N|#object had shattered into pieces . #It had shattered|VBN into pieces|NNS .
+188448: # score = 155.6
+  zh: 我 所 说 的 颜色|NN|@N 变化 是 什么 意思 呢 ？
+  en: So what do I mean by color|NN|@N changes ?
   
-
+  
   
 # TODO: one-year-olds, two-year-olds, etc. as nouns... this would go on the lexical side? is it worth it?
+104984: # score = 150.0
+  zh: 现在 我们 来 试试|VV 引诱|VV 4 岁 的 孩子 ， 拿 他们 来 做个|VV 试验
+  en: Now lets|VBZ tempt|JJ four-year-olds|NNS , giving|VBG them a treat|NN .
+144503: # score = 200.0 # consider amplifying 光 as adverb...
+  zh: 光 制作 就 花 了 两 年 半 时间 。
+  en: Making it alone took two and a half years time . #Two-and-a-half|CD years in the making .
+  
+# TODO: useful syntactic frameworks?
+#51949: # score = 144.4 # TODO: if/then wrapper
+#  zh: 如果 野生|JJ 飞禽|NN 又 飞|VV 回来 ， 那 又 会 怎么样 呢 ？
+#  en: What if that wild|JJ bird|NN flies|NNS by again ?
+110335: # score = 140.0 # this might be useful for intransitive verbs...?
+  zh: 用 一点 时间 想 一 想 。
+  en: Think for a minute|NN .
 
-
-# TODO: amplify us? - later when there's a few more of them?
-40766: # score = 200.0
-  zh: 而且 坏处|NN 也 不 只 是 一 两 件 而已 。
-  en: And it 's not just one or two downsides|NNS .
+  
+# TODO: amplify us
+23128: # score = 140.0 # works with an abstract subject?
+  zh: 这 之间 的 差异 非常 显著|VA 。
+  en: The differences|NNS were dramatic|JJ .
+34387: # score = 150.0
+  zh: 流动|JJ 人口 的 问题 又 是 如何 解决 的 呢 ？
+  en: How do we tackle|VB things like mobility|NN ?
+34917: # score = 150.0
+  zh: 是 给 大家 的 一 个 小 礼物|NN 。
+  en: A little present|JJ for you .
+40518: # score = 145.5
+  zh: '" 逃跑|VV 或 战斗|VV " 释放|VV 肾上腺素|NN 将 自我 防卫|VV 的 高墙|NN 推到|VV 天 那么 高'
+  en: Flight-or-fight|JJ releases|NNS adrenalin|NN , which throws|VBZ our walls|NNS up sky-high|JJ .
+44365: # score = 150.0
+  zh: 这 一 现象 在 世界 各地 都 在 发生
+  en: And so it is everywhere|RB one looks . # huh? how did I want to amplify THIS?
 44574: # score = 150.0
   zh: 这样 就 很 清楚 了 ， 那些 怀着|VV 末日|NN 心态|NN 的 作家|NN 实际上 是 夸大其辞|VV 了 。
   en: So clearly|RB , apocalyptically-minded|JJ authors|NNS have overstated|VBN the case .
-72103: # score = 162.5
-  zh: 他们 认为 艾滋病 不 该 成为 人人|NN 回避|VV 的 社会 标签|NN 。
-  en: They bring out the issues|NNS of stigma|NN .
+52213: # score = 150.0
+  zh: 你们 堵塞|VV 了 接纳|VV 这些 受害者|NN 的 渠道|NN 你们 不 把 这些 孩子 当成|VV 是 我们 中间 的 一 分子
+  en: My biggest|JJS challenge|NN is your blocks|NNS to accept|VB these victims|NNS as our own .
+59624: # score = 144.4
+  zh: 这 就 是 气候 变化 导致 水温|NN 过 热|NN 告诉 我们 的 。
+  en: And that 's the story with climate-change|JJ heating|NN .
 73717: # score = 160.0
   zh: 虽然 这 不 是 件 简单 的 事 。
   en: Not an easy project . # hmm, would have to worry about a/an...
+77509: # score = 145.5
+  zh: 但 机构 的 本身 决定 了 它 无法 习惯|VV 这 种 不成比例|NN
+  en: But everything about institutions|NNS makes them uncomfortable|JJ with that disproportionality|NN .
 79865: # score = 171.4
   zh: 于是 ， 外界|NN 对 纽约 时报|NN 指责|VV 如潮|VV 。
   en: The Times was deluged|VBN with criticism|NN .
 80788: # score = 175.0
   zh: 这 是 什么样 的 企业 啊 ！
-  en: What a company .
+  en: What a company .  # ugh, also needs a/an to be handled
 92599: # score = 175.0
   zh: 突然 之间 ， 美国 充满 了 歇斯底里|NN 的 情绪
   en: America suddenly|RB was swept|VBN up by hysteria|NN .
-105030: # score = 157.1
-  zh: 举 个 例子 ： 为了 将来 的 成功 我们 需要 牺牲|VV 些 什么 呢 ？
-  en: For example , what do we need to sacrifice for future success ? #What do futures|NNS sacrifice|VB for success|NN ?
-116266: # score = 157.1
+116266: # score = 157.1  #Moses: We hope to see ' 巨作 , ' you understand ? "
   zh: 我们 期待|VV 的 是 看到 ' 巨作|NN ' ， 你 懂|VV 吗 "
-  en: And we expected|VBD huge masterpieces|NNS ! " #Moses: We hope to see ' 巨作 , ' you understand ? "
-116507: # score = 200.0
-  zh: 但 大自然|NN 的 法则|NN 不 是 这样的|AD
-  en: Nature works very differently|RB .
+  en: And we expected|VBD huge masterpieces|NNS ! "  # ugh, have to fix plural, or maybe use "the"
+116512: # score = 142.9
+  zh: 这些 废弃物|NN 最后 都 会 被 扔到|VV 垃圾场|NN
+  en: It was ending|VBG up in landfills|NNS . # TODO: plural (generator currently will default to singular, right?)
 124211: # score = 200.0
   zh: 首先 它 使 辩论|NN 的 技巧|NN 凌驾|VV 与 观点 本身 。
   en: First , it elevates argument techniques over ideas themselves . #First it elevates|VBZ tactics|NNS over substance|NN .
@@ -62,30 +125,21 @@
 140824: # score = 150.0
   zh: 大量 人口 涌入|VV 城市 也 意味 着 这 种 新 发现 的 工业 材料 开始 取代|VV 原先|JJ 的 、 很 难 获取|VV 的 天然|JJ 牧草|NN
   en: Rural|JJ to urban|JJ migration|NN meant|VBD that newfound|JJ industrial|JJ materials|NNS started to replace|VB hard-to-come-by|JJ natural grasses|NNS .
-144503: # score = 200.0 # consider amplifying 光 as adverb...
-  zh: 光 制作 就 花 了 两 年 半 时间 。
-  en: Making it alone took two and a half years time . #Two-and-a-half|CD years in the making .
 145073: # score = 160.0
   zh: 对 她们 而言 社会 毫|AD 无 正义|NN 可言|VV
-  en: There was no justice|NN .
-177241: # score = 128.6
-  zh: " 压力 使得 万|CD 物|NN 再次 变得 完整|VA ， "
-  en: Pressure|NN can make everything whole again .
-183295: # score = 183.3
-  zh: 整个 社会 支离破碎|VV ，
-  en: The whole society|NN had shattered into pieces . #It had shattered|VBN into pieces|NNS .
+  en: There was no justice|NN .  # it was tempting to make this #abstract, but that's bordering on nonsense...
+145859: # score = 144.4
+  zh: 事实 证明 ， 中共|NR 具有 超凡|JJ 的 与时俱进|NN 和 自我 纠错|NN 能力 。
+  en: So the Party|NNP self-corrects|NNS in rather dramatic|JJ fashions|NNS .
 185427: # score = 171.4
   zh: 我 十分 震惊|VV ， 无法 接受 这 一 事实 。
   en: I was completely surprised , unable to accept this fact . #I was taken completely by surprise|NN .
 188039: # score = 180.0
-  zh: 这些 城市|NN 的 相貌|NN 如何 ？
+  zh: 这些 城市|NN 的 相貌|NN 如何 ？  # doable with more suitable lexical entries?
   en: How is the appearance|NN of these cities|NNS ? #What is their profile|NN ?
-188448: # score = 155.6
-  zh: 我 所 说 的 颜色 变化 是 什么 意思 呢 ？
-  en: So what do I mean by color|NN changes ?
 188556: # score = 125.0
   zh: 我的 工作 是 编|VV 词典|NN
-  en: I make dictionaries|NNS .
+  en: I make dictionaries|NNS .  # could do #book, but I think that's kind of sparse
 #189094: # TODO: segment zh
 #  zh: 「火车全程那么长。」
 #  en: " The length of the entire train ride . " #"Oh," we said, "full length."
@@ -185,6 +239,9 @@
 94695: # score = 190.9
   zh: 若|CS 我 现在 找 他们 ， 估计|VV 没 人 理|VV 我 ， 因为 他们 现在 有 很多 事 缠身|VV 。
   en: If I called them now , I suppose nobody would pay attention to me, because they are now preoccupied with many things . #BP|NN obviously|RB has a bit more on their mind now .
+105030: # score = 157.1
+  zh: 举 个 例子 ： 为了 将来 的 成功 我们 需要 牺牲|VV 些 什么 呢 ？
+  en: For example , what do we need to sacrifice for future success ? #What do futures|NNS sacrifice|VB for success|NN ?
 110101: # score = 180.0
   zh: 我们 没有 办法 帮助 他 。
   en: We don 't have a way to help him . #Nothing can be done .
@@ -221,6 +278,9 @@
 156884: # score = 180.0
   zh: 我 真 不 知道 这 是 一 个 什么 事儿|NN 。
   en: I really don 't know what this thing was . #It was really something .
+158072: # score = 142.9
+  zh: 中国 朝着|P 高 收入 的 方向 发展
+  en: China develops in the direction of high income . #It moves|VBZ this way over here .
 160308: # score = 200.0
   zh: 这 都 是 如同|P 国际 货币|NN 基金|NN 组织 一样 的 好 例子
   en: This is like the good example of the International Monetary Fund . #Model on the IMF|NNP .
