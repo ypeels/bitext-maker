@@ -33,6 +33,7 @@
     % needed by Multeval tables
     \usepackage{amstext}
     \usepackage{multirow}
+
 \fi
 \if \buildtarget \buildhcomp    
     \input{header-aaai.tex}
@@ -220,7 +221,12 @@ We plan on eventually open-sourcing both our generator code and its accompanying
 % TODO: mention Python?
 One implementation detail worth mentioning is the choice of YAML for writing sentence templates and lexical data. 
 In particular, YAML has native Unicode support and does not even require quotation marks to enclose strings.
-}
+
+% TODO: YAML code examples. couldn't get verbatim + zh to work...
+%To maximize human translator productivity, 
+%meta-templates, which can then be easily parsed into templates to be fed into the generator.
+%An example is shown in Figure~\ref{fig:yaml_template}.
+} % amtaonly
 
 
 
@@ -308,7 +314,8 @@ Our generated corpora do not yet make a significant impact on the final BLEU sco
 indicating that our parallel corpus generator has a long way to go.
 Development on our generator has so far focused on ``rule-based'' syntactic diversity and growing a lexical database tailored to the training set. 
 Given the resulting scores, a change of direction seems in order; work on harvesting more ``example-based'' templates from the IWSLT15 training corpus is currently in progress.
-\amtaonly{As a first step in this direction, we examine the gold corpora qualitatively.}
+\amtaonly{
+As a first step in this direction, we examine the gold corpora qualitatively.}
 
 
 % TODO: maybe add Bing and Google results, since nobody seems to report these? save this for AMTA? (haha not gonna have room, sucka)
@@ -321,7 +328,7 @@ Given the resulting scores, a change of direction seems in order; work on harves
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     
-\amtaonly{
+\amtaonly{ 
 \subsection{Qualitative Analysis of Corpora}
 \label{subsec:case_study}
 
@@ -361,14 +368,14 @@ The most effective automated ways we found to identify lines in dire need of pos
 \item 
 Duplicated Chinese segments on the same line. 
 This was presumably caused by having the same sentence displayed at multiple time points in the video subtitles. 
-Often, would also indicate passages that were poorly aligned at the sentence level.
+Often, this would also indicate passages that were poorly aligned at the sentence level.
 Such translations might suffice for viewing translated videos monolingually, but they are far from ideal for training a machine translation system.
 
 \item 
 Missing segments (usually English) when compared with the original lecture transcripts online.\footnote{http://www.ted.com/} 
-This issue seems to have been introduced in the IWSLT15 Chinese-English corpus. 
-When applied to the IWSLT14 corpus, most of these would be ``false positives'' indicating post-editing of musical symbols and other artifacts.
-True positives were often indicative of misaligned sentences.
+This issue seems to have been introduced in the IWSLT15 Chinese-English corpus, and was also indicative of misaligned sentences.
+%When applied to the IWSLT14 corpus, most of these would be ``false positives'' indicating post-editing of musical symbols and other artifacts.
+%True positives were often indicative of misaligned sentences.
 \end{itemize}
 
 
@@ -378,11 +385,11 @@ True positives were often indicative of misaligned sentences.
 
 % SLIGHTLY inconsistent formatting, since now I have discussion ABOVE the table instead of below...
 % but this creates a natural break for the discussion 
-Table~\ref{tab:tst2010} shows the results of ``lightly'' post-editing {\small \tt tst2010}. 
+Table~\ref{tab:tst2010} shows the scores obtained by ``lightly'' post-editing the MERT tuning set {\small \tt tst2010} as follows. 
 On the Chinese side, duplicated segments, applause lines, and translator notes were removed. 
 Speaker annotations were normalized on both sides, as well as sentence alignments wherever possible.
-Small but noticeable differences in scores are observed. 
-(By comparison, the difference between the best and worst scoring Chinese-to-English systems in IWSLT14 \mycitep{iwslt2014} was 6 BLEU points and 7 TER points.)
+As a result, small but noticeable differences in scores are observed. 
+(For comparison, the difference between the best and worst scoring Chinese-to-English systems in IWSLT14 \mycitep{iwslt2014} was 6 BLEU points and 7 TER points.)
 In this case, the post-edited tuning set seems to guide the MERT optimization procedure of Moses to a slightly different local optimum.
 
 % my baseline - 2016-05-15-213619
@@ -413,30 +420,33 @@ Our baseline model is also trained on the IWSLT corpus Chinese-English training 
 These data sets and this evaluation software were used by the official benchmark cited in footnote \ref{foot:tst2010}.
 MultEval has the added benefit of providing bootstrapped error bar estimates.
 
-
-% TODO: I am here. the rest of the stuff from here to ``Proposed Future Work'' is not finished yet. Just draft entries...
-
-% In Table~\ref{tab:multeval_tst2010} 
-In the tables below with MultEval results, metric scores for all systems were generated using MultEval 0.5.1 \mycitep{multeval}: jBLEU V0.1.1 (an exact reimplementation of NIST's mteval-v13.pl without tokenization); Translation Error Rate (TER) V0.8.0. 
+In tables with MultEval scores below, metric scores for all systems were generated using MultEval 0.5.1 \mycitep{multeval}: jBLEU V0.1.1 (an exact reimplementation of NIST's mteval-v13.pl without tokenization); Translation Error Rate (TER) V0.8.0. 
 The $p$-values are relative to the baseline and indicate whether a difference of this magnitude (between the baseline and the system on that line) is likely to be generated again by some random process (a randomized optimizer). 
 Metric scores are averages over three runs per system. 
 $s_{sel}$ indicates the variance due to test set selection and has nothing to do with optimizer instability.\footnote{
     This paragraph and the tables with MultEval results are adopted from \LaTeX~code automatically generated by MultEval.
 }
 
+
+
+
 % \pagebreak % soooooo ugly
 
-% well, looks like I'm stuck doing discussion THEN table... (tab:multeval_tst2010 won't fit on the same page if before)
-Let's discuss Table~\ref{tab:multeval_tst2010}.
-Train2015 adds more data, but it's noisy and does not produce a statistically significant change in scores.
-On the other hand, post-edited {\small \tt train2015} produces a significant improvement in scores.
-(Quality matters - not just quantity, which is something we've been saying. Post-editing makes a significant difference.)
-% TODO: post-editing DOES provide performance boost. But it's labor intensive, and a SMALL boost...
-Unlike Table~\ref{tab:tst2010}, post-editing the MERT tuning set {\small \tt dev2010} actually makes things uniformly worse.
-The effect of this kind of noise in tuning corpora appears to be ill-defined.
-Input-domain noise can play a role similar to regularization in machine learning - get a reference from denoising autoencoders?
-We do indeed find that making the tuning set translations more literal also tends to decrease performance, but this could be because of premature stopping.
-Also, the amount of noise added is generally some small amount of Gaussian noise, and it is unclear
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 \begin{table}[htb]
 \begin{center}
@@ -448,17 +458,17 @@ Also, the amount of noise added is generally some small amount of Gaussian noise
 \multirow{5}{*}{BLEU $\uparrow$}
 & Official IWSLT14 baseline  & 11.2 & -   & -   & - \\
 & Our baseline & 11.4 & 0.3 & 0.2 & - \\
-& Trained on 2015 corpus ({\small \tt train2015}) & 11.5 & 0.3 & 0.3 & 0.30 \\
-& Post-edited: {\small \tt train2015} & \textbf{11.7} & 0.3 & 0.1 & 0.01 \\
-& Post-edited: {\small \tt dev2010} & 10.8 & 0.3 & 0.3 & 0.00 \\
+& Tuning: {\small \tt dev2010} (post-edited) & 10.8 & 0.3 & 0.3 & 0.00 \\
+& Training: 2015 corpus & 11.5 & 0.3 & 0.3 & 0.30 \\
+& Training: 2015 corpus (post-edited) & \textbf{11.7} & 0.3 & 0.1 & 0.01 \\
 %& Post-edited: {\small \tt train2015} and {\small \tt dev2010} & 11.0 & 0.3 & 0.2 & 0.00 \\
 \hline
 \multirow{5}{*}{TER $\downarrow$}
 & Official IWSLT14 baseline & 77.0 & -   & -   & - \\
 & Our baseline & 76.2 & 0.8 & 0.3 & - \\
-& Trained on {\small \tt train2015} & 76.4 & 0.8 & 0.5 & 0.26 \\
-& Post-edited: {\small \tt train2015} & \textbf{75.6} & 0.8 & 0.0 & 0.00 \\
-& Post-edited: {\small \tt dev2010} & 83.4 & 1.0 & 0.5 & 0.00 \\
+& Tuning: {\small \tt dev2010} (post-edited) & 83.4 & 1.0 & 0.5 & 0.00 \\
+& Training: 2015 corpus & 76.4 & 0.8 & 0.5 & 0.26 \\
+& Training: 2015 corpus (post-edited) & \textbf{75.6} & 0.8 & 0.0 & 0.00 \\
 %& system 4 & 82.7 & 1.0 & 0.8 & 0.00 \\
 \hline
 \end{tabular}
@@ -467,7 +477,7 @@ Also, the amount of noise added is generally some small amount of Gaussian noise
 
 \caption{\label{tab:multeval_tst2010} % \caption[LoF entry] would allow multi-paragraph caption... \hspace{0.6 cm} to indent
 %\-\caption[LoF entry]{ \label{tab:multeval_tst2010}
-MultEval results for systems evaluated on the unmodified {\small \tt tst2010} data set.
+MultEval results for systems evaluated on the unmodified {\small \tt tst2010} data set, trained on the 2014 training corpus, and tuned on {\small \tt dev2010} unless indicated otherwise.
 Official baseline results (with IRSTLM instead of KenLM as discussed previously) are also given for comparison.
 %UHHHH do I have anything else to say here in the immediate caption? 
 %I'll interpret results in the text body.
@@ -475,20 +485,25 @@ Official baseline results (with IRSTLM instead of KenLM as discussed previously)
 } % caption
 \end{table}
 
+Table~\ref{tab:multeval_tst2010} gives results evaluated on the original {\small \tt tst2010} data set.
+The IWSLT 2015 training corpus {\small \tt train2015} did not produce a significant improvement over the IWSLT 2014 baseline.
+Although {\small \tt train2015} includes an additional \textasciitilde 30,000 lines of in-domain data, increasing the corpus size by \textasciitilde 17\%, it is also plagued by the new problem of missing fragments and resulting misaligned sentences mentioned in Section~\ref{subsec:post_edited}.
+Accordingly, post-editing \textasciitilde 7500 lines (3.6\%) of {\small \tt train2015} produced a small but significant improvement in scores,\footnote{
+This might look like a proportional improvement in BLEU, but gains were found to come in discrete steps during the editing process. This is thought to be due to the non-parametric nature of SMT, with changes in scores only occurring when there are appreciable changes to the parts of the probability tables that are relevant to the test set.
+} demonstrating the importance of corpus quality, not just quantity.
+Finally, unlike Table~\ref{tab:tst2010}, post-editing the MERT tuning development set {\small \tt dev2010} surprisingly makes things strictly worse.
+The effect of corrective post-editing tuning corpora appears to be relatively unpredictable, guiding the MERT optimizer to different local optima with varying out-of-sample performance.
+Whereas input-domain noise can play a role similar to regularization in methods such as denoising autoencoders \mycitep{bengio:2008}, the effect of ``large-amplitude'' noise from mistranslated or misaligned parallel corpora is unclear, and it may warrant further investigation in other models.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+TODO: I am here. the rest of the stuff from here to ``Proposed Future Work'' is not finished yet. Just draft entries...
 
 
 % TODO: Adding train2015 + 
 % this is pointless to say, unless I also have unmodified train2015 + dev2010?
 
-\pagebreak
-Now we discuss Table~\ref{tab:multeval_tst2010-fixed}.
-Baseline's TER score changes by about 10\% relative to TAble~\ref{tab:multeval_tst2010}, but BLEU doesn't change as much.
-Apparently, BLEU is more robust to relatively minor changes?
-This time there is a statistically significant improvement in TER for train2015, but not for BLEU.
-Post-editing train2015 again leads to further improvement.
-More surprisingly, post-edited dev2010 gets slightly better BLEU at the expense of much worse TER; this is more like Table~\ref{tab:tst2010} than Table~\ref{tab:multeval_tst2010}.
-This is counter-intuitive, since you would think that removing sentences with duplicated segments from tst2010 would improve TER scores, not worsen them.
-This emphasizes the fact that tuning set noise can affect bottom-line performance in relatively unpredictable ways.
+
 
 % NOTE
 % +0.3 BLEU -0.6 TER from post-editing the entire training corpus, esp the new 2015 additions (~25000 lines)
@@ -502,34 +517,75 @@ This emphasizes the fact that tuning set noise can affect bottom-line performanc
 \hline
 \multirow{4}{*}{BLEU $\uparrow$}
 & Our baseline & 11.4 & 0.3 & 0.2 & - \\
-& Trained on {\small \tt train2015} & 11.4 & 0.3 & 0.2 & 0.44 \\
-& Post-edited: {\small \tt train2015} & 11.6 & 0.3 & 0.2 & 0.01 \\
-& Post-edited: {\small \tt dev2010} & \textbf{11.9} & 0.3 & 0.1 & 0.00 \\
+& Tuning: {\small \tt dev2010} (post-edited) & \textbf{11.9} & 0.3 & 0.1 & 0.00 \\
+& Training: 2015 corpus & 11.4 & 0.3 & 0.2 & 0.44 \\
+& Training: 2015 corpus (post-edited) & 11.6 & 0.3 & 0.2 & 0.01 \\
 %& Post-edited: {\small \tt train2015} and {\small \tt dev2010} & \textbf{12.2} & 0.3 & 0.1 & 0.00 \\
 \hline
 \multirow{4}{*}{TER $\downarrow$}
 & Our baseline & 70.6 & 0.4 & 0.5 & - \\
-& Trained on {\small \tt train2015} & 70.1 & 0.4 & 0.3 & 0.00 \\
-& Post-edited: {\small \tt train2015} & \textbf{69.7} & 0.4 & 0.2 & 0.00 \\
-& Post-edited: {\small \tt dev2010} & 75.1 & 0.5 & 0.3 & 0.00 \\
+& Tuning: {\small \tt dev2010} (post-edited) & 75.1 & 0.5 & 0.3 & 0.00 \\
+& Training: 2015 corpus & 70.1 & 0.4 & 0.3 & 0.00 \\
+& Training: 2015 corpus (post-edited) & \textbf{69.7} & 0.4 & 0.2 & 0.00 \\
+& + generated & & & &  \\
 %& Post-edited: {\small \tt train2015} and {\small \tt dev2010} & 74.7 & 0.5 & 0.2 & 0.00 \\
 \hline
 \end{tabular}
 %\end{footnotesize}
 \end{center}
 
-\caption{\label{tab:multeval_tst2010-fixed} % \caption[LoF entry] would allow multi-paragraph caption... \hspace{0.6 cm} to indent
+\caption{\label{tab:multeval_tst2010_fixed} % \caption[LoF entry] would allow multi-paragraph caption... \hspace{0.6 cm} to indent
 %\-\caption[LoF entry]{ \label{tab:multeval_tst2010}
-MultEval results for systems evaluated on the post-edited {\small \tt tst2010} data set.
+MultEval results obtained as described in Table~\ref{tab:multeval_tst2010}, but evaluated on the post-edited {\small \tt tst2010} data set.
 } % caption
 \end{table}
+
+%\pagebreak
+Now we discuss Table~\ref{tab:multeval_tst2010_fixed}, for which we now as a test set the previously post-edited tst2010.
+Unlike the tuning set, post-editing the test set is expected to have a more predictable effect.
+Namely, correcting lines in the test set as described in Section~\ref{subsec:case_study} is expected to improve scores compared with Table~\ref{tab:multeval_tst2010}, as it should generally be easier for the MT system to reproduce lines that have not been grossly mistranslated.
+This does indeed seem to be the case, with a more pronounced effect for TER scores.% with most runs except for the uncorrected 2015 training corpus
+
+% no, this was if I HAND corrected dev set translations to be more literal
+%\footnote{This is different from 
+%which in our experiments seemed to lead to worse results, due to premature termination of optimization (not shown).
+%}
+
+%Baseline's TER score changes by about 10\% relative to Table~\ref{tab:multeval_tst2010}, but BLEU doesn't change as much.
+This time there is a statistically significant improvement for train2015, but only in the TER score and not for BLEU.
+Apparently, BLEU scores are more robust than TER with respect to changes in training, tuning, and test corpora.
+Post-editing train2015 again leads to further improvement in both metrics.
+
+Unlike Table~\ref{tab:multeval_tst2010}, post-edited dev2010 no longer makes everything uniformly worse. 
+Instead, and as in Table~\ref{tab:tst2010}, post-editing of the tuning set obtains slightly better BLEU at the expense of much worse TER. 
+This again emphasizes the fact that tuning set noise can affect bottom-line performance in relatively unpredictable ways.
+
+Table~\ref{tab:multeval_tst2010_fixed} also has some initial results from the ``example-based'' mode of our generator.
+[Should I add an example of the meta-templates, to show how easy they are to write?]
+These examples focus on quality instead of quantity and so there aren't many of them.
+Started by looking for non-compositional sentences in poorly-scoring training pairs.
+Alternative translations to some liberal (but not incorrect) translations were also included.
+This was only possible after post-editing to clear out the noise.
+They were simply concatenated to the end of the training corpus.
+The results almost certainly suck.
+To better direct future efforts, we perform some data snooping.
+We are looking for at least a partial answer to the question, what makes a corpus in-domain?
+
+Maybe we just to generate more data at scale. 
+But should we scale up lexical data or syntactic data? 
+To address this question, we resort to data snooping.
 
 
 \subsection{Data Snooping}
 % Data Snooping - dedicate this to its own section, to make clear that these are not ``REAL'' results
-we perform snooping on a dedicated snooping set (as if that makes it right...)
+\textbf{Warning: This section is dedicated to ``data snooping runs'' that train on the test set in one way or another.}
+The scores given here must not considered indicative of actual out-of-sample system performance .
+The reason for the snooping is to try to isolate the most effective characteristics of in-domain data, whose power was seen in Section~\ref{sec:experiments}.
+It is hoped that these characteristics can guide future development of our generator from Section~\ref{sec:generator}.
 
-uhhh there's not enough room for a table and discussion, is there? i guess i'd have to pad with some philosophical discussion about snooping
+The snooping is performed on {\small \tt tst2010}, to keep {\small \tt tst2014} relatively pristine for future work.
+Since they were so much smaller (\textasciitilde 1500 lines vs. \textasciitilde 180000 lines), snooping data sets were simply concatenated to the end of the IWSLT 2014 training corpus instead of using {\small \tt tmcombine}, with the rationale being that unlike our large, ``rule-based'' generated corpora from Section~\ref{sec:experiments}, these snooping additions should only perturb the translation tables slightly.
+
 
 
 \begin{table}[htb]
@@ -537,38 +593,58 @@ uhhh there's not enough room for a table and discussion, is there? i guess i'd h
 %\begin{footnotesize}
 \begin{tabular}{|l|l|l|l|l|l|}
 \hline
-\bf Metric & \bf System & \bf Avg & \bf $\overline{s}_{\text{sel}}$ & \bf $s_{\text{Test}}$ & \bf $p$-value \\
+\bf Metric & \bf Snooping Type & \bf Avg & \bf $\overline{s}_{\text{sel}}$ & \bf $s_{\text{Test}}$ & \bf $p$-value \\
 \hline
-\multirow{3}{*}{BLEU $\uparrow$}
-& baseline & 11.4 & 0.3 & 0.2 & - \\
-& system 1 & 36.8 & 0.6 & 0.0 & 0.00 \\
-& system 2 & 11.2 & 0.3 & 0.1 & 0.03 \\
+\multirow{4}{*}{BLEU $\uparrow$}
+& Our baseline & 11.4 & 0.3 & 0.2 & - \\
+& Full snooping & \textbf{36.8} & 0.6 & 0.0 & 0.00 \\
+& Syntactic snooping & 17.6 & 0.4 & 1.0 & 0.00 \\
+& Lexical snooping & 11.2 & 0.3 & 0.1 & 0.02 \\
 \hline
-\multirow{3}{*}{TER $\downarrow$}
-& baseline & 76.2 & 0.8 & 0.3 & - \\
-& system 1 & 48.3 & 0.7 & 0.0 & 0.00 \\
-& system 2 & 76.3 & 0.7 & 0.1 & 0.46 \\
+\multirow{4}{*}{TER $\downarrow$}
+& Our baseline & 76.2 & 0.8 & 0.3 & - \\
+& Full snooping & \textbf{48.3} & 0.7 & 0.0 & 0.00 \\
+& Syntactic snooping & 69.8 & 0.7 & 1.3 & 0.00 \\
+& Lexical snooping & 76.3 & 0.7 & 0.1 & 0.48 \\
 \hline
 \end{tabular}
 %\end{footnotesize}
 \end{center}
 
-\caption{\label{tab:multeval_tst2010-fixed} % \caption[LoF entry] would allow multi-paragraph caption... \hspace{0.6 cm} to indent
+\caption{ \label{tab:snooping} % \caption[LoF entry] would allow multi-paragraph caption... \hspace{0.6 cm} to indent
 %\-\caption[LoF entry]{ \label{tab:multeval_tst2010}
-MultEval results for systems evaluated on the post-edited {\small \tt tst2010} data set.
-System 1: trained on the concatenation of train14 and tst2010. SNOOPING!
-System 2: snooped out a bunch of mistranslated or OOV words from baseline translation and generated sentences with those words using the generator (remember that thing?)
+Data snooping results for systems trained on information from the {\small \tt tst2010} data set concatenated to the end of the IWSLT 2014 training corpus and also evaluated with MultEval on {\small \tt tst2010}.
+The different types of snooping are defined in the text.
 } % caption
 \end{table}
 
-The rationale for not bothering with tmcombine was that the additional data was very small in comparison.
-Shouldn't skew the tables that much or whatever.
-Yet there is still the ``unreasonable effectiveness of data'' or whatever - but really it's just overfitting...
+For full snooping, the corpus was concatenated directly with {\small \tt tst2010}. 
+This establishes an ``upper bound'' of sorts of how much performance boost you could get by simply adding more data.
+Can think of this as the limit of infinite data (with in-domain distribution)?
+It's also a measure of the inherent limitation (bias?) of the model being used.
+Even snooped data is only on-par with out-of-sample Spanish-English performance, illustrating the difficulty of the task.
 
-Snooping data set establishes an ``upper bound'' of sorts of how much performance boost you could get by simply adding more data.
-It's a measure of the inherent limitation (bias?) of the model being used.
-Generated data doesn't make a dent, and in fact makes things slightly worse (although TER is within error bars).
-So nonsense sentences of OOV words does NOT help - or even if it does, the nonsense-noise drowns it out
+For syntactic snooping, before concatenation, rare tokens in {\small \tt tst2010} were replaced by their part of speech (POS) from the Stanford POS tagger \mycitep{postagger:2003}. 
+ Non-rare tokens were arbitrarily defined for each language as the most common 80\% in the IWSLT 2014 corpus: 670 tokens for English, 1406 tokens for Chinese, tokenized using the latest version of the Stanford Segmenter \mycitep{segmenter:2005,segmenter:2008}.
+You get a significant increase in performance, even though this essentially performs zero snooping on out-of-vocabulary (OOV) words that the baseline system failed to translate.
+
+For lexical snooping, we selected \textasciitilde 100 mistranslated or OOV words from the baseline translation and used the rule-based mode of our generator to generate \textasciitilde 30000 sentences with OOV words for concatenation.
+This snooping-generated data doesn't make a dent, and in fact makes things slightly worse (although TER is within error bars).
+So nonsensical sentences of OOV words does NOT help - or even if it does, the nonsense-noise drowns it out.
+
+Taken together, these snooping results reinforce the sentiment from the end of Section~\ref{sec:experiments} that future scaled-up work on our generator should focus on the ``example-based'' approach.
+Thus  you should focus on the example-based half.
+
+
+
+
+
+%%% TODO: see OneNote
+
+% 
+
+
+
 
 } % amtaonly
 
@@ -609,6 +685,11 @@ While current paid approaches like Amazon's Mechanical Turk are already a viable
 This could then serve as a platform from which to harvest supervised natural language data from its natural source. 
 Compared with current paid approaches, the cost per datum could be significantly reduced or perhaps even become negative (a profitable app), although the value of the harvested data itself might be worth subsidizing.
 We consider the construction of such a potentially game-changing source of supervised NLP data to be an open challenge to the NLP community in general.
+
+
+% what the heck, let's do this - as it makes it transparent that I'm not over reference length either
+% but ugh, huge blank space looks silly
+%\pagebreak
 
 % TODO: I suspect MT requirements are very similar to that of, say, AP Latin - where the best translations are the most LITERAL, not necessarily the most fluent. 
 % That also means that you might have to create TWO parallel corpora per language pair? To translate idioms in the source as compositional in the target...
