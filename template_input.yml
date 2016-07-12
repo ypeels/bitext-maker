@@ -31,19 +31,19 @@
   en: They believe AIDS|NN|@N|#disease should not become a stigma .  #They bring out the issues|NNS of stigma|NN .
 98021: # score = 144.4
   zh: 好了 ， 台下|NN 的 年轻 人 还 不 需 去 想 退休|NN|@N 这个 问题 。  # originally 退休|VV
-  en: So forget|VB about retirement|NN|@N if you 're young .  # originally retirements|NNS
+  en: So forget|VB about retirement|NN|@N if you 're young .  # originally retirements|NNS. TODO: non-divisible?
 113270: # score = 144.4
   zh: 如今 ， " 人民|NN|@N " 对 我们 来说 是 一 种 资本|NN
-  en: Today we talk of people|NN|@N as an asset|NN .
+  en: Today we talk of the people|NN|@N|#object as an asset|NN . # originally just "people"
 116507: # score = 200.0
-  zh: 但 大自然|NN|@N 的 法则|NN 不 是 这样的|AD
-  en: Nature|NN|@N works very differently|RB .
+  zh: 但 大自然|NR|@N 的 法则|NN 不 是 这样的|AD   # originally NN in both languages
+  en: Nature|NNP|@N works very differently|RB .
 134011: # score = 145.5
   zh: 我们 无须|AD 因为 牛|NN|@N 而 慌张|VA  # originally 大量 的 空虚|VA
-  en: Let 's not be freaked|VBN out by the cow|NN|@N . #our bountiful|JJ nothingness|NN .
+  en: Let 's not be freaked|VBN out by the cow|NN|@N|#object . #our bountiful|JJ nothingness|NN .
 177241: # score = 128.6 - the first sentence at which I amplified more than one word!
   zh: 压力|NN|@N 使得 万|CD 物|NN 再次 变得 完整|VA|@J
-  en: Pressure|NN|@N can make everything whole|JJ|@J again .
+  en: The pressure|NN|@N|#object can make everything whole|JJ|@J again .
 183295: # score = 183.3
   zh: 整个 社会|NN|@N 支离破碎|VV ，
   en: The whole society|NN|@N|#object had shattered into pieces . #It had shattered|VBN into pieces|NNS .
@@ -51,6 +51,8 @@
   zh: 我 所 说 的 颜色|NN|@N 变化 是 什么 意思 呢 ？
   en: So what do I mean by color|NN|@N changes ?
   
+# n.b. a lot of the en sentences generated this way are NOT high-quality, because they lack articles...
+  # maybe I should make them NPs and disable modification? or make modification probability REALLY low?
   
   
 # TODO: one-year-olds, two-year-olds, etc. as nouns... this would go on the lexical side? is it worth it?
@@ -175,6 +177,9 @@
 12913: # score = 166.7
   zh: 这 算|VV 是 个 还 不错 的 消息 。
   en: This is not bad news . # Not bad .
+14423: # score = -100
+  zh: 三思而后行
+  en: Think twice before you do it . #have that bottle of wine .
 15775: # score = 214.3
   zh: 每 天 都 会 有 发现 新型|JJ 的 细胞 。
   en: Every day , there are new cells being discovered . #New ones are being discovered|VBN everyday|NN .
@@ -333,3 +338,306 @@
   zh: 有 孩子 的 夫妇|NN 的 压力 要 高于|VV 那些 没有 孩子 的 夫妇|NN
   en: Stress for couples who have children is higher than for couples who don 't have children . #Parents experience more stress|NN than non-parents|NNS .
 
+
+  
+  
+  
+
+  
+  
+# UNAMPLIFIED: long sentences that were previously omitted from training by clean-corpus.perl, now split into sentences <= 100 tokens long.
+1206a: # score = -100
+  zh: 你 翻阅 研究 资料 —— 这 方面 的 研究 已经 很多 —— 关于 学龄前 教育 计划 如何 对 参加 过 学龄前 教育 的 人 的 教育 程度 ， 薪水 和 技能 的 影响 ， 我们 把 这些 影响 综合 起来 ， 估算 一下 接受 学前 教育 的 人 有 多少 大 的 比例 会 留 在 当地 的 经济圈 中 ， 没有 搬走 再 考虑 到 通过 学龄前 教育 提高 的 劳动 技能 促进 创造 了 多少 就业 机会 
+  en: You look at the research evidence -- that 's extensive -- on how much early childhood programs affect the educational attainment , wages and skills of former participants in preschool as adults , you take those known effects , you take how many of those folks will be expected to stick around the state or local economy and not move out , and you take research on how much skills drive job creation . 
+1206b:
+  zh: 你 就 会 得出 结论 ， 这 三 个 不同 方向 的 研究 结果 表明 在 儿童 早 教 计划 中 每 投入 一 美元 会 对 各州 居民 的 人均 收入 增加 2 美金 78 美分 所以 这 是 三 比 一 的 回报率  
+  en: You will conclude , from these three separate lines of research , that for every dollar invested in early childhood programs , the per capita earnings of state residents go up by two dollars and 78 cents , so that 's a three-to-one return .
+1301a:
+  zh: 我们 深入 到 教育界 ， 开展 了 一 个 叫做 " 玩具 交响乐 " 的 长期 项目 。 我们 为 小 朋友 制作 了 一 系列 特别 好玩 的 乐器 ， 期望 他们 会 喜欢 上 演奏 ， 并 愿意 在 这 方面 投入 时间 ， 进而 渴求 学习 乐理 知识 ， 以及 如何 演奏 、 创作 音乐 。 
+  en: We are very involved in education . We have a long-term project called Toy Symphony , where we make all kinds of instruments that are also addictive , but for little kids , so the kids will fall in love with making music , want to spend their time doing it , and then will demand to know how it works , how to make more , how to create . 
+1301b:
+  zh: 我们 制作 了 一 种 可以 捏 的 乐器 ， 比如说 这个 可以 测量 手指 间 电流 的 " 音乐 塑型 机 " 。 又 如 这个 用于 敲击 节奏 的 " 节拍 虫子 " ， 你 可以 用 它 来 收集 节奏 ， 然后 把 这个 信息 像 丢 烫 土豆 似地 传给 你 的 朋友 ， 他们 需要 模仿 你 ， 或者 对 你 的 动作 作出 反应 。 再 就 是 制作 一 种 叫做 " 超级 乐谱 " 的 软件 。 它 可以 让 大家 用 线条 和 色彩 来 绘制 出 复杂 的 音乐  
+  en: So , we make squeezy instruments , like these Music Shapers that measure the electricity in your fingers , Beatbugs that let you tap in rhythms -- they gather your rhythm , and like hot potato , you send your rhythm to your friends , who then have to imitate or respond to what your doing -- and a software package called Hyperscore , which lets anybody use lines and color to make quite sophisticated music . 
+1301c:
+  zh: 特别 容易 使用 。 一旦 上 了 手 ， 任何 曲风 的 音乐 ， 对 你 来说 都 是 手到擒来 。 最后 只要 摁下 按钮 ， 这个 软件 就 能 自动 转换 出 乐谱 ， 以便 让 音乐家 来 演奏 你 创作 的 乐章 。
+  en: Extremely easy to use , but once you use it , you can go quite deep -- music in any style . And then , by pressing a button , it turns into music notation so that live musicians can play your pieces .
+1629a:
+  zh: 知道 虽然 你 病了 ， 但 你 并不 脆弱 ， 它 是 一 个 问题 ， 不 是 一 个 身份 标签 ， 因为 当你 经历 过 你 过去 的 恐惧 和 嘲笑 别人 对 你 的 看法 和 耻辱 ， 你 就 可以 看到 抑郁症 真实 的 身份 ， 
+  en: And know that you 're sick , you 're not weak , and it 's an issue , not an identity , because when you get past the fear and the ridicule and the judgment and the stigma of others , you can see depression for what it really is . 
+1629b:
+  zh: 它 只是 生活 的 一 部分 ， 只是 生活 的 一 部分 ， 虽然 我 讨厌 ， 就 像 我 讨厌 的 一些 地方 ， 我 生活 的 某 一 部分 已经 被 抑郁症 拖垮 ， 但 在 很多 方面 上 我 是 非常 感激 的 。
+  en: That 's just a part of life , just a part of life , and as much as I hate , as much as I hate some of the places , some of the parts of my life depression has dragged me down to , in a lot of ways I 'm grateful for it .
+1631a:
+  zh: 我的 痛苦 ， 比 我 在 生活 的 十九 年 的 任何 事 都 能 给 我 看待 事情 的 角度
+  en: My pain , more than anything in 19 years on this planet , has given me perspective .
+1631b:
+  zh: 而 我 的 伤口 让 我 有 了 希望 有 希望 ， 有 信念 ， 对 我 自己 的 信念 对 其他 人 的 新年 ， 可以 更 好 的 信念 ， 我们 可以 改变 这 一 点 ， 我们 可以 把 它 说出 来说 出来 与 对抗 无知 ， 反击 不 容忍 ， 还有 一 件 比 什么 都 重要 的 是 ， 那就是 ， 学会 爱 自己 ， 学会 接受 我们 自己 ， 我们 不 是 别人 想要 我们 成为 的 那个 人 。
+  en: And my hurt , my hurt has forced me to have hope , have hope and to have faith , faith in myself , faith in others , faith that it can get better , that we can change this , that we can speak up and speak out and fight back against ignorance , fight back against intolerance , and more than anything , learn to love ourselves , learn to accept ourselves for who we are , the people we are , not the people the world wants us to be .
+1685a:
+  zh: 这 条 评论 真的 让我 很 触动 ， 因为 这 条 评论 来自于 这 是 一 个 在 伊朗 长大 的 每 天 上学 都 踩踏 着 以色列 国旗 进入 校园 的 小姑娘 的 留言 而 
+  en: This one is really moving for me because it 's the story of a girl who has been raised in Iran to walk on an Israeli flag to enter her school every morning .
+1685b:
+  zh: 现在 她 看 了 我们 张贴 的 海报 后 她 说 这 改变 了 她 的 看法 她 现在 喜欢 它 的 蓝色 和 它 的 六 角 星 她 喜欢 这 面 象征 着 以色列 的 旗帜 ， 她 还 希望 我们 能够 有 机会 见面 和 互访 这些 留言 是 在 我 贴出 第一 张 海报 几 天 之后 留 的
+  en: And now that she sees the posters that we 're sending , she starts -- she said that she changed her mind , and now she loves that blue , she loves that star , and she loves that flag , talking about the Israeli flag , and she wished that we 'd meet and come to visit one another , and just a few days after I posted the first poster .
+2546a:
+  zh: 从 小 男孩 起 ， 我们 学到 男人 应该 意志 坚强 ， 身体 强壮 ， 有 勇气 ， 有 支配权 -- 没有 痛苦 ， 没有 感情 ， 除了 愤怒 之外 -- 男人 什么 都 不 怕 -- 
+  en: Growing up as a boy , we were taught that men had to be tough , had to be strong , had to be courageous , dominating -- no pain , no emotions , with the exception of anger -- and definitely no fear . 
+2546b:
+  zh: 我们 学到 男人 全权 负责 ， 主管 一切 ， 而 女人 不是 ； 男人 是 领导 ， 女人 应该 只是 跟随 和 做 男性 吩咐 的 事 ； 男人 带有 优越性 ， 女人 是 低人一等 ； 男人 是 强大 的 ， 女人 弱小 ； 女人 价值 比较 小 -- 仅是 男人 的 财富 和 物品 ， 特别是 性猎物 。
+  en: We were taught that men are in charge , which means women are not ; that men lead , and you should just follow and do what we say ; that men are superior ; women are inferior ; that men are strong ; women are weak ; that women are of less value , property of men , and objects , particularly sexual objects .
+3729a:
+  zh: 而 假如 你 越过 这 种 国家 层次 ， 往下 看 微观 ， 公司 层次 ， 现在 越来越 多 的 公司 意识 到 他们 有 必要 让 员工 或者 减少 工作 时间 ， 或者 离开 工作 在 午餐 时间 休息 一下 ， 或者 坐在 一 个 安静 的 房间 里  
+  en: And if you go beyond sort of the country level , down at the micro-company level , more and more companies now are realizing that they need to allow their staff either to work fewer hours or just to unplug -- to take a lunch break , or to go sit in a quiet room .
+3729b:
+  zh: 现在 越来越 多 的 公司 意识 到 他们 有 必要 让 员工 关掉 他们 的 黑莓 手机 —— 说 你 呢 ， 后面 那个 手机 ， 这些 在 工作日 或 周末 的 休息 让 他们 有 时间 去 充电 有 时间 让 大脑 进入 那 种 创造性 思维 模式 。
+  en: More and more companies now are realizing that they need to allow their staff to switch off their Blackberrys and laptops -- you at the back -- mobile phones , during the work day or on the weekend , so that they have time to recharge and for the brain to slide into that kind of creative mode of thought .
+4523a:
+  zh: 但 事实上 它 是 一 个 真实 的 世界 确实 有 因特网 的 真实 世界 也就是 我 花费 了 过去 两 年 时间 到访 的 因特网 的 所在地 
+  en: But , in fact , it is . There is a real world of the Internet out there , and that 's what I spent about two years visiting , these places of the Internet . 
+4523b:
+  zh: 我 在 大型 的 数据 中心 它们 使用 和 所在 城市 一样 多 的 能源 我 参观 了 类似 这样 的 地方 ， 比如 纽约 的 哈德逊 街 60 号 它 是 一 栋 大楼 名单 中 仅 有的 十几 座 中 的 其中 一 座 那里 是 大量 的 网络 连接 彼此 的 地方 —— 比 别处 的 连接 更多
+  en: I was in large data centers that use as much power as the cities in which they sit , and I visited places like this , 60 Hudson Street in New York , which is one of the buildings in the world , one of a very short list of buildings , about a dozen buildings , where more networks of the Internet connect to each other than anywhere else .
+4534a:
+  zh: 它们 在 大海 里 延伸 它们 有 三 或 五 或 八千 英里 那么 长 如果说 材料 科学 和 计算机 技术 是 无比 复杂 的 当中 的 基本 物理 过程 却 是 惊人 的 简单 
+  en: They stretch across the ocean . They 're three or five or eight thousand miles in length , and if the material science and the computational technology is incredibly complicated , the basic physical process is shockingly simple . 
+4534b:
+  zh: 灯光 从 海 的 一边 进去 再 从 另 一 边 出来 通常 是 从 一 座 叫作 坐落 站 的 大楼 出来 常 在 临近 海边 不 显眼 的 地方 妥善 保存 起来 在 海床 设有 增强 器 它们 看起来 像 蓝鳍吞 拿 每 50 英里 它们 会 增强 信号 
+  en: Light goes in on one end of the ocean and comes out on the other , and it usually comes from a building called a landing station that 's often tucked away inconspicuously in a little seaside neighborhood , and there are amplifiers that sit on the ocean floor that look kind of like bluefin tuna , and every 50 miles they amplify the signal .
+4534c:
+  zh: 由于 传播 速度 无比 迅速 基本 单位 是 每 秒 10千兆 比特 光波 也许 是 你 连接 速度 的 一千 倍 或能 承载 1万 个 视频流 
+  en: And since the rate of transmission is incredibly fast , the basic unit is a 10-gigabit-per-second wavelength of light , maybe a thousand times your own connection , or capable of carrying 10,000 video streams .
+4534d:
+  zh: 但 不止 那样 你 不 会 只 把 一 个 光波 放在 一 条 光纤 里 你 也许 会 在 一 根 光纤 里 放 50 或 60 或 70 个 不同 波长 或 颜色 的 光波 然后 你 也许 会 在 一 个 电缆 里 放 8 个 光纤 四 个 又 分散 到 不同 方向
+  en: But not only that , but you 'll put not just one wavelength of light through one of the fibers , but you 'll put maybe 50 or 60 or 70 different wavelengths or colors of light through a single fiber , and then you 'll have maybe eight fibers in a cable , four going in each direction .
+5401a:
+  zh: 所以 ， 这 次 我们 将 竭尽全力 重现 500 人 大厅 重修 之前 的 本来 面目 ， 不仅 如此 我们 还要 重现 传说 中 建于 1494年 的 萨拉格兰德 墙
+  en: Well , this time , we focused on trying to reconstruct the way the Hall of the 500 was before the remodeling , and the so-called Sala Grande , which was built in 1494.
+5401b:
+  zh: 为了 重现 当年 的 那些 门窗 ， 为了 达到 这 一 目的 ， 我们 首先 制作 了 一些 3D 模型 ， 随后 依靠 热 成像 技术 ， 我们 找到 了 一些 隐藏 起来 的 的 窗户 。 这些 窗户 都 是 最初 存在 于萨 拉格兰德 墙 上 的 。 
+  en: To find out the original doors , windows , in order to do that , we first created a 3D model , and then , with thermography , we went on to discover hidden windows . These are the original windows of the hall of the Sala Grande . 
+5401c:
+  zh: 不仅 如此 我们 还 测出 了 最初 天花板 的 高度 ， 经过 我们 的 不懈 努力 ， 最终 ， 我们 找出 了 瓦萨 里 改造 之前 500 人 大厅 的 原始 规划 与 布局 并且 我们 成功 的 重现 了 这 一 切 包括 一 个 非常 重要 的 扶梯 此 扶梯 是 当时 为了 准确 安放 " " 安吉亚 里 之战 " 而 准备 的 众多 工具 之一 。
+  en: We also found out about the height of the ceiling , and we managed to reconstruct , therefore , all the layout of this original hall the way it was before there came Vasari , and restructured the whole thing , including a staircase that was very important in order to precisely place " The Battle of Anghiari " on a specific area of one of the two walls .
+5410a:
+  zh: 但是 我们 遇到 各 种 刁难 ， 或者说 被 限制 因为 一些 根本 不 值得 解释 的 原因 虽然 我们 有 很多 其他 选择 ， 却 只 能 使用 内镜 检查 技术 通过 一 个 4 毫米 镜头 来 窥视 ， 我们 最终 还是 成功 的 证明 并且 发现 一些 彩色 的 碎片 包括 淡红色 碎片 ， 黑色 碎片 一些 米黄色 碎片 随后 也 被 发现 我们 立刻 对 这些 碎片 展开 了 更多 复杂 的 检验 包括 射线 荧光 光谱 ， X 光射线 衍射 ， 
+  en: Well , we were confined though , limited , I should rather say , for several reasons that it 's not worth explaining , to endoscopy only , of the many other options we had , and with a 4mm camera attached to it , we were successful in documenting and taking some fragments of what it turns out to be a reddish color , black color , and there is some beige fragments that later on we ran a much more sophisticated exams , XRF , X-ray diffraction .
+5410b:
+  zh: 最终 的 结果 对于 我们 的 推测 非常 有利 至此 ， 我们 认为 这个 现象 指出 我们 确实 找到 了 一些 颜料 ， 而且 我们 能 肯定 没有 其他 的 艺术家 曾经 在 这 张 墙上 作画 直 到 大约 六十 年 后 瓦萨 里来 到 这里 ， 所以 ， 这些 颜料 已经 被 确定 跟 壁画 有 密切 的 联系 很 有 可能 就是 达芬奇 那幅 。
+  en: And the results are very positive so far . It seems to indicate that indeed we have found some pigments , and since we know for sure that no other artist has painted on that wall before Vasari came in about 60 years later , well , those pigments are therefore firmly related to mural painting and most likely to Leonardo .  
+5419a:
+  zh: 同样的 ， 真实性 。 稍微 思考 下 如果 有朝一日 科学 可以 进入 艺术品 真伪 的 鉴定 领域 。 那 将 是 一 场 文化 的 革命 ， 即使 退一步讲 ， 我 认为 ， 也 是 艺术品 市场 的 革命 ， 
+  en: Well , also , authenticity . Just think for a moment if science really could move in the field of authenticity of works of art . There would be a cultural revolution to say the least , but also , I would say , a market revolution , let me add . 
+5419b:
+  zh: 让 我 补充 下 这个 问题 ， 做 一下 这个 实验 奥托·玛苏斯 的 名画 " 静止 的 生命 " ， 它 保存 在 碧提宫 画廊 ， 刚刚 经过 红外线 扫描 ， 对于 艺术 史学家 来说 很 幸运 ， 它 刚 被 确认 为 真迹 因为 有 奥托 玛苏斯 的 签名 在 上面 。 检测 甚至 告诉 我们 画 是 何时 何地 所做 。
+  en: 'Take this example : Otto Marseus , nice painting , which is " Still Life " at the Pitti Gallery , and just have an infrared camera peering through , and luckily for art historians , it just was confirmed that there is a signature of Otto Marseus . It even says when it was made and also the location .'
+5467a:
+  zh: 【 雨 … … 】 【 影 水 之 眼 】 【 井水 之 眼 】 【 梦 水 之 眼 。 】 【 蓝色 的 太阳 ， 绿色 的 旋风 ， 】 【 鸟喙 轻轻 地 叩开 】 【 石榴 星辰 。 】 【 但是 ， 告诉 我 ， 烧焦 的 地球 啊 ， 难道 没有 水 吗 ？ 】 【 只有 鲜血 ， 只有 尘土 ， 】 【 只 有 荆棘 上 赤裸 的 脚印 ？ 】 【 雨 醒 了 …… 】 
+  en: "[ The rain ... ] [ Eyes of shadow-water ] [ eyes of well-water ] [ eyes of dream-water . ] [ Blue suns , green whirlwinds , ] [ birdbeaks of light pecking open ] [ pomegranate stars . ] [ But tell me , burnt earth , is there no water ? ] [ Only blood , only dust , ] [ only naked footsteps on the thorns ? ] [ The rain awakens ... ]" 
+5467b:
+  zh: 【 我们 必须 睁着 眼 睡去 ， 】 【 我们 必须 用 双 手 追 梦 ， 】 【 我们 必须 梦 着 河流 的 梦 ， 追寻 前行 的 路 ， 】 【 我们 必须 梦 着 太阳 的 梦 ， 梦想 着 她 的 世界 。 】 【 我们 必须 高声 地 梦想 ， 】 【 我们 必须 歌唱 ， 直 到 歌曲 生出根 、 】 【 干 、 枝 、 鸟 、 星 。 】 
+  en: "[ We must sleep with open eyes , ] [ we must dream with our hands , ] [ we must dream the dreams of a river seeking its course , ] [ of the sun dreaming its worlds . ] [ We must dream aloud , ] [ we must sing till the song puts forth roots , ] [ trunk , branches , birds , stars . ]" 
+5467c:
+  zh: 【 我们 必须 找回 遗失 的 字眼 ， 】 【 并且 记住 鲜血 、 】 【 浪潮、 地球 和 尸体 的 话语 ， 】 【 我们 必须 回到 分离 的 原 点 … … 】 【 《 暴雨 》 奥克塔维奥·帕斯 】 【 英译 ： 莱赛德·肯普 ， 改编 ： 埃里克·惠特克 】 埃里克·惠特 克 ： 贝斯 ， 安娜 贝勒 ， 你们 在 哪儿 ？ 雅各布 。
+  en: '[ We must find the lost word , ] [ and remember what the blood , ] [ the tides , the earth , and the body say , ] [ and return to the point of departure ... ] [ " Cloudburst " Octavio Paz ] [ translation by Lysander Kemp , adapted by Eric Whitacre ] Eric Whitacre : Beth . Annabelle , where are you ? Jacob .'
+5654a:
+  zh: 但 更 重要 的 是 ， 如果说 我 要 弄清楚 哪些 夫妇 有性 火花 ， 什么 东西方 维系 着 性爱 , 我 必须 得 回顾 一下 性爱 的 最 原始 的 定义 , 这 一 最 神秘 的 定义 ， 我 经历 过 的 以 一 种 分岐 ， 通过 创伤 来 看这 就 是 另一面 
+  en: But more importantly , for me to begin to understand who are the couples who have an erotic spark , what sustains desire , I had to go back to the original definition of eroticism , the mystical definition , and I went through it through a bifurcation by looking actually at trauma , which is the other side . 
+5654b:
+  zh: 我 来看看 看看 我 成长 的 社区 那 是 一 个 在 比利时 的 社区 ， 所有 人 都 是 大 屠杀 的 幸存者 在 这个 社区 里 ， 有 两 类 人 ： 一 类 是 没有 死 过 的 ， 另 一 类 是 死后 重生 的
+  en: "I looked at it looking at the community that I had grown up in , which was a community in Belgium , all Holocaust survivors , and in my community there were two groups : those who didn 't die , and those who came back to life ."
+6246a:
+  zh: "TH ： 能够 来到 TEDwomen 对 我 是 很 兴奋 和 合适 的 一 件 事 ， 昨天 晚餐 时有 一 位 总结 的 很 好 ， 他 说 ： 转身 对 你 的 邻座 说 \" 当 革命 开始 时 ， 我们 挺 你 。 \""
+  en: "TH : One of this things that 's exciting and appropriate for me to be here at TEDWomen is that , well , I think it was summed up best last night at dinner when someone said , \" Turn to the man at your table and tell them , ' When the revolution starts , we 've got your back . ' \"" 
+6246b:
+  zh: 事实 是 ， 女士们 ， 在 这个 问题 上 我们 已经 支持 了 很久 。 从 Rachel Carson 的 《 安静 的 春天 》 开始 ， 到 Theo Colborn 的 《 失窃 的 未来 》 ， 和 桑德拉·斯坦 格雷伯  的 《 下游 生活 》 和 《 相信 》 。
+  en: The truth is , women , you 've had our back on this issue for a very long time , starting with Rachel Carson 's " Silent Spring " to Theo Colborn 's " Our Stolen Future " to Sandra Steingraber 's books " Living Downstream " and " Having Faith . "
+11004a:
+  zh: 全球性 的 道德观 可以 为 这些 机构 注入 公正 、 负责 的 理念 ， 使 其 起到 应有 的 作用 
+  en: That global ethic can infuse the fairness and responsibility that is necessary for these institutions to work . 
+11004b:
+  zh: 但 同时 我们 也 不 应 错失 我们 这 一 代 的 机会 ， 尤其是 当下 的 十 年 里 ， 协同 美国 的 奥巴马 总统 ， 还有 来自 全球 与 我们 同心协力 的 人民 ， 来 创建 保卫 环境 、 金融 、 安全 与 发展 的 全球 机构 。 这些 机构 理应 明白 我们 对 他人 的 责任感 ， 我们 想把 这个 世界 联系 起来 的 渴望感 ， 还有 我们 想要 解决 已 知 问题 的 需求 感 。
+  en: But we should not lose the chance in this generation , in this decade in particular , with President Obama in America , with other people working with us around the world , to create global institutions for the environment , and for finance , and for security and for development , that make sense of our responsibility to other peoples , our desire to bind the world together , and our need to tackle problems that everybody knows exist .
+12560a:
+  zh: 我 已经 测出 从 蜡制 模型 到 青铜 模型 之间 " 缩水 " 的 确切 值 再 把 它 放大 到 足够 做 一 个 三维 平版 模型 擦亮 之后 ， 我 可以 把 它 交给 铸模 的 人 然后 我 就 能 得到 青铜 模型 或 这
+  en: I had figured out the exact amount of shrinkage I achieved going from a wax master to a bronze master and blown this up big enough to make a 3D lithography master of this , which I will polish , then I will send to the mold maker and then I will have it done in bronze . 
+12560b:
+  zh: 或许 那些 拥有 原件 的 人 我 一直 在 试图 联系 他们 希望 他们 能 让 我 花上 几 分钟 看 一 看 其中 的 一 个 原件 ， 或者 拍 个 照 甚至 让 我 用手 执式 激光 扫描仪 来 扫描 一下 这个 小 仪器 刚好 能 放进 麦片 盒 里 我 发誓 ， 甚至 不用 碰到 他们 的 " 猎鹰 " 我 就 能 得到 完美 的 三维 扫 描图 。 
+  en: "Or : There are several people who own originals , and I have been attempting to contact them and reach them , hoping that they will let me spend a few minutes in the presence of one of the real birds , maybe to take a picture , or even to pull out the hand-held laser scanner that I happen to own that fits inside a cereal box , and could maybe , without even touching their bird , I swear , get a perfect 3D scan ."
+12560c:
+  zh: 我 甚至 想 签 文件 保证 我 绝 不 会 让 它 从 我 的 办公室 流出 ， 落入 别人 手里
+  en: And I 'm even willing to sign pages saying that I 'll never let anyone else have it , except for me in my office , I promise .
+14146a:
+  zh: 我 去 拜访 的 那 天 早晨 ， 埃莉诺 从 楼上 下来 ， 给 她 自己 倒 了 一 杯 咖啡 ， 坐在 了 摇椅 上 ， 她 就 坐 在 那里 ， 和蔼 的 和 她 每 一 个 孩子 说话 看 着 他们 一 个 接 一 个 的 下楼 
+  en: So on the morning I visited , Eleanor came downstairs , poured herself a cup of coffee , sat in a reclining chair , and she sat there , kind of amiably talking to each of her children as one after the other they came downstairs .
+14146b:
+  zh: 他们 检查 他们 的 清单 ， 给 他们 自己 做 早餐 ， 再 检查 他们 的 清单 ， 把 盘子 放在 洗碗 机内 ， 然后 又 检查 清单 ， 喂 宠物 或者 其他 他们 需要 负责 的 家务 ， 最后 一 次 检查 他们 的 清单 ， 整理 好 他们 的 东西 ， 然后 出门 去 坐 校车 了 。
+  en: They checked the list , made themselves breakfast , checked the list again , put the dishes in the dishwasher , rechecked the list , fed the pets or whatever chores they had , checked the list once more , gathered their belongings , and made their way to the bus .
+14541a:
+  zh: 甚至 是 真正 将 其 实现 的 人们 ， 波士顿 的 Bolt Beranek and Newman 公司 的 人们 ， 他们 将 这 最终 连接 全球 的 网络 的 结构 描绘 出来 ， 
+  en: Or even the people who actually pulled it off , the people at Bolt , Beranek and Newman in Boston , who just would sketch out these structures of what would eventually become a worldwide network , and 
+14541b:
+  zh: 他们 描绘 在 纸巾 背面 和 笔记本 上 ， 在 麻省 莱 克星 顿 的 Howard Johnson 旅店 的 晚餐 上 争论不休 ─ 离 我 学习 " 后 翼 弃兵 " 以及 听 Gladys Knight&the Pips 唱 " Midnight Train to Georgia " 的 地方 仅 两 英 里 之 遥 ── 在 我 爸爸 的 摇椅 上 。
+  en: They would sketch things on the back of napkins and on note papers and argue over dinner at Howard Johnson 's -- on Route 128 in Lexington , Massachusetts , just two miles from where I was studying the Queen 's Gambit Deferred and listening to Gladys Knight & the Pips singing " Midnight Train to Georgia , " while -- -- in my dad 's big easy chair , you know ?  
+14560a:
+  zh: 这 同样 可以 被 运用 在 音乐 、 电影 、 和 高雅 艺术 上 ， 它们 和 视觉 之间 并 无 关系 ， 或者说 ， 和 我们 这 次 的 " 来 于 自然 的 灵感 " 的 主题 毫 无 关系 ； 除了 那个 关于 青蛙 的 寓言 ： 青蛙 让 蝎子 坐在 它 背上 渡河 ， 条件 是 蝎子 承诺 不 蛰 它
+  en: And it probably applies just as much to music and to movies and to fine art , which has nothing whatsoever to do with vision at all , or for that matter , nothing to do with our conference theme of " Inspired by Nature " -- except to the extent of the fable of the frog who gives the ride to the scorpion on his back to get across the river because the scorpion promises not to sting him .
+14560b:
+  zh: 但 蝎子 最后 还是 蛰 了 它 ， 结果 它们 都 淹死 了 ， 在 临死 之前 ， 青蛙 问 为什么 ， 蝎子 说： " 因为 这 是 我 的 自然 天性 " ── 从 这个 意义 上 来说 ， 有 关系 。
+  en: But then the scorpion does sting him anyway and they both die , but not before the frog asks him why and the scorpion says , " Because it 's my nature " -- in that sense , yes .
+15405a:
+  zh: 但是 ， 除非 你 有 一 头 身上 装了 研究 反刍 消化 装置 的 牛 ， 肚子 一侧 开 了 个 大 洞 你 可以 把手 伸进 它 的 瘤胃 很 难 想象 从 嘴巴 经过 整个 消化道 上部 传输 微生物 是 最 好 的 传输 方式 
+  en: Although , unless you have a fistulated cow with a big hole in its side , and you can put your hand into its rumen , it 's hard to imagine that the delivery of microbes directly into the mouth and through the entire top of the digestive tract is the best delivery system .
+15405b:
+  zh: 所以 你们 可能 听说 过 有人 在 做 粪便 移植 ， 与其 将 少数 益生 菌种 从 口腔 传入 体内 他们 将 一 个 益生 菌群 来自 一 个 健康 的 捐赠者 的 整个 微生物 群落 从 消化道 的 另 一 端 送入 体内
+  en: So you may have heard in people they are now doing fecal transplants , where rather than delivering a couple of probiotic microbes through the mouth , they are delivering a community of probiotics , a community of microbes from a healthy donor , through the other end .
+16170a:
+  zh: 这 十分 重要 ， 在座 各位 都 是 成功 人士 我 相信 你们 都 拥有 美好 的 家庭 和 子孙 这 并不 足够 
+  en: And it is so important that all of you here today who are successful people , and I 'm sure have wonderful families and children and grandchildren , it 's not enough . 
+16170b:
+  zh: 你们 必须 伸出 援手 帮助 像 Cruz 先生 这样 的 孩子 他们 可以 有所 成就 ， 如果 你们 给予 他们 结构 如果 你们 伸出 援手 ， 如果 你们 提供 指导 如果 你们 资助 男女 童军 如果 你们 和 学校 系统 携手 合作 确保 它 成为 最 佳 的 学校 系统 不仅 是 你们 孩子 的 学校 还有 那些 位于 哈 林区 的 学校 不仅 是 位于 西区 市中心 的 蒙特梭利 学校
+  en: You 've got to reach out and back and find kids like Mr. Cruz who can make it if you give them the structure , if you reach back and help , if you mentor , if you invest in boys and girls clubs , if you work with your school system , make sure it 's the best school system , and not just your kid 's school , but the school uptown in Harlem , not just downtown Montessori on the West Side .
+17121a:
+  zh: 我 鼓励 数学 教师 多多 应用 多媒体 ， 因为 它 把 真实 世界 以 高清晰度 的 图片 和 全色 彩图 像 带到 你 的 教室 ， 来 鼓励 学生 对 那个 场景 的 直觉 ， 来 问你 可能 问 的 最短 的 问题 ， 让 那些 更 细 ， 更 具体 的 问题 随着 交谈 显露 出来 ， 让 学生们 着手 解决 问题 ， 正如 爱因斯坦 所说 ， 总而言之 ， 就是 给予 更 少 的 帮助 ， 因为 教科书 在 以 非常 错误 的 方式 帮助 大家 。 
+  en: I encourage math teachers I talk to to use multimedia , because it brings the real world into your classroom in high resolution and full color ; to encourage student intuition for that level playing field ; to ask the shortest question you possibly can and let those more specific questions come out in conversation ; to let students build the problem , because Einstein said so ; and to finally , in total , just be less helpful , because the textbook is helping you in all the wrong ways .
+17121b:
+  zh: 它 在 免去 大家 对 耐心 问题 的 解决 和 数学 推理 的 责任 ， 更 没有 帮助 性 。
+  en: It 's buying you out of your obligation , for patient problem solving and math reasoning , to be less helpful .
+17140a:
+  zh: 我 可以 看到 世界 是 怎么 微笑 的 。 我 将 永远 快乐 。 如果 有 你 我 能使 灰色 天空 变蓝 。 我 将 忘却 过去 的 岁月 。 离开 我 所有 的 伙伴儿 ， 我 也 在所不惜 。 如果 有 你 ， 我 将 开始 我 崭新 的 生活 。 我 可以 攀登 雪山 。 渡过 宽阔 的 神秘 海洋 。 如果 有 你 相伴 ， 我 可以 穿越 火热 的 沙漠 。 
+  en: I could show the world how to smile , I could be glad all of the while . I could turn the gray skies to blue , if I had you . I could leave the old days behind , leave all my pals , I 'd never mind . I could start my life all anew , if I had you . I could climb the snow-capped mountains , sail the mighty ocean wide . I could cross the burning desert , if I had you by my side . 
+17140b:
+  zh: 亲爱 的 ， 我 会 成为 无冕 的 国王 ， 无论 尊贵 与 卑微 ， 无论 富有 与 贫困 。 如果 有 你 ， 我 还 有 何 是 事 不 成 呢 。 谢谢 ！ 非常 感谢 ！
+  en: I could be a king , dear , uncrowned , humble or poor , rich or renowned . There is nothing I couldn 't do , if I had you . Thank you . Well , thank you so much .
+17148a:
+  zh: 这 被 认为 是 现代 方式 。 但是 这 种 想法 却 和 硅谷 等 地 的 背后 秘密 有所 不同 ， 硅谷 有 不同 的 市场 开拓 机制 。 
+  en: It 's talked about in these modern ways , but the idea is that somehow , behind places like Silicon Valley , the secret have been different types of market-making mechanisms .
+17148b:
+  zh: 私人 动议 ， 不管 这个 动议 是否 属于 动态 风险 投资 范畴 ， 这些 创新型 公司 都 实际上 能够 得到 高风险 融资 。 被 我们 称为 " 羚羊 企业 " 的 这些 领军 公司 所 需要 的 融资 是 那些 传统 银行 所 害怕 接手 的 。 另外 ， 不同 类型 的 一些 颇 有 成效 的 商业化 政策 实际上 允许 这些 公司 把 他们 绝妙 的 发明 、 他们 的 产品 直接 推向 市场 ， 实际上 得以 安然 度过 被 称为 " 可怕 死亡谷 " 的 时期 。 其他 的 很多 公司 却 在 这个 时期 一败涂地 。
+  en: The private initiative , whether this be about a dynamic venture capital sector that 's actually able to provide that high-risk finance to these innovative companies , the gazelles as we often call them , which traditional banks are scared of , or different types of really successful commercialization policies which actually allow these companies to bring these great inventions , their products , to the market and actually get over this really scary Death Valley period in which many companies instead fail .
+17248a:
+  zh: 实际上 ， 如果 我们 有 一 个 更 广义 的 价值 生成 理论 ， 我们 可以 允许 政府 对 科技 投资 ， 以 期 回报 。 也许 下 一 轮 的 科技 创新 时 ， 我们 就 可以 这样 做 。 
+  en: If we can actually have a broader theory of value creation and allow us to actually admit what the state has been doing and reap something back , it might just be that in the next round .
+17248b:
+  zh: 我 希望 我们 期待 的 下 一 个 巨大 变革 会 真的 是 绿色 革命 。 那个 时期 的 经济 增长 ， 不仅 是 智能 的 、 创新 主导 的 、 不仅 是 绿色 的 ， 更 应该 是 包容 的 ， 这样 ， 像 在 硅谷 的 那些 公立 学校 就 可以 从 经济 增长 中直 接 受益 。 但是 他们 还 没有 受益 。
+  en: And I hope that we all hope that the next big revolution will in fact be green , that that period of growth will not only be smart , innovation-led , not only green , but also more inclusive , so that the public schools in places like Silicon Valley can actually also benefit from that growth , because they have not . 
+17425a:
+  zh: 他 的 名字 叫 Norman Borlaug 。 他 得到 了 诺贝尔 奖 。 还 获得 了 国会 荣誉 奖章 。 这 一 切 都 是 他 应得 的 。 因为 他 的 贡献 是 让 更 多 的 人 吃 饱 饭 。 对此 他 做出 的 贡献 比 任何 其他 人 都 大 。 他 把 生物学 理论 用于 育种 。 他 在 墨西哥 完成 这 项 研究 。 
+  en: This is a guy called Norman Borlaug . He won the Nobel Prize . He 's got the Congressional Medal of Honor . He deserves all of this stuff . And he deserves this stuff because he probably has fed more people than any other human being alive because he researched how to put biology behind seeds . He did this in Mexico . 
+17425b:
+  zh: 这 就 是 为什么 印度 和 中国 不再 有 那么 多 人 挨饿 。 Norman Borlaug 教 他们 如何 用 更 高效 的 方法 种植 粮食 作物 ， 掀起 一 场 绿色 革命 。 很多 人 对此 持 批评 的 态度 。 当然 ， 那 是 因为 ， 那些 人 没有 意识 到 ， 中国 和 印度 不仅 不再 挨饿 ， 并且 在 出口 粮食 。
+  en: The reason why India and China no longer have these massive famines is because Norman Borlaug taught them how to grow grains in a more efficient way and launched the Green Revolution . That is something that a lot of people have criticized . But of course , those are people who don 't realize that China and India , instead of having huge amounts of starving people , are exporting grains .
+17429a:
+  zh: 农业 发生 了 怎样 的 变化 ？ 如果 你 回头 看 一 个 世纪 以前 的 农业 ， 1900年 的 农业 跟 一千年 前 的 种植 方法 没有 很 大 的 区别 。 是的 ， 看起来 ， 犁的 样子 有些 不同 。 人们 用上 了 拖拉机 等 机械 而 不 是 骡子 ， 但是 农民们 知道 ， 这 仍 是 人在 操作 ， 他 还是 要 这么 做 ， 没什么 太 大 的 不同 。 
+  en: "What happened in agriculture ? Well , if you take agriculture over a century , agriculture in about 1900 would have been recognizable to somebody planting a thousand years earlier . Yeah , the plows look different . The machines were tractors or stuff instead of mules , but the farmer would have understood : this is what the guy 's doing , this is why he 's doing it , this is where he 's going ."
+17429b:
+  zh: 农业 真正 开始 改变 始自 从 使用 大规模 的 机械 和 化学 力量 转为 运用 生物学 。 并且 从此 生产力 大大 提高 了 。 自从 你 那么 做 以后 ， 产量 这样 的 变化 ：
+  en: What really started to change in agriculture is when you started moving from this brute force engineering and chemistry into biology , and that 's where you get your productivity increases . And as you do that stuff , here 's what happens to productivity .
+17435a:
+  zh: 整个 体系 中 具有 讽刺 意味 的 一 点 是 ， 我们 在 讨论 对 一 个 我们 所 不 了解 的 体系 要 做 点 什么 。 我们 甚至 都 不 知道 石油 到底 是 什么 。 我们 不 知道 石油 是 从 哪里 来 的 。 事实上 ， 这 至今 都 是 有 争议 的 ， 这 流动 着 的 黑色 物质 到底 是 什么 ， 是 从 哪里 来 的 。 
+  en: One of the ironies of this whole system is we 're discussing what to do about a system that we don 't understand . We don 't even know what oil is . We don 't know where oil comes from . I mean , literally , it 's still a source of debate what this black river of stuff is and where it comes from . 
+17435b:
+  zh: 最靠 谱 的 假说 和 猜测 ， 这 种 物质 来自于 这些 东西 。 这些 东西 吸收 阳光 ， 在 压力 的 作用 之下 腐烂 经过 了 上 百万 年 ， 变成 了 这 黑色 河流 。
+  en: The best assumption , and one of the best guesses in this stuff , is that this stuff comes out of this stuff , that these things absorb sunlight , rot under pressure for millions of years , and you get these black rivers .
+17453a:
+  zh: 在 你 考虑 生物 材料 时 ， 这个 人 ， 就是 他 完成 了 对 人类 基因组 测序 的 一部分 工作 ， 因为 他 的 工作 ， 基因 和 蛋白质 数据库 的 数据 量 倍增 ， 他 为此 走遍 了 全 世界 ， 他 也 在 考虑 你 将 如何 构建 这个 体系 。 还有 很多 高人 在 考虑 这个 问题 。 
+  en: And as you think of biomaterials , this guy -- who did part of the sequencing of the human genome , who just doubled the databases of genes and proteins known on earth by sailing around the world -- has been thinking about how you structure this . And there 's a series of smart people thinking about this . 
+17453b:
+  zh: 他们 走到 一起 成立 了 像 Synthetic Genomics 这样 的 公司 ， 还有 Cambria 、 Condon 等 公司 ， 这些 公司 都 在 试图 发现 ， 你 如何 能够 运用 生物学 原则 来 避免 使用 大规模 的 外力 ？
+  en: And they 've been putting together companies like Synthetic Genomics , like , a Cambria , like Codon , and what those companies are trying to do is to think of , how do you apply biological principles to avoid brute force ?
+17457a:
+  zh: 他 当时 在 霍普金斯 ， 他 是 如此 谦虚 的 一 个 人 ， 在 他 获奖 的 那 天 ， 他 的 母亲 问 他 说 ： " 我 不 知道 在 霍普金斯 还 有 另外 一 个 Ham Smith 。 你 知道 他 刚刚 获得 了 诺贝尔 奖么 ？ " 我 的 意思 是 ， 这 就 是 母亲 。 不过 ， 他 本人 也 正 是 这样 的 。 
+  en: He was at Hopkins when he did this , and he 's such a modest guy that the day he won , his mother called him and said , " I didn 't realize there was another Ham Smith at Hopkins . Do you know he just won the Nobel ? " I mean , that was Mom , but anyway , this guy is just a class act . 
+17457b:
+  zh: 你 会 发现 他 每 天 都 在 工作台 那里 ， 在 用 吸液 管 构建 一些 东西 。 他 做 的 事情 之一 就 是 制造 了 这些 东西 。
+  en: You find him at the bench every single day , working on a pipette and building stuff . And one of the things this guy just built are these things .
+17464a:
+  zh: 我们 如何 对待 其余 的 那个 比例 是 我们 通向 未来 的 桥梁 。 当 我们 把 这 看作 是 通向 未来 的 桥梁 时 ， 有 一 件 事 必须 认真 思考 ： 现在 我们 把 大约 三分之二 的 石油 留在 那些 油井 中 。 这样 我们 花费 巨大 的 开支 ， 把 大部分 的 能源 留在 地下 。 当然 ， 这样 做 需要 更 多 的 能源 去 获取 其他 能源 。 
+  en: "How we deal with that other portion is our bridge to the future . And as we think of this bridge to the future , one of the things you should ponder is : we are leaving about two-thirds of the oil today inside those wells . So we 're spending an enormous amount of money and leaving most of the energy down there . Which , of course , requires more energy to go out and get energy ."
+17464b:
+  zh: 这个 比值 会 变得 很 愚蠢 ， 如果 你 取得 的 是 乙醇 的话 。 那样 做 ， 产出 的 能源 与 消耗 的 能源 之 比 几乎 就 是 一 比 一 。 这 是 在 用 一 种 很 傻的 做法 管理 这个 体系 。
+  en: The ratios become idiotic by the time you get to ethanol . It may even be a one-to-one ratio on the energy input and the energy output . That is a stupid way of managing this system .
+17468a:
+  zh: 因此 ， 我 最后 要 提出 一 个 温和 的 建议 ， 让 我们 在 欧洲 和 美国 设定 一 个 稳定 的 石油 价格 。 怎么 能 做到 呢 ？ 那么 ， 我们 可以 在 油价 上加 一 项 税 —— 非 收入 税 ， 基本 理念 是 说 在 最近 的 20 年 中 ， 石油 价格 将 是 —— 随便 假设 一 个 数字 ， 35 美元 也好 ， 40 美元 也罢 。 
+  en: So if I had one closing and modest suggestion , let 's set a stable oil price in Europe and the United States . How do you do that ? Well , let 's put a tax on oil that is a non-revenue tax , and it basically says for the next 20 years , the price of oil will be -- whatever you want , 35 bucks , 40 bucks . 
+17468b:
+  zh: 如果 欧佩克 的 油价 低于 这个 价格 ， 我们 就 开征 这 项 税 。 如果 油价 高于 这个 价格 ， 这 项 税 就 取消 。
+  en: If the OPEC price falls below that , we tax it .  If the OPEC price goes above that , the tax goes away .
+19416a:
+  zh: 所以 ， 当 大家 坐在 桌子 前面 的 时候 ， 这 是 我们 家 的 一 个 仪式 
+  en: Also , while we were at the table , there was a ritual in our family . 
+19416b:
+  zh: 当 任何 人 身上 发生 意义 重大 的 事情 时 ， 比如 当 妈妈 被 选举 为 家长 教师 会 的 主席 的 时候 ， 或者 当 爸爸 得到 一 份 我们 大学 的 教会 的 工作 时 。 或者 有 谁 赢得 口才 比赛 的 时候 ， 我们 家庭 的 传统 仪式 就是 ， 在 宣布 完 之后 ， 我们 必须 花 五 到 十 分钟 时间 来 跟 那个 人 总结 一下 ， 就是 ， 认认真 真的 表扬 一下 那个 获得 荣誉 的 人 ，
+  en: when something significant had happened for any one of us -- whether mom had just been elected as the president of the PTA , or whether dad had gotten an assignment at the college of our denomination , or whether someone had won the jabberwocky contest for talent -- the ritual at the family was , once the announcement is made , we must take five , ten minutes to do what we call " make over " that person -- that is , to make a fuss over the one who had been honored in some way .
+19497a:
+  zh: 然后 人们 问道 ， " 那么 ， 你 是 指 什么 ， 邻居 ？ " 
+  en: And then the person asked , " Well , what do you mean , ' neighbor ? ' " 
+19497b:
+  zh: 然后 他 讲 了 一 个 男人 落到 贼窝 的 故事 来 回答 这个 问题 ， 以及 宗教 的 掌权者 是 如何 通向 另 一 条 路 ， 还有 他们 的 支持者 是 如何 聚在一起 通向 另 一 条 路 的 ， 但 没有 料想到 ， 被 歧视 的 人 一起 ， 看到 有 需要 帮助 的 人 ， 提供 了 油 和 酒来 治疗 他 的 伤口 ， 把 他 送上 自己 的 交通 工具 ， 然后 送 他 到 旅馆 并且 告诉 侍应生 ， " 好好 照顾 他 。 "
+  en: And he answered it by telling the story of the man who fell among thieves , and how religious authorities went the other way , and how their supporters in the congregation went the other way ; but an unsuspecting , despised person came along , saw the man in need , provided oil and wine for his wounds , put him on his own transportation , and took him to the inn and asked the innkeeper , " Take care of him . "
+20134a:
+  zh: 其实 ， 我 所 经历 的 一些 非比 寻常 的 事情 作为 一 个 音乐家 ， 你 可能 有 一 个 15 岁 的 男孩 他 有 很多 不可思议 的 挑战 他 可能 无法 控制 自己 的 行动 也 有 可能 是 失聪 的 ， 失明 的 等等 等等 
+  en: Because you know , some of the extraordinary things I 've experienced as a musician , when you may have a 15-year-old lad who has got the most incredible challenges , who may not be able to control his movements , who may be deaf , who may be blind , etc . , etc .  
+20134b:
+  zh: 突然 ， 如果 这个 年轻 的 小伙子 坐在 乐器 旁边 甚至 躺在 木琴 底下 然后 你 弹奏 一 个 非常 像 木琴 的 声音 可能 我 拿 的 鼓 棒 不 对 但 和 这个 差不多 。 换 一下
+  en: Suddenly , if that young lad sits close to this instrument , and perhaps even lies underneath the marimba , and you play something that 's so incredibly organ-like , almost -- I don 't really have the right sticks , perhaps -- but something like this . Let me change .
+22681a:
+  zh: '[ " DNA 自动 贩卖机 是 ， 有关 我们 增进 接触 生物 技术 的 艺术 装置 。 " ] [ " 以 合理 的 价格 ， 您 可以 从 传统 自动 售卖 机处 购买 一 个 人类 DNA 的 样本 。 " ] [ " 每 个 样本 都 配有 人体 试样 的 珍藏版 限量 肖像画 " ] 。 [ " DNA 自动 贩卖机 ， 将 DNA 视为 一 种 可收集 的 材料 ， 公开 讨论 DNA 所有权 的 法律 问题 " ] 。' 
+  en: '[ " DNA Vending Machine is an art installation about our increasing access to biotechnology . " ] [ " For a reasonable cost , you can purchase a sample of human DNA from a traditional vending machine . " ] [ " Each sample comes packaged with a collectible limited edition portrait of the human specimen . " ] [ " DNA Vending Machine treats DNA as a collectible material and brings to light legal issues over the ownership of DNA . " ]' 
+22681b:
+  zh: 加布里埃尔·加西亚 - 科伦坡 ： DNA 自动 贩卖机 目前 设立 在 纽约 的 在 几 个 画廊 里 ， 事实上 ， 它 的 销量 很 好 。
+  en: "Gabriel Garcia-Colombo : So the DNA Vending Machine is currently in a couple galleries in New York , and it 's selling out pretty well , actually ."
+23368a:
+  zh: 所有 我们 的 欢乐 和 痛苦 ， 所有 言之凿凿 的 宗教 、 意识 形态 和 经济 原理 ， 所有 猎人 和 强盗 ， 所有 英雄 和 懦夫 ， 所有 文明 的 创造者 和 毁灭者 ， 所有 的 皇帝 和 农夫 
+  en: The aggregates of joy and suffering thousands of confident religions , ideologies and economic doctrines , every hunter and forager , every hero and coward , every creator and destroyer of civilization , every king and peasant . 
+23368b:
+  zh: 所有 热恋 中 的 青年 情侣 ， 所有 的 父母 、 满怀 希望 的 孩子 、 发明者 和 探索者 ， 所有 精神 导师 ， 所有 腐败 的 政治家 ， 所有 " 超级 明星 " ， 所有 " 最高 领导人 " ， 所有 圣徒 和 罪人 ， 从 人类 这个 种族 存在 的 第一 天 起 都 生活 在 这 颗 遥远 的 尘埃 上 ， 悬浮 在 太阳光 中 。
+  en: Every young couple in love , every mother and father , hopeful child , inventor and explorer , every teacher of morals , every corrupt politician , every superstar , every supreme leader , every saint and sinner in the history of our species , lived there , on a mote of dust , suspended in a sunbeam .
+23823a: # manually punctuated (zh), since the sentences didn't look TOO song-ey
+  zh: 嘿 ， 我 没 开 玩笑 ， 我 真的 怯场 。 如果 我 在 台上 一 边 发抖 一边 歌唱 ， 你 会 知道 我 的 感受 。 我 还 会 搞砸 发出 颤音 那 是 全身 发抖 的 杰作 不用 替 我 尴尬 哦 ， 真的 不用 。 好吧 ， 可以 有一点 。 我 会 想象 你们 都 没 穿 衣裳 
+  en: I 'm not joking , you know , this stage fright is real . And if I 'm up here trembling and singing , well , you 'll know how I feel . And the mistake I 'd be making , the tremolo caused by my whole body shaking . As you sit there feeling embarrassed for me , well , you don 't have to be . Well , maybe just a little bit . And maybe I 'll try to imagine you all without clothes . 
+23823b:
+  zh: 但 在 一 群 躶体 陌生 人前 唱歌 更 让 我 紧张 。 不要 细说 下去 ， 身材 从不 是 我 的 强项 。 老实 说 ， 我 希望 大家 都 正 装 出席 ， 我 的 意思 是 ， 不要 真的 什么 也 不 穿 。 我 才 是 有 问题 的 那个 人 。 你们 跟 我 说 ， 不要 太 烦恼 ， 一定 能 唱好  
+  en: But singing in front of all naked strangers scares me more than anyone knows . Not to discuss this at length , but my body image was never my strength . So frankly , I wish that you all would get dressed , I mean , you 're not even really naked . And I 'm the one with the problem . And you tell me , don 't worry so much , you 'll be great . 
+23823c:
+  zh: 我 一直 都 陪 着 自己 ， 我 知道 该 怎样 做 。 你 的 建议 很 贴心 ， 但 来得 有点 晚 。 就算 你 不 是 神气十足 。 那 挖苦 的 语调 也 让 我 唱 不 好 。 但 现在 我们 不 需要 谈论 这些 真的 ， 我 在 台上 ， 你 在 台下 。 嗨 ~ 我 没有 拿这 莫名其妙 的 恐慌 开 玩笑 ， 如果 没准 备好 去 面对 ， 我 也 不 会 站 在 这里
+  en: But I 'm the one living with me and I know how I get . Your advice is gentle but late . If not just a bit patronizing . And that sarcastic tone doesn 't help me when I sing . But we shouldn 't talk about these things right now , really , I 'm up on stage , and you 're in the crowd . Hi . And I 'm not making fun of unnurtured , irrrational fear , and if I wasn 't ready to face this , I sure as hell wouldn 't be here . 
+23823d:
+  zh: 如果 我 清晰 将 一 个 音符 弹唱 ， 你 会 明白 我 在 恢复 ， 慢 却 稳当 。 或许 ， 下周 我 会 把 吉他 奏响 我的 声音 清澈 如水 ， 大家 一起 歌唱 。 或许 ， 我 会 走 上台 ， 渐入佳境 声带 不 停 震动 快 得 超过 声速
+  en: But if I belt one note out clearly , you 'll know I 'm recovering slowly but surely . And maybe next week , I 'll set my guitar ringin ' my voice clear as water , and everyone singin ' . But probably I 'll just get up and start groovin ' , my vocal cords movin ' , at speeds slightly faster than sound . 
+24502a:
+  zh: 让·里奇 ： 在 诺塔芒城 ， 一 个 灵魂 都 不 会 向往 看 ， 灵魂 不 会 向上 看 ， 没有 一 个 灵魂 会 向下 瞧 。 鲍勃·迪伦 ： 来吧 战争 之王 ， 你 构建 枪支 ， 你 的 打造 死亡 的 飞机 ， 你 ， 造成 所有 的 炸弹 。 
+  en: "Jean Ritchie : In Nottamun Town , not a soul would look out , not a soul would look up , not a soul would look down . Bob Dylan : Come you masters of war , you that build the big guns , you that build the death planes , You that build all the bombs ."
+24502b:
+  zh: 柯 比 弗格森 ： 好吧 ， 这 就 是 相同 的 基本 旋律 与 整体 结构 。 这 下 一 个 是 " 爱国者 游戏 " 由 多米尼克 本 汉 。 同时 ， 你 将 听到 迪伦 的 " 上帝 在 我们 这边 " 。
+  en: "Kirby Ferguson : Okay , so that 's the same basic melody and overall structure . This next one is \" The Patriot Game , \" by Dominic Behan . Alongside that , you 're going to hear \" With God on Our Side , \" by Dylan ."
+24503a:
+  zh: 多米尼克 本 汉 ： 来吧 ， 你们 反叛 的 年轻人 ， 在 我 唱 时 ， 列出 爱 一 个 人 的 土地 是 件 可怕 的 事情 。 BD ： 哦 我 的 名字 什么 都 不 是 ， 我 的 年龄 不 是 问题 我 来自 的 国家 被 称为 中 西部 。 
+  en: "Dominic Behan : Come all ye young rebels , and list while I sing , for the love of one 's land is a terrible thing . BD : Oh my name it is nothin ' , my age it means less , the country I come from is called the Midwest ."
+24503b:
+  zh: 好的 所以 在 这 种 情况 下 ， 迪伦 承认 他 一定 会 听说 过 " 爱国者 游戏 " ， 他 忘 了 这 件 事 ， 然后 当 这 首 歌 有点 回想 起来 时 ， 在 他 的 大脑 中 ， 他 认为 那 是 他 的 歌 。
+  en: Okay , so in this case , Dylan admits he must have heard " The Patriot Game , " he forgot about it , then when the song kind of bubbled back up in his brain , he just thought it was his song .
+25962a:
+  zh: 我 认识 著名 的 音乐家 ， 我 认识 演员 和 影星 ， 百万 富翁 和 作家 高级 律师 和 电视 高管 杂志 编辑 和 国家 记者 环卫工 和 理发匠 ， 他们 都 曾 是 被 看护 的 小孩 ， 领养 的 ， 收容 的 或者 从小 流浪
+  en: I know famous musicians , I know actors and film stars and millionaires and novelists and top lawyers and television executives and magazine editors and national journalists and dustbinmen and hairdressers , all who were looked after as children , fostered , adopted or orphaned .
+25962b:
+  zh: 他们 中 的 绝大部分 成年 以后 都 害怕 谈论 到 这些 背景 ， 因为 这样 做 可能 会 或多或少 会 黯淡 他们 的 表面 光鲜 ， 好似 一 片 逆鳞 ， 又 仿佛 是 一 颗 定时 炸弹 埋在 内心 深处 。 那些 生来 得到 呵护 的 孩子 ， 注定 有权 享受 被 关爱 的 人生 ， 活在 他们 自己 的 童年 回忆 中 。
+  en: Many of them grow into their adult lives in fear of speaking of their background , as if it may somehow weaken their standing in the foreground , as if it were somehow Kryptonite , as if it were a time bomb strapped on the inside . Children in care , who 've had a life in care , deserve the right to own and live the memory of their own childhood .
+27895a:
+  zh: 这 种 政策 的 表述 听起来 充满 恶意 ： 如果 医院 资源 是 有限 的 ， 例如 ， 如果 只有 一 个 捐助者 的 心脏 可供 移植 ， 或者 ， 如果 一 个 外科 医生 在 一定 时间 中 只 能 为 少数 几 个 患者 做 手术 ， 美国 的 医院 有 明确 的 政策
+  en: That sinister expression means that if hospital resources are limited , for example if only one donor heart becomes available for transplant , or if a surgeon has time to operate on only a certain number of patients , American hospitals have an explicit policy .
+27895b:
+  zh: 美国 的 医院 有 明确 的 政策 ， 要 优先 给 年轻 的 患者 而 不 是 老年 患者 ， 理由 是 年轻 患者 被 认为 对 社会 更 有 价值 因为 他们 还有 更 多 年 的 生活 在 等待 他们 ， 即使 较年轻 的 患者 有 较 少 的 宝贵 生活 经验 。
+  en: American hospitals have an explicit policy of giving preference to younger patients over older patients on the grounds that younger patients are considered more valuable to society because they have more years of life ahead of them , even though the younger patients have fewer years of valuable life experience behind them .
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  

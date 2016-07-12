@@ -181,6 +181,9 @@ def process_tagged_sentence(sentence, lang):
             template_words.append(tok)
             # TODO: convert punctuation to a separate field? or just eat it for now? (custom templates, after all)
     
+    # this is for long sentences recovered from clean-corpus.perl
+    assert(len(template_words) <= 100)
+    
     assert('template' not in result)
     result['template'] = ' '.join(template_words) # hey, this works! you can override the default with a different data type
     
