@@ -201,5 +201,7 @@ if __name__ == '__main__':
             #assert(type(e.args[0]) is str)
             raise Exception('Error processing {} - key {} - {}'.format(INPUT_FILE, key, e.args[0]))
             #import pdb; pdb.set_trace()
+        except AssertionError as e:
+            raise Exception('Error processing {} - key {} - probably too long'.format(INPUT_FILE, key))
             
     yaml_reader.write_file(OUTPUT_FILE, output_data)
