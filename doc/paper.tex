@@ -35,6 +35,8 @@
     \usepackage{multirow}
     
     \usepackage{graphicx}
+    %\usepackage{caption}
+    %\usepackage{subcaption}
 
 \fi
 \if \buildtarget \buildhcomp    
@@ -189,10 +191,12 @@ While we try to model straightforward linguistic phenomena compositionally, we a
 Thus, with the long-term goal of scalability, we attempt to construct a system sufficiently flexible to write some sentence pairs in large quantities through syntactic variations and others with ``hand-crafted'' quality through example-based templates.
 
 
-\section{A Nascent Multilingual Generator}
+\section{A Rudimentary Multilingual Generator}
 \label{sec:generator}
 
 % TODO: didn't mention how you could easily create infinitely many sentences like ``the number of cats is N'', but they'll be soo correlated that they have zero translation value
+
+
 
 As an example of how our synthetic parallel corpus generation system works, consider the following English-Chinese template pair:
 
@@ -205,76 +209,218 @@ As an example of how our synthetic parallel corpus generation system works, cons
 
 \noindent Our system then expands the subject {\small \tt S} and object {\small \tt O} as noun phrases, adding adjectival and participial modifiers as desired. 
 Semantic constraints can be imposed from the verb {\small \tt V} as well as externally.
-The generator can then vary the template lexically\footnote{
-    Rewrite probabilities were set by hand; a more principled approach might use, say, a generative PCFG parser.} and syntactically, allowing a large number of sentence pairs to be generated from a single template.
+The generator can then vary the template lexically and syntactically,\footnote{\label{footnote:probabilities}
+    Rewrite probabilities were set by hand; a more principled approach might use, say, a generative synchronous CFG.} allowing a large number of sentence pairs to be generated from a single template.
 We can also trade quantity for quality by adding more literals to the template, in the spirit of example-based MT.
 
 
+
+
+%This Section is organized as follows. 
+%Section~\ref{subsec:software}, we describe our software architecture and internal data representation. 
+%Section~\ref{subsec:linguistics} then covers the linguistic phenomena we implemented in this framework.
+
 % TODO: maybe these nonsense sentences shed some light as to what is NOT a sensible, ``natural'' sentence...
-%\subsection{Simplistic Linguistics}
+\amtaonly{
+\subsection{Simplistic Linguistics}
+\label{subsec:linguistics}
+}
 We adopt an extremely simplistic view of language as nouns, verbs, and their modifications and elaborations.
 \amtaonly{
 Inspired by early work on transformations by \mynewcite{chomsky}, we focus on declarative indicative present active sentences in the hopes that they can be transformed into other forms in the long run. 
 Similarly, although we enforce some semantic constraints, our system generally produces nonsensical sentences like Chomsky's celebrated ``{\em Colorless green ideas sleep furiously.}''
 }The fact that verb phrases can also serve as nouns (gerundives) and modifiers (participles) appears to be a major source of syntactic complexity, and we made it a priority to implement participial modifiers.
-To capture recursive structures like participles, we adopt a rudimentary tree representation that is something intermediate between constituency and dependency trees, with constituent-like modifiers that also maintain dependency-like links to their targets.
-We plan on eventually open-sourcing both our generator code and its accompanying data.
 
-%\subsection{Implementation Details}
 \amtaonly{
-% TODO: mention Python?
-One implementation detail worth mentioning is the choice of YAML for writing sentence templates and lexical data. 
-In particular, YAML has native Unicode support and does not even require quotation marks to enclose strings.
 
-% TODO: YAML code examples. couldn't get verbatim + zh to work...
-%To maximize human translator productivity, 
+\subsection{Software Architecture}
+\label{subsec:software}
+
+
+The bulk of our software, which we plan on eventually open-sourcing, along with its accompanying data, comprises four Python modules:\footnote{
+    In particular, we used Python 3 for its improved Unicode support over Python 2.
+}
+
+\begin{itemize}
+\item {\small \tt data}: data abstraction layer
+\item {\small \tt nodes}: internal tree representation
+\item {\small \tt generator}: converts internal trees to surface forms (sentence pairs)
+\item {\small \tt main}: outermost logic
+\end{itemize}
+
+The {\small \tt data} module implements an abstraction layer that mediates between data resources on disk and the rest of the program.
+These data resources include bilingual (extensible to multilingual) lexicons for different parts of speech, monolingual morphology, templates, and a small taxonomy used to tag nouns.
+All of our data resources were written in YAML, a ``human-readable'' language particularly well-suited to manual editing.
+In particular, YAML has native Unicode support and does not even require quotation marks to enclose strings.
+An example of YAML code is shown in Figure~\ref{fig:yaml-rb}.
+
+% TODO: probably going to have to resize/crop this image to keep this paper from going over length
+% TODO: YAML code examples. couldn't get verbatim + zh to work... just use an image? see if there's room.
+% TODO: manually indent YAML. use placeholder graphic for now instead.
+% TODO: get proper left/right subfigures working? just slapping in a single image for now.
+\begin{figure}[ht]
+    \centering
+    \includegraphics{yaml-rb}
+    \caption{An example of YAML code, showing syntactic (left) and semantic (right) components of a clause template used for the ``rule-based'' mode of generation mentioned in the discussion of the {\small \tt main} module.}
+    \label{fig:yaml-rb}
+\end{figure}
+ 
+
+% the internal data representation. the bulk of the discussion?
+The {\small \tt nodes} module implements the data structures used internally by the program.
+To capture recursive structures like participles, we adopt a rudimentary tree representation that is something intermediate between constituency and dependency trees, with constituent-like modifiers that also maintain dependency-like links to their targets.
+Following our highly simplified picture of linguistics in Section~\ref{subsec:linguistics}, the basic backbone of the tree is constituency-like, as shown in Figure~\ref{fig:tree}.
+
+% TODO: nodes class diagram? seems like an implementation detail...
+% TODO: the fastest way i have to get dotted lines is through Word or PowerPoint, but I wanted to do the figures in OneNote, at least the camera-unready ones...
+% TODO: it would be NICE if the tree matched a YAML example...
+\begin{figure}[ht]
+    \centering
+    placeholder graphic, used to estimate space remaining in the paper
+    \includegraphics{yaml-rb-rotated}
+        
+    \caption{
+        An example tree made of nodes from the {\small \tt nodes} module.
+        Thick lines indicate the ``constituent'' backbone that dictates the order of traversal in the {\small \tt generator} module, while thin lines indicate longer-range dependencies that are stored as links between nodes.
+    }
+    \label{fig:tree}
+
+\end{figure}
+    
+
+
+% TODO: class hierarchy for nodes module only??
+% - data is too mundane, and i'll just describe it in words.
+% - Generator is only 2 classes, and i'll also just describe it in words.
+%- ad hoc semantic taxonomy that allows a template to request
+
+
+The {\small \tt generator} module traverses the backbone of the ``interlingual'' tree from the {\small \tt nodes} module and recursively builds up parallel surface forms (bilingual sentence pairs).
+Language-specific rules (e.g., word order) are implemented as ad hoc bits of code in this module,\footnote{
+    Formally, the ``rule-based'' component of our system can be considered an extremely rudimentary synchronous (bilingual) context-free grammar of sorts \mycitep{transduction} that also admits long-range dependencies and semantic constraints.
+    But it would be a disservice to those other well-developed methods to refer to our system as anything other than an ad hoc way to generate multilingual sentences.
+%    MEH: Also, example-based mode admits the possibility of just writing down translations and then generating parse trees on PORTIONS of those templates.
+%    Although then I guess you have a transductive grammar on those portions?
+} reading long-range dependency information from the tree as needed.
+All language-dependent code is confined to this module, although this is coupled with language-dependent information from the YAML data (e.g., the tags and punctuation in Figure~\ref{fig:yaml-rb}). 
+% TODO: More ideally, A desirable longer-term goal would be to move language rules to data, but that's beyond the scope of this paper.
+
+
+Finally, the outermost {\small \tt main} module is responsible for tree instantiation and modification.
+To generate a sentence pair in ``rule-based mode,'' a syntactic clause template is randomly selected, followed by a semantic verb category that uses that syntactic template, as in Figure~\ref{fig:yaml-rb}.
+Modifier nodes are then randomly attached, recursively so for constructs like participles and prepositions, in principle admitting arbitrarily long sentences.
+The probabilities for these random processes are chosen heuristically as mentioned in Footnote~\ref{footnote:probabilities}.
+The system also allows for semantic constraints by adding semantic tags to nodes and querying the taxonomy through the {\small \tt data} module for eligible lexical choices. 
+%For example, the semantic template component in Figure~\ref{fig:yaml-rb} requires a person for the subject node, and it should be able to query the noun database for UGH
+Building a comprehensive taxonomy and labeling the lexical database exhaustively is a labor-intensive task; results in Section~\ref{supersec:experimental_results} below were obtained with relatively minimal semantic constraints.
+
+
+% example-based amplification: loop over different lexical choices exhaustively
+One of the things we wanted to do differently from KPML \mycitep{kpml} was to implement an ``example-based mode'' in which sentence pairs that would be difficult to generate in ``rule-based mode'' could simply be written down and then amplified as proposed by \mynewcite{brown:99}. 
+This would trade the quantity available through arbitrarily complex sentences from ``rule-based'' mode for the quality of sentence pairs with a larger degree of hand-translation.
+Our software achieves this by allowing the {\small \tt template} entries as on the left side of Figure~\ref{fig:yaml-rb} to contain literal strings in addition to symbols.
+These ``example-based'' templates are currently selected by hand for the experiments described in Section~\ref{supersec:experimental_results}, with all amplification resulting from varying the lexical choices (i.e., without adding ).
+Whether it helps to add modifier nodes in this mode is a potential area for future work.
+% TODO: meta-template picture (if space allows)? or is this description adequate? this is kind of like the tradeoff I faced in the EMNLP submission, where I was like, uh oh, out of space... meh, this system sucks anyways, so I'll just omit its details
+A helper script also supports the use of ``meta-templates'' to facilitate hand-construction of templates, allowing a minimal annotation of a sentence pair to produce a full YAML template similar to Figure~\ref{fig:yaml-rb}.
+
+%% TODO: ugh, out of room? this stuff is pretty pointless anyway
+%It is hoped that these ``example-based'' templates prove useful for tasks like training set amplification, which we consider in Sections~\ref{sec:experiments}~and~\ref{subsec:post_edited}. 
+%But it would be very easy to specify modifiable nodes in the meta-templates, and you could add modifiers as in ``rule-based'' mode.
+%The point of rule-based templates (and indeed linguistics) is to be precise and write a few rules that can generate a lot of sentences.
+%But for example-based templates, we want to do lots of sentences, fast, and then maybe amplify little pieces of it.
+%Meta-templates let you iterate quickly over sentences.
+
+%An example of such a meta-template is given in Figure~XXX, which corresponds to the example-based template given above in Figure~YYY
+%\begin{small}
+%\noindent {\tt S V O .} \\
+%{\tt S \zh{把} O V \zh{。}}
+%\end{small}
+
+
+% figure: example-based template, and its associated 
 %meta-templates, which can then be easily parsed into templates to be fed into the generator.
+% one big image, top/bottom?
 %An example is shown in Figure~\ref{fig:yaml_template}.
 
 
+
+
+
+%} \hcomponly{ % disable last bit of unfinished stuff for temp upload
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}} % full-width horizontal line
-%TODO: detailed system description
-% code section - do this first, since it MAY shed light on what linguistic phenomena are easy to implement?
-    % oh yes, definitely, because then you can explain things briefly in terms of their implementation
-    
-%Language-specific rules (e.g., word order) are confined to ad hoc bits of code the generator module.\footnote{
-%    Formally, this might be considered an extremely rudimentary synchronous (bilingual) context-free grammar of sorts \mycitep{transduction}, one that also admits long-range dependencies and semantic constraints.
-%    But it would be a disservice to those other well-developed methods to refer to our system as anything other than an ad hoc way to generate multilingual sentences.
-%}
-    
-%
-% Simplistic Linguistics
-% maybe use a bulleted list for the different linguistic phenomena supported?
-%Clause: transitive, meta, modal
-%basic support for NP, ADJP, ADVP (targeting ADJP or Clause), pronouns with antecedents 
-%prepositions, which are really relations, allowing semantic constraints on both object and target
-%indirect object as a special case of ``null preposition''
-%- not necessarily linguistically well-founded, but good enough
-%past tenses via transformation of present tense sentence
-% other transformations: topicalization, and some hokier stuff like \zh{把} 
-%Custom (``template-based mode''): lots of iterals, maybe mark an NP somewhere
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}} % full-width horizontal line
+TODO
 
-% big question: do I want to show a source code example??
-%\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}} % full-width horizontal line
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Implemented Linguistic Phenomena}
 
+We briefly list
+and how they are implemented in terms of the tree representation from Section~\ref{subsec:software}
 
+a couple of reasons for keeping linguistic phenomena to the most basic ones (aside from manageability)
+- we believe that for the purposes of generating parallel corpora, is most effective to treat very difficult, non-compositional phenomena (example?!) by simply writing them down, in tradition of example-based MT
+- keeping the data format simpler makes it potentially easier to scale up to admit contributions from non-linguists
 
-} % amtaonly
+- emphasize that we prioritize generating in-domain sentences above linguistic soundness
 
+% transformations were chosen with an eye toward scalability, so that things like semantic constraints (<animal> eats <food>) could be used (eating <food>, and should modify <animal>)
 
 % if i'm gonna do source code snippets with zh, maybe it'd be best to use IMAGES? it's not for camera-ready anyway...
 % well, i can do the meta-template easily... the problem is with REAL templates
 
+% maybe use a bulleted list for the different linguistic phenomena supported? yeah, let's just do that.
 
-%here is the figure
-%\begin{figure}[ht]
-%    \centering
-%    \includegraphics{Chick1}
-%    \caption{\label{fig:test} chick}
-%\end{figure}
-%Hola chica, Figure~\ref{fig:test}.
+%Oh, maybe I should make this a table. that should cut down on the vertical spacing
+%
+%\begin{table}[ht]
+%\centering
+%\begin{tabular}{|l|l|}
+%\hline
+%Gold en & 60,000. \\ \hline
+%Gold en & 60,000. \\ \hline
+%Gold en & 60,000. \\ \hline
+%Gold en & 60,000. \\ \hline
+%Gold en & 60,000. \\ \hline
+%Gold en & 60,000. \\ \hline
+%Gold en & 60,000. \\ \hline
+%Gold en & 60,000. \\ \hline
+%Gold en & 60,000. \\ \hline
+%Gold en & 60,000. \\ \hline
+%\end{tabular}
+%\caption{ 
+%    Linguistic constructs implemented in our multilingual generator.
+%}
+%\label{tab:implemented_linguistics}
+%\end{table}
+
+\begin{itemize}
+\item clauses: transitive, meta, modal. a word on modalish. 
+\item NP
+\item ADJP
+\item participles as transformations of clauses that convert subject into a linked node, allowing reuse of semantic constraints
+\item prepositions as relations between two nodes (noun/noun or noun/verb), and accompanying semantic requirements on both object and target
+\item custom nodes - because sometimes, the most effective way to represent a translation is to just write it down. (``template-based mode''): lots of iterals, maybe mark an NP somewhere
+
+% other (if there's room)
+\item ADVP (targeting ADJP or Clause), pronouns with antecedents 
+\item indirect object as a special case of ``null preposition'' - not necessarily linguistically well-founded, but good enough to make sentences
+\item past tense as transformation of present tense  % MEH
+\item other transformations: topicalization, and some hokier stuff like \zh{把} 
+\end{itemize}
+
+
+
+% big question: do I want to show a source code example?? yeah, i probably have room
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}} % full-width horizontal line
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+} % amtaonly
+
+
+
+
+
 
 
 % oh this part really is just flying now, because there's no uncertainty as to what I DID
@@ -351,7 +497,7 @@ Our baseline        & 11.54  \\ \hline
 The results of these experiments are shown in Table~\ref{tab:results}.
 For the table on the left, note that adding in-domain data improves performance significantly more than a much larger amount of out-of-domain data (MultiUN), a commonly reported phenomenon \mycitep{tmcombine}.
 TED talks, which are prepared lectures, fall somewhere between the conversational language of movie subtitles and the formal written language of UN resolutions.
-As such, the OpenSubtitles\footnote{http://www.opensubtitles.org/} 2016 corpus \emnlponly{\mycitep{opensubtitles:2016}} from the OPUS project was also out-of-domain; results for this corpus were similar to MultiUN and are not shown. % AMTA: removed citation to keep reference list under length
+As such, the OpenSubtitles\footnote{http://www.opensubtitles.org/} 2016 corpus \emnlponly{\mycitep{opensubtitles:2016} }from the OPUS project was also out-of-domain; results for this corpus were similar to MultiUN and are not shown. % AMTA: removed citation to keep reference list under length
 For the table on the right, note the diminishing returns of out-of-domain data as the amount of in-domain data increases.
 These observations underscore the importance of domain overlap and hint at the potential value to be found in the amplification of in-domain corpora.
 
@@ -409,7 +555,7 @@ Moses output & CA : That is 60,000 dollars .  \\ \hline
 An example is given in Table~\ref{tab:bad_pair}.
 The baseline Moses system tries valiantly, but it ultimately scores poorly for producing a good machine translation of a liberal human translation.
 Alternatively, one can interpret these errors as an additional source of noise in the human encoding of English into Chinese.
-It is not entirely clear how the MT process is affected by this kind of noise.
+It is not immediately obvious how the MT process is affected by this kind of noise.
 
 The most effective automated ways we found to identify lines in dire need of post-editing were:
 \begin{itemize}
@@ -478,23 +624,8 @@ $s_{sel}$ indicates the variance due to test set selection and has nothing to do
 
 
 
-% \pagebreak % soooooo ugly
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+% TODO: didn't run MultiUN + tst2010 - but that's okay I guess, I have the out-of-domain in-domain comparison in Table 1
 
 \begin{table}[htb]
 \begin{center}
@@ -541,7 +672,7 @@ The IWSLT 2015 training corpus did not produce a significant improvement over th
 Post-editing the 2015 corpus to correct for the missing fragments and resulting misaligned sentences mentioned in Section~\ref{subsec:case_study} resulted in a modest but statistically significant improvement in scores,\footnote{
 By comparison, the best scoring systems from the IWSLT 2014 evaluation campaign \mycitep{iwslt2014} scored $\sim$4 BLEU points and $\sim$3 TER points better than the baseline.
 Also, this might look like a proportional improvement in BLEU, but gains were found to come in discrete steps during the editing process. 
-This is thought to be due to the non-parametric nature of SMT, with changes in scores only occurring when there are appreciable changes to the parts of the probability tables that are relevant to the test set.
+This is thought to be due to the non-parametric nature of statistical MT, with changes in scores only occurring when there are appreciable changes to the parts of the probability tables that are relevant to the test set.
 It remains to be seen what effect post-editing of training, tuning, and test corpora would have on parametric systems like recent deep-learning based MT methods \mycitep{sutskever:2014,bengio:2014}, in which all training examples contribute to the same shared connection weight matrices.
 } demonstrating the importance of corpus quality, not just quantity.
 Finally, unlike Table~\ref{tab:tst2010}, post-editing the MERT tuning development set {\small \tt dev2010} surprisingly makes things strictly worse.
@@ -620,8 +751,8 @@ These pairs were amplified by replacing one or more words in the templates with 
 Unamplified alternative translations to some liberal (but not incorrect) translations were also included.
 As there were relatively few of them compared with Table~\ref{tab:results}, the generated sentences here were simply concatenated to the end of the training corpus.
 Not unlike the ``rule-based'' generated corpora from Table~\ref{tab:results}, these ``example-based'' generated corpora do not make a significant impact on system performance. 
-This may be because these atypical translations wound up being overamplified and thus skewing the model's probability distributions unfavorably.
-Alternatively, this can be interpreted that a crucial component of in-domain data is syntactic diversity.
+These atypical translations may have wound up being overamplified and thus also ``teaching'' spurious phrases to the statistical MT system (which can be thought of as variable-length example-based MT of sorts). 
+Alternatively, this can be interpreted as indicating that a crucial component of in-domain data is syntactic diversity.
 % TODO: 10 nouns and 10 adjectives gives you 100 sentences. but that skews the tables too much? BUT TO VERIFY THIS, I SHOULD RUN MORE EXPERIMENTS - like, how much does it skew if I don't amplify and only do like 1 or maybe 10 sentences for that pair?
 
 Unlike its use as a tuning set in Section~\ref{subsec:case_study}, post-editing {\small \tt tst2010} as the test set had a more predictable effect.
@@ -813,7 +944,7 @@ But to master one's native tongue takes like 10 years, and there's a BUNCH of un
 We are very grateful to the anonymous EMNLP 2016 reviewers for many helpful comments on an earlier version of this paper.
 
 
-\pagebreak 
+%\pagebreak  % use this to gauge reference list length
 
  
 
