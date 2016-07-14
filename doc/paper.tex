@@ -131,7 +131,7 @@ Other practical considerations shine a favorable light on parallel corpus genera
 As the ``inverse'' of translation, multilingual generation is also an easier task in some senses.
 For example, lexical ambiguity can be largely alleviated,\footnote{
     Ideally the generator would ``know'' {\em a priori} whether it is writing a sentence about, say, (financial) banks or (river) banks.
-} segmentation of languages like Chinese \mycitep{segmenter:2005,segmenter:2008} becomes a non-issue, and there is the potential for generating annotated corpora with zero annotation error.
+} segmentation of languages like Chinese \mycitep{segmenter:2008} becomes a non-issue, and there is the potential for generating annotated corpora with zero annotation error.
 Parallel corpora also provide a natural avenue to interface contemporary MT systems with the countless linguist-years of expertise that have been invested into rule-based MT systems. %, as discussed in Section \ref{sec:related}. % that's not really discussed there anymore, is it?
 And unlike the various different MT methods, which are by nature competitive, corpora are inherently collaborative.
 
@@ -231,10 +231,24 @@ In particular, YAML has native Unicode support and does not even require quotati
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}} % full-width horizontal line
-TODO: detailed system description
+%\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}} % full-width horizontal line
+%TODO: detailed system description
+% code section - do this first, since it MAY shed light on what linguistic phenomena are easy to implement?
+    % oh yes, definitely, because then you can explain things briefly in terms of their implementation
+%
+% Simplistic Linguistics
+% maybe use a bulleted list for the different linguistic phenomena supported?
+%Clause: transitive, meta, modal
+%basic support for NP, ADJP, ADVP (targeting ADJP or Clause), pronouns with antecedents 
+%prepositions, which are really relations, allowing semantic constraints on both object and target
+%indirect object as a special case of ``null preposition''
+%- not necessarily linguistically well-founded, but good enough
+%past tenses via transformation of present tense sentence
+% other transformations: topicalization, and some hokier stuff like \zh{把} 
+%Custom (``template-based mode''): lots of iterals, maybe mark an NP somewhere
 
-\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}} % full-width horizontal line
+% big question: do I want to show a source code example??
+%\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}} % full-width horizontal line
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -273,7 +287,7 @@ To investigate the relative effect of our synthetic parallel corpora, we chose a
 Namely, we used the baseline configuration of Moses \mycitep{moses} as described in \mycitep{iwslt2015}, with the exception of changing the target language model to KenLM \mycitep{kenlm}, which we found to be faster and stabler at decoding time than IRSTLM \mycitep{irstlm}.
 Since monolingual corpora are typically available at scale, target language models were obtained using the same in-domain monolingual corpus for all runs.
 For the remaining unspecified model settings, we used the {\small \tt grow-diag} alignment heuristic recommended by \mynewcite{segmenter:2008} and the {\small \tt mslr-fe} configuration for lexicalized reordering. 
-Chinese text was preprocessed using the latest version of the Stanford Segmenter \mycitep{segmenter:2005,segmenter:2008}.
+Chinese text was preprocessed using the latest version of the Stanford Segmenter \mycitep{segmenter:2008}.
 Phrase and lexicalized reordering tables were interpolated using the {\small \tt tmcombine} script included with Moses \mycitep{tmcombine}, with the interpolation optimized on the {\small \tt dev2010} data set.
 Following \mynewcite{iwslt2015}, the model was tuned on the {\small \tt tst2010} data set using the MERT procedure included in Moses.
 For Table~\ref{tab:results}, BLEU scores were computed as described by \mynewcite{iwslt2015} using the IWSLT 2015 progress data set ({\small \tt tst2014}).\footnote{
@@ -657,7 +671,7 @@ The different types of snooping are defined in the text.
 
 For full snooping, {\small \tt tst2010} was directly concatenated to the training, establishing an ``upper bound'' of sorts on how much performance boost is obtainable by simply adding more data.
 For syntactic snooping, before concatenation, rare tokens in {\small \tt tst2010} were replaced by their part of speech (POS) from the Stanford POS tagger \mycitep{postagger:2003}. 
-Non-rare tokens were arbitrarily defined for each language as the most common 80\% in the IWSLT 2014 corpus: 670 tokens for English and 1406 tokens for Chinese, with the latter tokenized using the latest version of the Stanford Segmenter \mycitep{segmenter:2005,segmenter:2008}.
+Non-rare tokens were arbitrarily defined for each language as the most common 80\% in the IWSLT 2014 corpus: 670 tokens for English and 1406 tokens for Chinese, with the latter tokenized using the latest version of the Stanford Segmenter \mycitep{segmenter:2008}.
 This achieves a much smaller but still substantial increase in performance,\footnote{
     The performance gain of 5 BLEU points or 6 TER points over the baseline is comparable with the gains obtained by the best scoring (and of course non-snooping) systems from IWSLT 2014 \mycitep{iwslt2014}.
 } even though this essentially performs zero snooping on out-of-vocabulary (OOV) words that the baseline system failed to translate.
@@ -713,14 +727,20 @@ We believe the most promising path to large-scale parallel corpus creation is th
 As with the success story of reCAPTCHA \mycitep{recaptcha}, we believe this will scale best when there is a natural harmony between data supply and demand.
 Unlike other staple NLP tasks like parsing or part-of-speech tagging, MT is particularly well-suited to this, with English being taught as a foreign language in classrooms around the world.
 The data format (English itself) is widely agreed upon, and there is even an existing market, a vast untapped resource of student problem sets that is yet to be harnessed by machine learning.
-\amtaonly{As a back of the envelope estimate, at a translation rate of about 1 noun per minute (based on our own data input experience), even for a modest user base of 10,000 users, a ten-minute problem set could in principle yield 100,000 data samples.
-It seems like the bottleneck would be judicious problem set design.}
+\amtaonly{ % Uh, should I bother with this stupidity, 
+%As a back of the envelope estimate, at a translation rate of about 1 noun per minute (based on our own data input experience), even for a modest user base of 10,000 users, a ten-minute problem set could in principle yield 100,000 data samples.
+%It seems like the bottleneck would be judicious problem set design.
+It is also worth noting that in a sense, this could regarded as a ``massively-online'' version of elicitation-based techniques  from fieldwork linguistics \mycitep{elicitation}, with an emphasis on acquiring unprocessed parallel sentences, and doing so at scale.
+}
 
 Large quantities of supervised data underlie state-of-the-art performance in many NLP tasks.
-While current paid approaches like Amazon's Mechanical Turk are already a viable way of obtaining crowdsourced data, we believe it would be well worth the initial investment of time and resources to build an educational app compelling enough to become widely adopted.
-This could then serve as a platform from which to harvest supervised natural language data from its natural source. 
+While current paid approaches like Amazon's Mechanical Turk are already a viable way of obtaining crowdsourced data, we believe 
+compelling, widely adopted educational apps like Duolingo\footnote{https://schools.duolingo.com/} to be much more cost-effective yet presently untapped platforms from which to harvest supervised natural language data from its natural source. 
 Compared with current paid approaches, the cost per datum could be significantly reduced or perhaps even become negative (a profitable app), although the value of the harvested data itself might be worth subsidizing.
-We consider the construction of such a potentially game-changing source of supervised NLP data to be an open challenge to the NLP community in general.
+We consider the effective exploitation of such potentially game-changing sources of supervised NLP data to be an open challenge to the NLP community in general.
+
+% TODO: mention somehow that Duolingo is from the creator of reCAPTCHA? this doesn't seem to fit anywhere... and I don't have an academic reference for Duolingo, do I?
+% TODO: mention that Duolingo only does short phrases? but they USED to manage to piece them together to do professional translation work... BUT they stopped that? plus, there's no zh-en support? is that the main reason i stopped?
 
 
 % what the heck, let's do this - as it makes it transparent that I'm not over reference length either
@@ -785,7 +805,7 @@ But to master one's native tongue takes like 10 years, and there's a BUNCH of un
 We are very grateful to the anonymous EMNLP 2016 reviewers for many helpful comments on an earlier version of this paper.
 
 
-%\pagebreak a man a plan a canal a panama. yes, it looks like ANY new reference will cause AMTA to go over limit.
+%\pagebreak %a man a plan a canal a panama. yes, it looks like ANY new reference will cause AMTA to go over limit.
 
 
 % these are so short that it's probably better to have it in literally instead of using \input
