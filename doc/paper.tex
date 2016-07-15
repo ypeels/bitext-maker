@@ -276,15 +276,16 @@ Following our highly simplified picture of linguistics in Section~\ref{subsec:li
 
 % TODO: nodes class diagram? seems like an implementation detail...
 % TODO: the fastest way i have to get dotted lines is through Word or PowerPoint, but I wanted to do the figures in OneNote, at least the camera-unready ones...
+% TODO: preposition (or participle!) might be illustrative, but PP is just WAY too messy and involved to draw in a small space...
 % TODO: it would be NICE if the tree matched a YAML example...
+% TODO: oh, I could have made a tree diagram using some LaTeX nlp tree package? Word + pdf wound up being pretty fast though
 \begin{figure}[ht]
     \centering
-    placeholder graphic, used to estimate space remaining in the paper
-    \includegraphics{yaml-rb-rotated}
-        
+    \includegraphics{tree}
     \caption{
         An example tree made of nodes from the {\small \tt nodes} module.
-        Thick lines indicate the ``constituent'' backbone that dictates the order of traversal in the {\small \tt generator} module, while thin lines indicate longer-range dependencies that are stored as links between nodes.
+        Solid lines indicate the ``constituent'' backbone that dictates the order of traversal in the {\small \tt generator} module, while dashed lines indicate longer-range syntactic or semantic dependencies that are stored as links between nodes.
+        % In this example, V$_1$ can be a ``modalish'' verb like ``want'' that acts like a non-defective modal verb of sorts % meh, let's just bury it in the table below
     }
     \label{fig:tree}
 
@@ -306,6 +307,7 @@ Language-specific rules (e.g., word order) are implemented as ad hoc bits of cod
 %    Although then I guess you have a transductive grammar on those portions?
 } reading long-range dependency information from the tree as needed.
 All language-dependent code is confined to this module, although this is coupled with language-dependent information from the YAML data (e.g., the tags and punctuation in Figure~\ref{fig:yaml-rb}). 
+For example, it is left to the generator to order prepositional phrases after their targets in English but before their targets in Chinese.
 % TODO: More ideally, A desirable longer-term goal would be to move language rules to data, but that's beyond the scope of this paper.
 
 
@@ -371,7 +373,7 @@ Also, minimizing the learning curve makes it potentially easier to scale up to a
 
 
 
-% maybe use a bulleted list for the different linguistic phenomena supported? yeah, let's just do that.
+
 
 %Oh, maybe I should make this a table. that should cut down on the vertical spacing
 %
@@ -384,7 +386,7 @@ Clauses & indicative present active; intransitive, transitive, ``meta'' (clause 
 NP & noun phrases headed by nouns, names, or pronouns; optional modifiers as child nodes; pronoun antecedents via links \\ \hline
 ADJP & adjectives as NP modifiers, with links to head nouns (e.g., this vs. these) \\ \hline
 ADVP & adverbs as Clause or ADJP modifiers \\ \hline
-Participles & transformations of clauses that convert subject child node into a linked node, allowing reuse of semantic constraints \\ \hline
+VP & transformations of clauses into participles or modal(ish) complements; convert subject child node into a linked node, allowing reuse of semantic constraints \\ \hline
 PP & prepositional phrases (relations) between two nodes (noun/noun or noun/verb), with relation-dependent semantic requirements on both nodes; indirect objects as ``null preposition'' nodes \\ \hline
 %Custom nodes & ``example-based'' nodes as discussed in Section~\ref{subsec:software} \\ \hline
 %Transformations & alterations of existing templates - past tense, topicalization, \zh{把}-construction \\ \hline
@@ -394,19 +396,6 @@ PP & prepositional phrases (relations) between two nodes (noun/noun or noun/verb
 }
 \label{tab:implemented_linguistics}
 \end{table}
-
-%\begin{itemize}
-%\item 
-%\item participles as 
-
-
-%
-%% other (if there's room)
-%\item indirect object as a special case of ``null preposition'' - not necessarily linguistically well-founded, but good enough to make sentences
-
-%\end{itemize}
-
-
 
 
 
@@ -575,7 +564,7 @@ This issue seems to have been introduced in the IWSLT15 Chinese-English corpus, 
 
 % SLIGHTLY inconsistent formatting, since now I have discussion ABOVE the table instead of below...
 % but this creates a natural break for the discussion 
-Table~\ref{tab:tst2010} shows the scores obtained by ``lightly'' post-editing the MERT tuning set {\small \tt tst2010} as follows. 
+Table~\ref{tab:tst2010} below shows the scores obtained by ``lightly'' post-editing the MERT tuning set {\small \tt tst2010} as follows. 
 On the Chinese side, duplicated segments, applause lines, and translator notes were removed. 
 Speaker annotations were normalized on both sides, as well as sentence alignments wherever possible.
 As a result, small but noticeable differences in scores are observed. 
@@ -762,8 +751,7 @@ Scores evaluated on post-edited {\small \tt tst2010} are not shown, for the sake
 
 
 \subsection{Data Snooping}
-\textbf{
-Warning: This section is dedicated to ``data snooping'' experiments that included information from the test set during training in one way or another.
+\textbf{Warning: This subsection is dedicated to ``data snooping'' experiments that included information from the test set during training in one way or another.
 The scores given here must not be considered indicative of actual out-of-sample system performance.
 }
 

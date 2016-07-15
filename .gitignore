@@ -10,7 +10,9 @@ doc/*.gz
 doc/*.log
 doc/*.out
 doc/*.pdf
-doc/submitted-emnlp/
+!doc/tree.pdf
+doc/submitted-emnlp/*.zip
+
 *.bat
 *.en
 *.lnk
