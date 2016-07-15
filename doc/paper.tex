@@ -37,6 +37,8 @@
     \usepackage{graphicx}
     %\usepackage{caption}
     %\usepackage{subcaption}
+    
+    \usepackage{tabularx}
 
 \fi
 \if \buildtarget \buildhcomp    
@@ -68,7 +70,8 @@
 \begin{abstract}
 The large-scale generation of synthetic parallel corpora for data-driven machine translation is proposed\amtaonly{ in this demo paper}.
 A rudimentary system for doing this is presented, with mechanisms for syntactic complexity in the spirit of classical rule-based machine translation and high-quality sentence pairs in the spirit of example-based machine translation.
-Preliminary experiments integrating these synthetic corpora into a shared task are reported.
+Preliminary experiments integrating these synthetic corpora into the IWSLT shared task are reported.
+In the process, it was incidentally found that correcting $\sim$4\% of the shared task's training corpus for obvious, clerical-type errors resulted in a $\sim$6\% relative increase in BLEU scores.
 Promising future directions are discussed, in particular, large-scale contributions from ``amateur linguists'' via crowdsourcing.
 \end{abstract}
 
@@ -85,7 +88,7 @@ This results in what we perceive to be a disproportionate amount of effort being
     However, such translations are optimized for human consumption, not machine learning, with no regard for such niceties as sentence alignment.
     \amtaonly{
         This is not unlike an athlete having an Olympic-level training regimen, fueled by food scrounged off the streets.
-        
+                
         An example of suboptimal parallel corpora being used for machine translation is given in Section \ref{subsec:case_study}.
         At the very least, it suggests a need for more careful post-editing of bitexts, particularly for development and test corpora.
         More ideal, though, would be the creation of parallel corpora for the express purpose of training, tuning, and evaluating data-driven MT systems.
@@ -298,7 +301,7 @@ Following our highly simplified picture of linguistics in Section~\ref{subsec:li
 The {\small \tt generator} module traverses the backbone of the ``interlingual'' tree from the {\small \tt nodes} module and recursively builds up parallel surface forms (bilingual sentence pairs).
 Language-specific rules (e.g., word order) are implemented as ad hoc bits of code in this module,\footnote{
     Formally, the ``rule-based'' component of our system can be considered an extremely rudimentary synchronous (bilingual) context-free grammar of sorts \mycitep{transduction} that also admits long-range dependencies and semantic constraints.
-    But it would be a disservice to those other well-developed methods to refer to our system as anything other than an ad hoc way to generate multilingual sentences.
+    But it would be a disservice to those other well-developed methods to refer to our system as anything other than a makeshift way to generate multilingual sentences.
 %    MEH: Also, example-based mode admits the possibility of just writing down translations and then generating parse trees on PORTIONS of those templates.
 %    Although then I guess you have a transductive grammar on those portions?
 } reading long-range dependency information from the tree as needed.
@@ -351,69 +354,62 @@ A helper script also supports the use of ``meta-templates'' to facilitate hand-c
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}} % full-width horizontal line
-TODO
+
+%TODO
 
 \subsection{Implemented Linguistic Phenomena}
 
-We briefly list
-and how they are implemented in terms of the tree representation from Section~\ref{subsec:software}
+Finally, to conclude this section, we briefly list linguistic constructs and their implementations in terms of the tree representation from Section~\ref{subsec:software}.
+Note that since we are interested primarily in the generated surface forms, the linguistic soundness of how they are implemented in our tree representation is of relatively secondary importance.
+Aside from manageability, there are a few other reasons for focusing on just the most basic linguistic phenomena for the ``rule-based'' mode.
+We strongly believe that for the purposes of generating large and high-quality parallel corpora, it is most effective to treat difficult, non-compositional phenomena by simply writing them down, in tradition of example-based MT.
+Also, minimizing the learning curve makes it potentially easier to scale up to admit contributions from non-linguists.
 
-a couple of reasons for keeping linguistic phenomena to the most basic ones (aside from manageability)
-- we believe that for the purposes of generating parallel corpora, is most effective to treat very difficult, non-compositional phenomena (example?!) by simply writing them down, in tradition of example-based MT
-- keeping the data format simpler makes it potentially easier to scale up to admit contributions from non-linguists
 
-- emphasize that we prioritize generating in-domain sentences above linguistic soundness
 
-% transformations were chosen with an eye toward scalability, so that things like semantic constraints (<animal> eats <food>) could be used (eating <food>, and should modify <animal>)
+% transformations - with scalability in mind, so that things like semantic constraints (<animal> eats <food>) could be used (eating <food>, and should modify <animal>)
 
-% if i'm gonna do source code snippets with zh, maybe it'd be best to use IMAGES? it's not for camera-ready anyway...
-% well, i can do the meta-template easily... the problem is with REAL templates
+
 
 % maybe use a bulleted list for the different linguistic phenomena supported? yeah, let's just do that.
 
 %Oh, maybe I should make this a table. that should cut down on the vertical spacing
 %
-%\begin{table}[ht]
-%\centering
-%\begin{tabular}{|l|l|}
-%\hline
-%Gold en & 60,000. \\ \hline
-%Gold en & 60,000. \\ \hline
-%Gold en & 60,000. \\ \hline
-%Gold en & 60,000. \\ \hline
-%Gold en & 60,000. \\ \hline
-%Gold en & 60,000. \\ \hline
-%Gold en & 60,000. \\ \hline
-%Gold en & 60,000. \\ \hline
-%Gold en & 60,000. \\ \hline
-%Gold en & 60,000. \\ \hline
-%\end{tabular}
-%\caption{ 
-%    Linguistic constructs implemented in our multilingual generator.
-%}
-%\label{tab:implemented_linguistics}
-%\end{table}
+\begin{table}[ht]
+\centering
+%\begin{tabular}{|l|l|} % tabularx allows automatic wrapping
+\begin{tabularx}{\linewidth}{ |l|X| }
+\hline
+Clauses & indicative present active; intransitive, transitive, ``meta'' (clause subnode), ``modalish'' (e.g., ``Alice wants to kick Bob'' - with ``Alice'' linked to ``kick'' as in Figure~\ref{fig:tree} for subject-verb semantics) \\ \hline % see with a ``dependency link'' for subject-verb syntactic agreement and 
+NP & noun phrases headed by nouns, names, or pronouns; optional modifiers as child nodes; pronoun antecedents via links \\ \hline
+ADJP & adjectives as NP modifiers, with links to head nouns (e.g., this vs. these) \\ \hline
+ADVP & adverbs as Clause or ADJP modifiers \\ \hline
+Participles & transformations of clauses that convert subject child node into a linked node, allowing reuse of semantic constraints \\ \hline
+PP & prepositional phrases (relations) between two nodes (noun/noun or noun/verb), with relation-dependent semantic requirements on both nodes; indirect objects as ``null preposition'' nodes \\ \hline
+%Custom nodes & ``example-based'' nodes as discussed in Section~\ref{subsec:software} \\ \hline
+%Transformations & alterations of existing templates - past tense, topicalization, \zh{把}-construction \\ \hline
+\end{tabularx}
+\caption{ 
+    Linguistic constructs implemented for the ``rule-based'' mode of our generator.
+}
+\label{tab:implemented_linguistics}
+\end{table}
 
-\begin{itemize}
-\item clauses: transitive, meta, modal. a word on modalish. 
-\item NP
-\item ADJP
-\item participles as transformations of clauses that convert subject into a linked node, allowing reuse of semantic constraints
-\item prepositions as relations between two nodes (noun/noun or noun/verb), and accompanying semantic requirements on both object and target
-\item custom nodes - because sometimes, the most effective way to represent a translation is to just write it down. (``template-based mode''): lots of iterals, maybe mark an NP somewhere
+%\begin{itemize}
+%\item 
+%\item participles as 
 
-% other (if there's room)
-\item ADVP (targeting ADJP or Clause), pronouns with antecedents 
-\item indirect object as a special case of ``null preposition'' - not necessarily linguistically well-founded, but good enough to make sentences
-\item past tense as transformation of present tense  % MEH
-\item other transformations: topicalization, and some hokier stuff like \zh{把} 
-\end{itemize}
+
+%
+%% other (if there's room)
+%\item indirect object as a special case of ``null preposition'' - not necessarily linguistically well-founded, but good enough to make sentences
+
+%\end{itemize}
 
 
 
-% big question: do I want to show a source code example?? yeah, i probably have room
-\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}} % full-width horizontal line
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 } % amtaonly
 
@@ -768,7 +764,7 @@ Scores evaluated on post-edited {\small \tt tst2010} are not shown, for the sake
 \subsection{Data Snooping}
 \textbf{
 Warning: This section is dedicated to ``data snooping'' experiments that included information from the test set during training in one way or another.
-The scores given here must not considered indicative of actual out-of-sample system performance.
+The scores given here must not be considered indicative of actual out-of-sample system performance.
 }
 
 Our reason for using the taboo practice of snooping is to try to isolate the most effective characteristics of in-domain data, whose power was seen in Section~\ref{sec:experiments}.
@@ -869,7 +865,7 @@ The data format (English itself) is widely agreed upon, and there is even an exi
 \amtaonly{ % Uh, should I bother with this stupidity, 
 %As a back of the envelope estimate, at a translation rate of about 1 noun per minute (based on our own data input experience), even for a modest user base of 10,000 users, a ten-minute problem set could in principle yield 100,000 data samples.
 %It seems like the bottleneck would be judicious problem set design.
-It is also worth noting that in a sense, this could regarded as a ``massively-online'' version of elicitation-based techniques  from fieldwork linguistics \mycitep{elicitation}, with an emphasis on acquiring unprocessed parallel sentences, and doing so at scale.
+It is also worth noting that in a sense, this could regarded as a ``massively-online'' version of elicitation-based techniques from fieldwork linguistics \mycitep{elicitation} for low-resource language pairs, with an emphasis on acquiring unprocessed parallel sentences, and doing so at scale.
 }
 
 Large quantities of supervised data underlie state-of-the-art performance in many NLP tasks.
